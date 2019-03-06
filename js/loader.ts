@@ -3,31 +3,34 @@ import { Launcher } from "launch"
 function isUrl(text:string):boolean{
     let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 
+    if(guardedMatch(text, pattern)){
+        return true;
+    }
+    return false;
+}
+
+function checkHttp(text:string):string{
+    let pattern = /(http(s)?:\/\/.).*/g
+    if(guardedMatch(text, pattern)){
+        return text;
+    }
+    return 'http://'+text;
+}
+
+function guardedMatch(text:string, pattern:RegExp){
     if(text.match(pattern)){
         if(text.match(pattern)[0] == text) {
-            console.log('true');
             return true;
         }
     }
     return false;
 }
 
-function checkHttp(text:string):string{
-    let pattern = /(http(s)?:\/\/.)*/g
-    if(text.match(pattern)[0] == text) {
-        return text;
-    }
-    return 'http://'+text;
-}
-
 function initLaunch(l:Launcher){
-    l.mkdir(['stack', 'media']);
+    l.mkdir(['launch'])
     l.touch('launch/google.lnk', 'https://www.google.com');
     l.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
     l.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
-    l.touch('stack/jsregex.lnk', 
-    'https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url');
-    l.touch('media/youtube.lnk', 'https://youtube.com/feed/subscriptions');
     return l;
 }
 
@@ -45,6 +48,8 @@ $(function(){
     let resultList:string[] = []
     let resultIndex:number = 0;
     let querySearching:boolean = false;
+
+    console.log(launch.toString())
 
     launchBox.on('keyup', function(key){
         // Listen for enter

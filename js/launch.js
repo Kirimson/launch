@@ -11,7 +11,6 @@ define(["require", "exports"], function (require, exports) {
             this.nextFolderId = 0;
             this.folders = [];
             this.files = [];
-            this.mkdir(['launch']);
         }
         mkdir(args) {
             args.forEach(folderName => {
@@ -156,6 +155,18 @@ define(["require", "exports"], function (require, exports) {
             }
             ;
             console.log(this);
+        }
+        toString() {
+            let sb = '.\n';
+            for (let i = 0; i < this.folders.length; i++) {
+                let folder = this.folders[i];
+                sb += '|---' + folder.name + '\n';
+                let folderFiles = this.files.filter(x => x.parentId == folder.id);
+                folderFiles.forEach(file => {
+                    sb += '|   |---' + file.filename + '\n';
+                });
+            }
+            return sb;
         }
     }
     exports.Launcher = Launcher;

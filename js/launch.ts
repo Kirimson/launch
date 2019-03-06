@@ -12,7 +12,6 @@ export class Launcher {
     constructor() {
         this.folders = []
         this.files = []
-        this.mkdir(['launch'])
     }
 
     mkdir(args:string[]) {
@@ -185,6 +184,23 @@ export class Launcher {
         };
 
         console.log(this)
+    }
+
+    toString():string{
+
+        let sb:string = '.\n'
+
+        for(let i = 0; i < this.folders.length; i++){
+            let folder = this.folders[i]
+            sb += '|---'+folder.name + '\n'
+
+            let folderFiles = this.files.filter(x => x.parentId == folder.id)
+            folderFiles.forEach(file => {
+                sb += '|   |---'+file.filename+'\n'
+            });
+        }
+
+        return sb
     }
 }
 
