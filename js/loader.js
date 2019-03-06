@@ -1,4 +1,4 @@
-define(["require", "exports", "launch"], function (require, exports, launch_1) {
+define(["require", "exports", "launch", "htmltools"], function (require, exports, launch_1, htmltools_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function isUrl(text) {
@@ -31,28 +31,26 @@ define(["require", "exports", "launch"], function (require, exports, launch_1) {
         return l;
     }
     var launch = new launch_1.Launcher();
+    let tools = new htmltools_1.Tools();
+    let resultList = [];
+    let resultIndex = 0;
     $(function () {
+        // Load or initialise launch
         if (localStorage.getItem('launch')) {
             launch.load(JSON.parse(localStorage.getItem('launch')));
         }
         else {
             launch = initLaunch(launch);
         }
-        let launchBox = $('#console');
-        launchBox.val('');
-        let resultList = [];
-        let resultIndex = 0;
-        let querySearching = false;
-        console.log(launch.toString());
-        launchBox.on('keyup', function (key) {
+        tools.setTreeHtml(launch);
+        tools.getLaunchBox().on('keyup', function (key) {
             // Listen for enter
-            let launchVal = String(launchBox.val());
+            let launchVal = tools.getLaunchBoxValue();
             if (key.which == 13) {
                 if (launch.getCommands().includes(launchVal.split(' ')[0])) {
                     launch.execCommand(launchVal);
-                    launchBox.val('');
+                    tools.clearLaunchBox();
                     localStorage.setItem('launch', launch.store());
-                    // launch.store()
                 }
                 else {
                     // First, check if url before anything else. least taxing
@@ -71,8 +69,7 @@ define(["require", "exports", "launch"], function (require, exports, launch_1) {
             }
             else {
                 // search for links
-                if (launchBox.val()) {
-                    querySearching = launch.isQuerySearch(launchVal);
+                if (tools.getLaunchBoxValue()) {
                     resultList = launch.search(launchVal);
                 }
             }

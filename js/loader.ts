@@ -1,4 +1,5 @@
 import { Launcher } from "launch"
+import {Tools} from "htmltools"
 
 function isUrl(text:string):boolean{
     let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
@@ -36,33 +37,30 @@ function initLaunch(l:Launcher){
 
 var launch = new Launcher();
 
+let tools = new Tools()
+let resultList:string[] = []
+let resultIndex:number = 0;
+
 $(function(){
+    // Load or initialise launch
     if(localStorage.getItem('launch')){
         launch.load(JSON.parse(localStorage.getItem('launch')))
     } else {
         launch = initLaunch(launch);
     }
+    
+    tools.setTreeHtml(launch)
 
-    let launchBox:JQuery = $('#console');
-    launchBox.val('');
-    let resultList:string[] = []
-    let resultIndex:number = 0;
-    let querySearching:boolean = false;
-
-    console.log(launch.toString())
-
-    launchBox.on('keyup', function(key){
+    tools.getLaunchBox().on('keyup', function(key){
         // Listen for enter
-        let launchVal:string = String(launchBox.val());
+        let launchVal:string = tools.getLaunchBoxValue()
         if(key.which == 13){
 
             if(launch.getCommands().includes(launchVal.split(' ')[0])){
                 launch.execCommand(launchVal)
 
-                launchBox.val('');
-
+                tools.clearLaunchBox();
                 localStorage.setItem('launch', launch.store())
-                // launch.store()
 
             } else {
                 // First, check if url before anything else. least taxing
@@ -78,8 +76,7 @@ $(function(){
             }
         } else {
             // search for links
-            if(launchBox.val()){
-                querySearching = launch.isQuerySearch(launchVal)
+            if(tools.getLaunchBoxValue()){
                 resultList = launch.search(launchVal);
             }
         }

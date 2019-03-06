@@ -5,13 +5,21 @@ enum LaunchFileTypes {
 
 export class Launcher {
 
-    public folders:LaunchFolder[];
-    public files:LaunchFile[];
-    public nextFolderId = 0;
+    private folders:LaunchFolder[];
+    private files:LaunchFile[];
+    private nextFolderId = 0;
 
     constructor() {
         this.folders = []
         this.files = []
+    }
+
+    getFolders():LaunchFolder[]{
+        return this.folders;
+    }
+
+    getFiles():LaunchFile[]{
+        return this.files;
     }
 
     mkdir(args:string[]) {
@@ -66,8 +74,6 @@ export class Launcher {
         // Split with spaces if using query
         let queryArg:string
         let fileName = entry
-
-        console.log(this.isQuerySearch(entry))
 
         if(this.isQuerySearch(entry)){
             fileName = entry.split(':')[0]+':'
@@ -182,25 +188,6 @@ export class Launcher {
             let file = data['files'][x];
             this.touch(file['filename'], file['content'])
         };
-
-        console.log(this)
-    }
-
-    toString():string{
-
-        let sb:string = '.\n'
-
-        for(let i = 0; i < this.folders.length; i++){
-            let folder = this.folders[i]
-            sb += '|---'+folder.name + '\n'
-
-            let folderFiles = this.files.filter(x => x.parentId == folder.id)
-            folderFiles.forEach(file => {
-                sb += '|   |---'+file.filename+'\n'
-            });
-        }
-
-        return sb
     }
 }
 

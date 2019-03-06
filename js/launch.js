@@ -12,6 +12,12 @@ define(["require", "exports"], function (require, exports) {
             this.folders = [];
             this.files = [];
         }
+        getFolders() {
+            return this.folders;
+        }
+        getFiles() {
+            return this.files;
+        }
         mkdir(args) {
             args.forEach(folderName => {
                 this.folders.push(new LaunchFolder(folderName, this.nextFolderId));
@@ -56,7 +62,6 @@ define(["require", "exports"], function (require, exports) {
             // Split with spaces if using query
             let queryArg;
             let fileName = entry;
-            console.log(this.isQuerySearch(entry));
             if (this.isQuerySearch(entry)) {
                 fileName = entry.split(':')[0] + ':';
                 queryArg = entry.substr(fileName.length).trim();
@@ -154,19 +159,6 @@ define(["require", "exports"], function (require, exports) {
                 this.touch(file['filename'], file['content']);
             }
             ;
-            console.log(this);
-        }
-        toString() {
-            let sb = '.\n';
-            for (let i = 0; i < this.folders.length; i++) {
-                let folder = this.folders[i];
-                sb += '|---' + folder.name + '\n';
-                let folderFiles = this.files.filter(x => x.parentId == folder.id);
-                folderFiles.forEach(file => {
-                    sb += '|   |---' + file.filename + '\n';
-                });
-            }
-            return sb;
         }
     }
     exports.Launcher = Launcher;
