@@ -35,12 +35,13 @@ export class Launcher {
     touch(newFile:string, content?:string) {
         if(newFile.match('/')) {
             let args = newFile.split('/');
+
             let parentFolder:LaunchFolder = this.getFolder(args[0]);
 
             this.files.push(this.createFile(args[1], content, 
             parentFolder.id, parentFolder.name))
         } else {
-            this.files.push(this.createFile(newFile, ''))
+            this.files.push(this.createFile(newFile, content))
         }
     }
 
@@ -88,6 +89,26 @@ export class Launcher {
         return
     }
 
+    execCommand(term:string){
+        let command = term.split(' ')[0]
+        let args = term.substr(command.length).trim();
+
+        switch(command) {
+            case 'mkdir':
+                this.mkdir(args.split(' '))
+                break;
+            case 'touch':
+                this.touch(args.split(' ')[0], args.split(' ')[1])
+                break;
+            case 'rm':
+                // TODO rm
+                break;
+            case 'rmdir':
+                // TODO rmdir
+                break;
+        }
+    }
+
     search(term:string):string[] {
         let links = this.files
         .filter(x => x instanceof LaunchLink)
@@ -106,12 +127,64 @@ export class Launcher {
         .map(x => x.toString());
 
         for(let i = 0; i < links.length; i++){
-            if(links[i]){
+            if(links[i] == bang){
                 return true
             }
         }
 
         return false
+    }
+
+    getCommands():string[] {
+        return ['mkdir', 'touch', 'rm', 'rmdir']
+    }
+
+    store():string{
+
+        let filesData = []
+        this.files.forEach(file => {
+            let fileData = {
+                'filename': file.getLocation(),
+                'content': file.content,
+            }
+            filesData.push(fileData)
+        });
+
+        let foldersData = []
+        this.folders.forEach(folder => {
+            let folderData = {
+                'folderName': folder.folderName,
+                'id': folder.id,
+                'name': folder.name
+            }
+            foldersData.push(folder)
+        })
+
+        let data = {
+            'nextFolderId': this.nextFolderId,
+            'files': filesData,
+            'folders': foldersData
+        }
+
+        return JSON.stringify(data)
+    }
+
+    load(data:JSON){
+        this.nextFolderId = 0
+        this.folders = []
+        this.files = []
+
+        for(let i = 0; i < data['folders'].length; i++){
+            let folder = data['folders'][i];
+            this.mkdir([folder['folderName']])
+        };
+
+        for(let x = 0; x < data['files'].length; x++){
+            let file = data['files'][x];
+            this.touch(file['filename'], file['content'])
+        };
+
+        console.log(this)
     }
 }
 
@@ -165,8 +238,8 @@ export class LaunchLink extends LaunchFile {
 
 export class LaunchQuery extends LaunchFile{
 
-    private shortHand:string
-    private link:string
+    public shortHand:string
+    public link:string
 
     constructor(public filename:string, 
         public content:string, public parentId?:number, 

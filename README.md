@@ -61,4 +61,4 @@ Command: `rm`
 Command: `rmdir`
 - can remove a folder
   - `rmdir folder`
-- will not remove files
+- will not remove files (unless inside the folder)

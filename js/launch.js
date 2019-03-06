@@ -35,7 +35,7 @@ define(["require", "exports"], function (require, exports) {
                 this.files.push(this.createFile(args[1], content, parentFolder.id, parentFolder.name));
             }
             else {
-                this.files.push(this.createFile(newFile, ''));
+                this.files.push(this.createFile(newFile, content));
             }
         }
         createFile(filename, content, parentId, parentName) {
@@ -75,6 +75,24 @@ define(["require", "exports"], function (require, exports) {
             this.run('g: ' + entry);
             return;
         }
+        execCommand(term) {
+            let command = term.split(' ')[0];
+            let args = term.substr(command.length).trim();
+            switch (command) {
+                case 'mkdir':
+                    this.mkdir(args.split(' '));
+                    break;
+                case 'touch':
+                    this.touch(args.split(' ')[0], args.split(' ')[1]);
+                    break;
+                case 'rm':
+                    // TODO rm
+                    break;
+                case 'rmdir':
+                    // TODO rmdir
+                    break;
+            }
+        }
         search(term) {
             let links = this.files
                 .filter(x => x instanceof LaunchLink)
@@ -89,11 +107,55 @@ define(["require", "exports"], function (require, exports) {
                 .filter(x => x instanceof LaunchQuery)
                 .map(x => x.toString());
             for (let i = 0; i < links.length; i++) {
-                if (links[i]) {
+                if (links[i] == bang) {
                     return true;
                 }
             }
             return false;
+        }
+        getCommands() {
+            return ['mkdir', 'touch', 'rm', 'rmdir'];
+        }
+        store() {
+            let filesData = [];
+            this.files.forEach(file => {
+                let fileData = {
+                    'filename': file.getLocation(),
+                    'content': file.content,
+                };
+                filesData.push(fileData);
+            });
+            let foldersData = [];
+            this.folders.forEach(folder => {
+                let folderData = {
+                    'folderName': folder.folderName,
+                    'id': folder.id,
+                    'name': folder.name
+                };
+                foldersData.push(folder);
+            });
+            let data = {
+                'nextFolderId': this.nextFolderId,
+                'files': filesData,
+                'folders': foldersData
+            };
+            return JSON.stringify(data);
+        }
+        load(data) {
+            this.nextFolderId = 0;
+            this.folders = [];
+            this.files = [];
+            for (let i = 0; i < data['folders'].length; i++) {
+                let folder = data['folders'][i];
+                this.mkdir([folder['folderName']]);
+            }
+            ;
+            for (let x = 0; x < data['files'].length; x++) {
+                let file = data['files'][x];
+                this.touch(file['filename'], file['content']);
+            }
+            ;
+            console.log(this);
         }
     }
     exports.Launcher = Launcher;
