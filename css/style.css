@@ -1,3 +1,29 @@
 html, body{
     background-color: #999;
+    font-family: 'Fira Code';
+    font-weight: lighter;
+}
+
+.tree-folder {
+    border-left: solid thin black;
+    padding-left: 0.5em;
+}
+
+.tree-files {
+    padding-left: 1em;
+    padding-bottom: 1em;
+}
+
+.tree-file::before, .tree-folder::before {
+    content: '';
+    position: absolute;
+    border-bottom: thin black solid;
+    height: 0.5em;
+    width: 0.5em;
+    transform: translateX(-0.5em) translateY(0.25em);
+}
+
+.tree-file {
+    border-left: solid thin black;
+    padding-left: 0.5em;
 }
