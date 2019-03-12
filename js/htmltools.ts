@@ -1,14 +1,16 @@
-import { Launcher, LaunchFolder, LaunchFile } from "./launch";
+import { Launcher, LaunchFolder, LaunchFile, LaunchLink } from "./launch";
 import "loader"
 
 export class Tools {
 
     private treeBox:JQuery;
     private launchBox:JQuery;
+    private body:HTMLElement;
 
     constructor(){
         this.launchBox = $('#console');
         this.treeBox = $('#tree');
+        this.body = document.body
     }
 
     getLaunchBox():JQuery{
@@ -23,9 +25,15 @@ export class Tools {
         this.launchBox.val('');
     }
 
-    setTreeHtml(launch:Launcher){
+    setBackground(background_url:string):void {
+        this.body.style.backgroundImage = `url(${background_url})`
+    }
+
+    updateTree(launch:Launcher){
 
         let folders:LaunchFolder[] = launch.getFolders()
+                                     .sort((foldera, folderb) => 
+                                     foldera.name > folderb.name ? 1 : -1);
         let files:LaunchFile[] = launch.getFiles()
         this.treeBox.html('')
 
@@ -34,8 +42,8 @@ export class Tools {
             
             // Create folder div element
             let folderDiv:HTMLElement = document.createElement('div');
-            folderDiv.className = 'tree-folder';
-            folderDiv.id = folder.name+'-folder';
+            folderDiv.className = 'tree-base';
+            folderDiv.id = `tree-folder-${folder.name}`
 
             let folderName:HTMLElement = document.createElement('span');
             folderName.className = 'tree-folder-name';
@@ -43,7 +51,9 @@ export class Tools {
             folderDiv.append(folderName);
 
             // Get files that belong to this folder
-            let folderFiles = files.filter(x => x.parentId == folder.id);
+            let folderFiles = files.filter(file => file.parentId == folder.id)
+                                   .sort((filea, fileb) => 
+                                   filea.filename > fileb.filename ? 1 : -1);
             let filesDiv:HTMLElement = document.createElement('div');
             filesDiv.className = 'tree-files';
 
@@ -52,25 +62,59 @@ export class Tools {
                 for(let k = 0; k < folderFiles.length; k++){
                 let file = folderFiles[k];
 
-                console.log(k)
-                console.log(file.filename)
-
                 let fileDiv:HTMLElement = document.createElement('div');
                 fileDiv.className = 'tree-file'
-                fileDiv.id = 'tree-file-'+file.filename
+                fileDiv.id = `tree-file-${file.filename}`
 
-                let fileName:HTMLElement = document.createElement('span');
+                let fileName:HTMLElement;
+
+                if(file instanceof LaunchLink){
+                    fileName = document.createElement('a');
+                    fileName.setAttribute('href', file.content)
+                } else {
+                    fileName = document.createElement('span');
+                }
+                
                 fileName.className = 'tree-file-name';
                 fileName.append(file.filename)
+
                 fileDiv.append(fileName)
                 
                 filesDiv.append(fileDiv)
                 }
+                
                 // Add this fodlers files div to it
                 folderDiv.append(filesDiv)
             }
 
             this.treeBox.append(folderDiv);
+        }
+
+        // Files that do not belong in a folder
+        let orphanedFiles = files
+                            .filter(file => file.parentId == undefined)
+                            .sort((filea, fileb) => 
+                                   filea.filename > fileb.filename ? 1 : -1);
+        for(let i = 0; i < orphanedFiles.length; i++){
+            let file = orphanedFiles[i];
+            console.log(file)
+            // Create folder div element
+            let orphanDiv:HTMLElement = document.createElement('div');
+            orphanDiv.className = 'tree-base';
+            orphanDiv.id = `tree-file-${file.filename}`
+
+            let fileName:HTMLElement;
+
+            if(file instanceof LaunchLink){
+                fileName = document.createElement('a');
+                fileName.setAttribute('href', file.content)
+            } else {
+                fileName = document.createElement('span');
+            }
+            fileName.append(file.filename)
+            orphanDiv.append(fileName);
+
+            this.treeBox.append(orphanDiv);
         }
     }
 }

@@ -1,29 +1,67 @@
 html, body{
-    background-color: #999;
     font-family: 'Fira Code';
     font-weight: lighter;
+    height: 100%;
+    margin: 0;
 }
 
-.tree-folder {
+body {
+    background-size: cover;
+}
+
+a {
+    color: rgb(17, 26, 112);
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.footer {
+    background-color: #5e921b;
+    height: 1.5em;
+}
+
+.tree-base {
     border-left: solid thin black;
-    padding-left: 0.5em;
+    padding-left: 1em;
 }
 
 .tree-files {
-    padding-left: 1em;
-    padding-bottom: 1em;
+    margin-left: 1em;
+    border-left: solid thin black;
 }
 
-.tree-file::before, .tree-folder::before {
+.tree-file::before, .tree-base::before {
     content: '';
     position: absolute;
     border-bottom: thin black solid;
     height: 0.5em;
-    width: 0.5em;
-    transform: translateX(-0.5em) translateY(0.25em);
+    width: 1em;
+    transform: translateX(-1em) translateY(0.25em);
 }
 
 .tree-file {
-    border-left: solid thin black;
-    padding-left: 0.5em;
+    padding-left: 1em;
+}
+
+#wrapper {
+    display: flex;
+    flex: 1;
+}
+
+#tree-wrapper {
+    width: 30%;
+    border: solid thin black;
+    display: flex;
+    justify-content: center;
+}
+
+#console-wrapper {
+    width: 70%;
+    border: solid thin black
 }

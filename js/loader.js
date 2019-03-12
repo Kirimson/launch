@@ -3,10 +3,7 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
     Object.defineProperty(exports, "__esModule", { value: true });
     function isUrl(text) {
         let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
-        if (guardedMatch(text, pattern)) {
-            return true;
-        }
-        return false;
+        return guardedMatch(text, pattern);
     }
     function checkHttp(text) {
         let pattern = /(http(s)?:\/\/.).*/g;
@@ -17,9 +14,7 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
     }
     function guardedMatch(text, pattern) {
         if (text.match(pattern)) {
-            if (text.match(pattern)[0] == text) {
-                return true;
-            }
+            return (text.match(pattern)[0] == text);
         }
         return false;
     }
@@ -42,7 +37,8 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
         else {
             launch = initLaunch(launch);
         }
-        tools.setTreeHtml(launch);
+        tools.updateTree(launch);
+        tools.setBackground(launch.getBackground());
         tools.getLaunchBox().on('keyup', function (key) {
             // Listen for enter
             let launchVal = tools.getLaunchBoxValue();
@@ -51,11 +47,15 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
                     launch.execCommand(launchVal);
                     tools.clearLaunchBox();
                     localStorage.setItem('launch', launch.store());
+                    tools.updateTree(launch);
+                    console.log(launch.getBackground());
+                    tools.setBackground(launch.getBackground());
                 }
                 else {
                     // First, check if url before anything else. least taxing
                     // Second, send the currently selected link item
-                    // Third, if running a query/standard search (technically the same)
+                    // Third, if running a query/standard search 
+                    // (technically the same)
                     if (isUrl(launchVal)) {
                         window.location.href = checkHttp(launchVal);
                     }

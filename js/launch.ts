@@ -4,14 +4,28 @@ enum LaunchFileTypes {
 }
 
 export class Launcher {
-
     private folders:LaunchFolder[];
     private files:LaunchFile[];
     private nextFolderId = 0;
+    private backgroundDefault:string = 'img/default.png'
+    private background:string;
 
     constructor() {
-        this.folders = []
-        this.files = []
+        this.folders = [];
+        this.files = [];
+        this.background = this.backgroundDefault;
+    }
+
+    getBackground(): string {
+        return this.background;
+    }
+
+    setBackground(newBackground:string){
+        if(newBackground == '--clear'){
+            this.background = this.backgroundDefault;
+        } else {
+            this.background = newBackground;
+        }
     }
 
     getFolders():LaunchFolder[]{
@@ -54,6 +68,13 @@ export class Launcher {
 
     createFile(filename:string, content:string, parentId?:number,
         parentName?:string): LaunchFile{
+            //  Check if there is any file content
+            if(!content){
+                content = '#'
+            }
+
+            // Check if extension is specified. If not, append .lnk
+
             if(this.checkFileType(filename) == LaunchFileTypes.Link){
                 return new LaunchLink(filename, content, parentId, parentName)
             } else {
@@ -96,6 +117,10 @@ export class Launcher {
 
     execCommand(term:string){
         let command = term.split(' ')[0]
+
+        /** Remove the length the command of the text sent to launch to get
+        the arguments to parse */
+
         let args = term.substr(command.length).trim();
 
         switch(command) {
@@ -111,14 +136,22 @@ export class Launcher {
             case 'rmdir':
                 // TODO rmdir
                 break;
+            case 'feh':
+                this.setBackground(args)
         }
     }
 
+    /**
+     *  Searchs through all .lnk files given a search terms
+     * @param term  search term
+     * @returns string[] of LaunchLink toString representations that match the 
+     *          search term provided
+     */
     search(term:string):string[] {
         let links = this.files
-        .filter(x => x instanceof LaunchLink)
-        .map(x => x.toString())
-        .filter(x => x.match(term));
+        .filter(file => file instanceof LaunchLink)
+        .map(file => file.toString())
+        .filter(file => file.match(term));
 
         return links
     }
@@ -141,7 +174,7 @@ export class Launcher {
     }
 
     getCommands():string[] {
-        return ['mkdir', 'touch', 'rm', 'rmdir']
+        return ['mkdir', 'touch', 'rm', 'rmdir', 'feh']
     }
 
     store():string{
@@ -168,7 +201,8 @@ export class Launcher {
         let data = {
             'nextFolderId': this.nextFolderId,
             'files': filesData,
-            'folders': foldersData
+            'folders': foldersData,
+            'background': this.background
         }
 
         return JSON.stringify(data)
@@ -178,6 +212,11 @@ export class Launcher {
         this.nextFolderId = 0
         this.folders = []
         this.files = []
+
+        //  If there is a user stored background, load it
+        if(data['background']){
+            this.background = data['background']
+        }
 
         for(let i = 0; i < data['folders'].length; i++){
             let folder = data['folders'][i];
@@ -244,7 +283,7 @@ export class LaunchQuery extends LaunchFile{
     public shortHand:string
     public link:string
 
-    constructor(public filename:string, 
+    constructor(public filename:string,
         public content:string, public parentId?:number, 
         public parentName?:string){
             super(filename, content, parentId, parentName)

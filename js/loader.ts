@@ -4,10 +4,7 @@ import {Tools} from "htmltools"
 function isUrl(text:string):boolean{
     let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 
-    if(guardedMatch(text, pattern)){
-        return true;
-    }
-    return false;
+    return guardedMatch(text, pattern)
 }
 
 function checkHttp(text:string):string{
@@ -20,9 +17,7 @@ function checkHttp(text:string):string{
 
 function guardedMatch(text:string, pattern:RegExp){
     if(text.match(pattern)){
-        if(text.match(pattern)[0] == text) {
-            return true;
-        }
+        return (text.match(pattern)[0] == text)
     }
     return false;
 }
@@ -48,8 +43,9 @@ $(function(){
     } else {
         launch = initLaunch(launch);
     }
-    
-    tools.setTreeHtml(launch)
+
+    tools.updateTree(launch)
+    tools.setBackground(launch.getBackground())
 
     tools.getLaunchBox().on('keyup', function(key){
         // Listen for enter
@@ -58,14 +54,20 @@ $(function(){
 
             if(launch.getCommands().includes(launchVal.split(' ')[0])){
                 launch.execCommand(launchVal)
-
                 tools.clearLaunchBox();
                 localStorage.setItem('launch', launch.store())
+
+                tools.updateTree(launch)
+
+                console.log(launch.getBackground())
+
+                tools.setBackground(launch.getBackground())
 
             } else {
                 // First, check if url before anything else. least taxing
                 // Second, send the currently selected link item
-                // Third, if running a query/standard search (technically the same)
+                // Third, if running a query/standard search 
+                // (technically the same)
                 if(isUrl(launchVal)){
                     window.location.href = checkHttp(launchVal);          
                 } else if(resultList.length != 0){

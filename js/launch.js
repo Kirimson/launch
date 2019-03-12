@@ -9,8 +9,21 @@ define(["require", "exports"], function (require, exports) {
     class Launcher {
         constructor() {
             this.nextFolderId = 0;
+            this.backgroundDefault = 'img/default.png';
             this.folders = [];
             this.files = [];
+            this.background = this.backgroundDefault;
+        }
+        getBackground() {
+            return this.background;
+        }
+        setBackground(newBackground) {
+            if (newBackground == '--clear') {
+                this.background = this.backgroundDefault;
+            }
+            else {
+                this.background = newBackground;
+            }
         }
         getFolders() {
             return this.folders;
@@ -44,6 +57,11 @@ define(["require", "exports"], function (require, exports) {
             }
         }
         createFile(filename, content, parentId, parentName) {
+            //  Check if there is any file content
+            if (!content) {
+                content = '#';
+            }
+            // Check if extension is specified. If not, append .lnk
             if (this.checkFileType(filename) == LaunchFileTypes.Link) {
                 return new LaunchLink(filename, content, parentId, parentName);
             }
@@ -81,6 +99,8 @@ define(["require", "exports"], function (require, exports) {
         }
         execCommand(term) {
             let command = term.split(' ')[0];
+            /** Remove the length the command of the text sent to launch to get
+            the arguments to parse */
             let args = term.substr(command.length).trim();
             switch (command) {
                 case 'mkdir':
@@ -95,13 +115,21 @@ define(["require", "exports"], function (require, exports) {
                 case 'rmdir':
                     // TODO rmdir
                     break;
+                case 'feh':
+                    this.setBackground(args);
             }
         }
+        /**
+         *  Searchs through all .lnk files given a search terms
+         * @param term  search term
+         * @returns string[] of LaunchLink toString representations that match the
+         *          search term provided
+         */
         search(term) {
             let links = this.files
-                .filter(x => x instanceof LaunchLink)
-                .map(x => x.toString())
-                .filter(x => x.match(term));
+                .filter(file => file instanceof LaunchLink)
+                .map(file => file.toString())
+                .filter(file => file.match(term));
             return links;
         }
         isQuerySearch(term) {
@@ -118,7 +146,7 @@ define(["require", "exports"], function (require, exports) {
             return false;
         }
         getCommands() {
-            return ['mkdir', 'touch', 'rm', 'rmdir'];
+            return ['mkdir', 'touch', 'rm', 'rmdir', 'feh'];
         }
         store() {
             let filesData = [];
@@ -141,7 +169,8 @@ define(["require", "exports"], function (require, exports) {
             let data = {
                 'nextFolderId': this.nextFolderId,
                 'files': filesData,
-                'folders': foldersData
+                'folders': foldersData,
+                'background': this.background
             };
             return JSON.stringify(data);
         }
@@ -149,6 +178,10 @@ define(["require", "exports"], function (require, exports) {
             this.nextFolderId = 0;
             this.folders = [];
             this.files = [];
+            //  If there is a user stored background, load it
+            if (data['background']) {
+                this.background = data['background'];
+            }
             for (let i = 0; i < data['folders'].length; i++) {
                 let folder = data['folders'][i];
                 this.mkdir([folder['folderName']]);
