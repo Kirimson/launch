@@ -35,8 +35,10 @@ define(["require", "exports"], function (require, exports) {
         }
         mkdir(args, readOnly = false) {
             args.forEach(folderName => {
-                this.folders.push(new LaunchFolder(folderName, this.nextFolderId, readOnly));
-                this.nextFolderId++;
+                if (!this.getFolder(folderName)) {
+                    this.folders.push(new LaunchFolder(folderName, this.nextFolderId, readOnly));
+                    this.nextFolderId++;
+                }
             });
         }
         setReadOnly(folderName) {

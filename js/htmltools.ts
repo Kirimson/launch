@@ -9,6 +9,7 @@ export class Tools {
 
     constructor(){
         this.launchBox = $('#console');
+        this.launchBox.focus();
         this.treeBox = $('#tree');
         this.body = document.body
     }

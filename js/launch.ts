@@ -41,9 +41,11 @@ export class Launcher {
 
     mkdir(args:string[], readOnly:boolean=false) {
         args.forEach(folderName => {
-            this.folders.push(new LaunchFolder(folderName, this.nextFolderId,
-                              readOnly))
-            this.nextFolderId++;
+            if(!this.getFolder(folderName)){
+                this.folders.push(new LaunchFolder(folderName, this.nextFolderId,
+                                  readOnly))
+                this.nextFolderId++;
+            }
         });
     }
 
