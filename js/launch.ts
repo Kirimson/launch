@@ -1,3 +1,9 @@
+import { LaunchFolder } from "./launchfolder";
+import { LaunchFile } from "./launchfile";
+import { LaunchLink } from "./launchlink";
+import { LaunchQuery } from "./launchquery";
+
+
 export class Launcher {
     private folders:LaunchFolder[];
     private files:LaunchFile[];
@@ -309,85 +315,5 @@ export class Launcher {
         };
 
         return true;
-    }
-}
-
-export class LaunchFolder {
-    public id:number;
-    public name:string;
-    private readOnly:boolean;
-
-    constructor(public folderName:string, folderid:number,
-        readOnly:boolean=false){
-        this.id = folderid;
-        this.name = folderName;
-        this.readOnly = readOnly;
-    }
-
-    isReadOnly() {
-        return this.readOnly;
-    }
-
-    setReadOnly(readOnly: boolean): any {
-        this.readOnly = readOnly;
-    }
-}
-
-export class LaunchFile {
-    
-    // ID number of folder is used, to avoid cyclic references that cannot
-    // be serialised easily
-    constructor(public filename:string, 
-        public content:string, public parentId?:number, 
-        public parentName?:string){}
-
-    getLocation():string {
-        if(this.parentName){
-            return this.parentName + '/' + this.filename;
-        } else return this.filename;
-    }
-    
-    // Overrriden functions
-    execute(queryArg?:string){}
-    toString():string{return ''}
-}
-
-export class LaunchLink extends LaunchFile {
-    
-    constructor(public filename:string, 
-        public content:string, public parentId?:number, 
-        public parentName?:string){
-            super(filename, content, parentId, parentName)
-        }
-
-    execute() {
-        window.location.href = this.content;
-    }
-
-    toString():string {
-        return this.getLocation().slice(0,-4);
-    }
-}
-
-export class LaunchQuery extends LaunchFile{
-
-    public shortHand:string
-    public link:string
-
-    constructor(public filename:string,
-        public content:string, public parentId?:number, 
-        public parentName?:string){
-            super(filename, content, parentId, parentName)
-
-            this.shortHand = content.substr(0,content.indexOf(' '));
-            this.link = content.substr(content.indexOf(' ')+1);
-        }
-    
-    execute(queryArg:string){
-        window.location.href = this.link.replace('${}', queryArg);        
-    }
-
-    toString():string {
-        return this.shortHand;
     }
 }

@@ -1,4 +1,4 @@
-define(["require", "exports", "./launch", "loader"], function (require, exports, launch_1) {
+define(["require", "exports", "./launchlink", "loader"], function (require, exports, launchlink_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class Tools {
@@ -48,7 +48,7 @@ define(["require", "exports", "./launch", "loader"], function (require, exports,
                         fileDiv.className = 'tree-file';
                         fileDiv.id = `tree-file-${file.filename}`;
                         let fileName;
-                        if (file instanceof launch_1.LaunchLink) {
+                        if (file instanceof launchlink_1.LaunchLink) {
                             fileName = document.createElement('a');
                             fileName.setAttribute('href', file.content);
                         }
@@ -76,7 +76,7 @@ define(["require", "exports", "./launch", "loader"], function (require, exports,
                 orphanDiv.className = 'tree-base';
                 orphanDiv.id = `tree-file-${file.filename}`;
                 let fileName;
-                if (file instanceof launch_1.LaunchLink) {
+                if (file instanceof launchlink_1.LaunchLink) {
                     fileName = document.createElement('a');
                     fileName.setAttribute('href', file.content);
                 }

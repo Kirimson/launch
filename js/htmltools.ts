@@ -1,5 +1,8 @@
-import { Launcher, LaunchFolder, LaunchFile, LaunchLink } from "./launch";
 import "loader"
+import { Launcher } from "./launch";
+import { LaunchFolder} from "./launchfolder";
+import { LaunchFile } from "./launchfile";
+import { LaunchLink } from "./launchlink";
 
 export class Tools {
 

@@ -1,4 +1,4 @@
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"], function (require, exports, launchfolder_1, launchlink_1, launchquery_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     class Launcher {
@@ -36,7 +36,7 @@ define(["require", "exports"], function (require, exports) {
         mkdir(args, readOnly = false) {
             args.forEach(folderName => {
                 if (!this.getFolder(folderName)) {
-                    this.folders.push(new LaunchFolder(folderName, this.nextFolderId, readOnly));
+                    this.folders.push(new launchfolder_1.LaunchFolder(folderName, this.nextFolderId, readOnly));
                     this.nextFolderId++;
                 }
             });
@@ -109,10 +109,10 @@ define(["require", "exports"], function (require, exports) {
             if (filename.match('.lnk')) {
                 // Check content is a proper url
                 content = this.checkHttp(content);
-                return new LaunchLink(filename, content, parentId, parentName);
+                return new launchlink_1.LaunchLink(filename, content, parentId, parentName);
             }
             else {
-                return new LaunchQuery(filename, content, parentId, parentName);
+                return new launchquery_1.LaunchQuery(filename, content, parentId, parentName);
             }
         }
         // Needs full path to execute, e.g launch/google.link
@@ -167,7 +167,7 @@ define(["require", "exports"], function (require, exports) {
          */
         search(term) {
             let links = this.files
-                .filter(file => file instanceof LaunchLink)
+                .filter(file => file instanceof launchlink_1.LaunchLink)
                 .map(file => file.toString())
                 .filter(file => file.match(term));
             return links;
@@ -176,7 +176,7 @@ define(["require", "exports"], function (require, exports) {
             // Build bang from search term if exists
             let bang = term.split(':')[0] + ':';
             let links = this.files
-                .filter(x => x instanceof LaunchQuery)
+                .filter(x => x instanceof launchquery_1.LaunchQuery)
                 .map(x => x.toString());
             for (let i = 0; i < links.length; i++) {
                 if (links[i] == bang) {
@@ -261,74 +261,4 @@ define(["require", "exports"], function (require, exports) {
         }
     }
     exports.Launcher = Launcher;
-    class LaunchFolder {
-        constructor(folderName, folderid, readOnly = false) {
-            this.folderName = folderName;
-            this.id = folderid;
-            this.name = folderName;
-            this.readOnly = readOnly;
-        }
-        isReadOnly() {
-            return this.readOnly;
-        }
-        setReadOnly(readOnly) {
-            this.readOnly = readOnly;
-        }
-    }
-    exports.LaunchFolder = LaunchFolder;
-    class LaunchFile {
-        // ID number of folder is used, to avoid cyclic references that cannot
-        // be serialised easily
-        constructor(filename, content, parentId, parentName) {
-            this.filename = filename;
-            this.content = content;
-            this.parentId = parentId;
-            this.parentName = parentName;
-        }
-        getLocation() {
-            if (this.parentName) {
-                return this.parentName + '/' + this.filename;
-            }
-            else
-                return this.filename;
-        }
-        // Overrriden functions
-        execute(queryArg) { }
-        toString() { return ''; }
-    }
-    exports.LaunchFile = LaunchFile;
-    class LaunchLink extends LaunchFile {
-        constructor(filename, content, parentId, parentName) {
-            super(filename, content, parentId, parentName);
-            this.filename = filename;
-            this.content = content;
-            this.parentId = parentId;
-            this.parentName = parentName;
-        }
-        execute() {
-            window.location.href = this.content;
-        }
-        toString() {
-            return this.getLocation().slice(0, -4);
-        }
-    }
-    exports.LaunchLink = LaunchLink;
-    class LaunchQuery extends LaunchFile {
-        constructor(filename, content, parentId, parentName) {
-            super(filename, content, parentId, parentName);
-            this.filename = filename;
-            this.content = content;
-            this.parentId = parentId;
-            this.parentName = parentName;
-            this.shortHand = content.substr(0, content.indexOf(' '));
-            this.link = content.substr(content.indexOf(' ') + 1);
-        }
-        execute(queryArg) {
-            window.location.href = this.link.replace('${}', queryArg);
-        }
-        toString() {
-            return this.shortHand;
-        }
-    }
-    exports.LaunchQuery = LaunchQuery;
 });
