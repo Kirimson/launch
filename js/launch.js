@@ -14,6 +14,13 @@ define(["require", "exports"], function (require, exports) {
             this.files = [];
             this.background = this.backgroundDefault;
         }
+        checkHttp(text) {
+            let pattern = /(http(s)?:\/\/.).*/g;
+            if (text.match(pattern)) {
+                return text;
+            }
+            return 'http://' + text;
+        }
         getBackground() {
             return this.background;
         }
@@ -56,6 +63,27 @@ define(["require", "exports"], function (require, exports) {
                 this.files.push(this.createFile(newFile, content));
             }
         }
+        rm(fileName) {
+            let fileID = this.getFileid(fileName);
+            if (fileID) {
+                // this.files.pop()
+                this.files.splice(fileID, 1);
+            }
+        }
+        getFileid(fileName) {
+            for (let i = 0; i < this.files.length; i++) {
+                let file = this.files[i];
+                console.log(file.filename);
+                let fileLocation = file.getLocation();
+                // Check if file matches full filename or filename w/out ext
+                if (fileLocation == fileName ||
+                    fileLocation.substr(0, fileLocation.length - 4) == fileName) {
+                    // return index
+                    return i;
+                }
+            }
+            return false;
+        }
         createFile(filename, content, parentId, parentName) {
             //  Check if there is any file content
             if (!content) {
@@ -63,6 +91,8 @@ define(["require", "exports"], function (require, exports) {
             }
             // Check if extension is specified. If not, append .lnk
             if (this.checkFileType(filename) == LaunchFileTypes.Link) {
+                // Check content is a proper url
+                content = this.checkHttp(content);
                 return new LaunchLink(filename, content, parentId, parentName);
             }
             else {
@@ -76,7 +106,7 @@ define(["require", "exports"], function (require, exports) {
             return LaunchFileTypes.Query;
         }
         // Needs full path to execute, e.g launch/google.link
-        run(entry) {
+        runFile(entry) {
             // Split with spaces if using query
             let queryArg;
             let fileName = entry;
@@ -94,7 +124,7 @@ define(["require", "exports"], function (require, exports) {
                 }
             }
             ;
-            this.run('g: ' + entry);
+            this.runFile('g: ' + entry);
             return;
         }
         execCommand(term) {
@@ -110,7 +140,7 @@ define(["require", "exports"], function (require, exports) {
                     this.touch(args.split(' ')[0], args.split(' ')[1]);
                     break;
                 case 'rm':
-                    // TODO rm
+                    this.rm(args);
                     break;
                 case 'rmdir':
                     // TODO rmdir

@@ -70,7 +70,6 @@ define(["require", "exports", "./launch", "loader"], function (require, exports,
                 .sort((filea, fileb) => filea.filename > fileb.filename ? 1 : -1);
             for (let i = 0; i < orphanedFiles.length; i++) {
                 let file = orphanedFiles[i];
-                console.log(file);
                 // Create folder div element
                 let orphanDiv = document.createElement('div');
                 orphanDiv.className = 'tree-base';

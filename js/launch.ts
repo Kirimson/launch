@@ -15,6 +15,14 @@ export class Launcher {
         this.files = [];
         this.background = this.backgroundDefault;
     }
+    
+    private checkHttp(text:string):string{
+        let pattern = /(http(s)?:\/\/.).*/g
+        if(text.match(pattern)){
+            return text;
+        }
+        return 'http://'+text;
+    }
 
     getBackground(): string {
         return this.background;
@@ -66,6 +74,30 @@ export class Launcher {
         }
     }
 
+    rm(fileName:string){
+        let fileID = this.getFileid(fileName);
+        if(fileID){
+            // this.files.pop()
+            this.files.splice(fileID,1)
+        }
+    }
+
+
+    getFileid(fileName:string){
+        for(let i = 0; i < this.files.length; i++) {
+            let file = this.files[i]
+            console.log(file.filename)
+            let fileLocation = file.getLocation()
+            // Check if file matches full filename or filename w/out ext
+            if(fileLocation == fileName || 
+                fileLocation.substr(0,fileLocation.length-4) == fileName){
+                // return index
+                return i;
+            }
+        }
+        return false;
+    }
+
     createFile(filename:string, content:string, parentId?:number,
         parentName?:string): LaunchFile{
             //  Check if there is any file content
@@ -76,6 +108,8 @@ export class Launcher {
             // Check if extension is specified. If not, append .lnk
 
             if(this.checkFileType(filename) == LaunchFileTypes.Link){
+                // Check content is a proper url
+                content = this.checkHttp(content)
                 return new LaunchLink(filename, content, parentId, parentName)
             } else {
                 return new LaunchQuery(filename, content, parentId, parentName)
@@ -90,7 +124,7 @@ export class Launcher {
     }
 
     // Needs full path to execute, e.g launch/google.link
-    run(entry:string){
+    runFile(entry:string){
 
         // Split with spaces if using query
         let queryArg:string
@@ -111,7 +145,7 @@ export class Launcher {
             }
         };
 
-        this.run('g: '+entry)
+        this.runFile('g: '+entry)
         return
     }
 
@@ -131,7 +165,7 @@ export class Launcher {
                 this.touch(args.split(' ')[0], args.split(' ')[1])
                 break;
             case 'rm':
-                // TODO rm
+                this.rm(args)
                 break;
             case 'rmdir':
                 // TODO rmdir

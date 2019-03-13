@@ -59,8 +59,6 @@ $(function(){
 
                 tools.updateTree(launch)
 
-                console.log(launch.getBackground())
-
                 tools.setBackground(launch.getBackground())
 
             } else {
@@ -71,9 +69,9 @@ $(function(){
                 if(isUrl(launchVal)){
                     window.location.href = checkHttp(launchVal);          
                 } else if(resultList.length != 0){
-                    launch.run(resultList[resultIndex])
+                    launch.runFile(resultList[resultIndex])
                 } else {
-                    launch.run(launchVal);
+                    launch.runFile(launchVal);
                 }
             }
         } else {

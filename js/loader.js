@@ -48,7 +48,6 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
                     tools.clearLaunchBox();
                     localStorage.setItem('launch', launch.store());
                     tools.updateTree(launch);
-                    console.log(launch.getBackground());
                     tools.setBackground(launch.getBackground());
                 }
                 else {
@@ -60,10 +59,10 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
                         window.location.href = checkHttp(launchVal);
                     }
                     else if (resultList.length != 0) {
-                        launch.run(resultList[resultIndex]);
+                        launch.runFile(resultList[resultIndex]);
                     }
                     else {
-                        launch.run(launchVal);
+                        launch.runFile(launchVal);
                     }
                 }
             }
