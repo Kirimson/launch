@@ -27,6 +27,8 @@ function initLaunch(l:Launcher){
     l.touch('launch/google.lnk', 'https://www.google.com');
     l.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
     l.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
+    l.setReadOnly('launch');
+    localStorage.setItem('launch', launch.store())
     return l;
 }
 
@@ -39,7 +41,10 @@ let resultIndex:number = 0;
 $(function(){
     // Load or initialise launch
     if(localStorage.getItem('launch')){
-        launch.load(JSON.parse(localStorage.getItem('launch')))
+        // If launch is not succesfully loaded init it
+        if(!launch.load(JSON.parse(localStorage.getItem('launch')))){
+            launch = initLaunch(launch);
+        }
     } else {
         launch = initLaunch(launch);
     }

@@ -1,8 +1,3 @@
-enum LaunchFileTypes {
-    Link,
-    Query
-}
-
 export class Launcher {
     private folders:LaunchFolder[];
     private files:LaunchFile[];
@@ -44,11 +39,20 @@ export class Launcher {
         return this.files;
     }
 
-    mkdir(args:string[]) {
+    mkdir(args:string[], readOnly:boolean=false) {
         args.forEach(folderName => {
-            this.folders.push(new LaunchFolder(folderName, this.nextFolderId))
+            this.folders.push(new LaunchFolder(folderName, this.nextFolderId,
+                              readOnly))
             this.nextFolderId++;
         });
+    }
+
+    setReadOnly(folderName:string){
+        let folder = this.getFolder(folderName);
+
+        if(folder){
+            folder.setReadOnly(true)
+        }
     }
 
     getFolder(folderName:string):LaunchFolder{
@@ -77,15 +81,17 @@ export class Launcher {
     rm(fileName:string){
         let fileID = this.getFileID(fileName);
         if(fileID){
-            // this.files.pop()
-            this.files.splice(fileID,1)
+            // If folder file is in is not ready only, remove it
+            if(!this.getFileFolder(this.files[fileID]).isReadOnly()){
+                this.files.splice(fileID,1)
+            }
         }
     }
 
-        getFileID(fileName:string){
+    getFileID(fileName:string){
         for(let i = 0; i < this.files.length; i++) {
             let file = this.files[i]
-            console.log(file.filename)
+
             let fileLocation = file.getLocation()
             // Check if file matches full filename or filename w/out ext
             if(fileLocation == fileName || 
@@ -100,15 +106,16 @@ export class Launcher {
     rmdir(folderName:string){
         for(let folderID = 0; folderID < this.folders.length; folderID++) {
             let folder = this.folders[folderID];
-            console.log(folder.name)
-            if(folder.name == folderName){
-                console.log('will delete')
+
+            if(folder.name == folderName && folder.isReadOnly() == false){
+
                 let folderFiles = this.files.filter(file => 
                     file.parentId == folder.id);
 
                 folderFiles.forEach(file => {
                     this.rm(file.getLocation())
                 });
+
                 this.folders.splice(folderID,1)
             }
         }
@@ -123,20 +130,14 @@ export class Launcher {
 
             // Check if extension is specified. If not, append .lnk
 
-            if(this.checkFileType(filename) == LaunchFileTypes.Link){
+
+            if(filename.match('.lnk')){
                 // Check content is a proper url
                 content = this.checkHttp(content)
                 return new LaunchLink(filename, content, parentId, parentName)
             } else {
                 return new LaunchQuery(filename, content, parentId, parentName)
             }
-    }
-
-    checkFileType(filename:string){
-        if(filename.match('.lnk')){
-            return LaunchFileTypes.Link;
-        }
-        return LaunchFileTypes.Query;
     }
 
     // Needs full path to execute, e.g launch/google.link
@@ -192,7 +193,7 @@ export class Launcher {
     }
 
     /**
-     *  Searchs through all .lnk files given a search terms
+     * Searchs through all .lnk files given a search term
      * @param term  search term
      * @returns string[] of LaunchLink toString representations that match the 
      *          search term provided
@@ -227,6 +228,20 @@ export class Launcher {
         return ['mkdir', 'touch', 'rm', 'rmdir', 'feh']
     }
 
+    /**
+     * Get a files folder
+     * @param file File to get folder of
+     * @returns LaunchFolder of file's folder
+     */
+    getFileFolder(file:LaunchFile):LaunchFolder{
+        this.folders.forEach(folder => {
+            if(folder.id == file.parentId){
+                return folder;
+            }
+        });
+        return null
+    }
+
     store():string{
 
         let filesData = []
@@ -243,7 +258,8 @@ export class Launcher {
             let folderData = {
                 'folderName': folder.folderName,
                 'id': folder.id,
-                'name': folder.name
+                'name': folder.name,
+                'readonly': folder.isReadOnly()
             }
             foldersData.push(folder)
         })
@@ -258,7 +274,18 @@ export class Launcher {
         return JSON.stringify(data)
     }
 
-    load(data:JSON){
+    /**
+     * Creates a launch instance based on it's serialised data
+     * @param data JSON object data of launch from localstorage
+     * @returns boolean: true if loading is successful
+     */
+    load(data:JSON):boolean{
+        console.log(data)
+        if(data['folders'].length == 0 || data['files'].length == 0){
+            console.error('YOU BROKE LAUNCH. YOU MONSTER!');
+            return false;
+        }
+
         this.nextFolderId = 0
         this.folders = []
         this.files = []
@@ -270,25 +297,37 @@ export class Launcher {
 
         for(let i = 0; i < data['folders'].length; i++){
             let folder = data['folders'][i];
-            this.mkdir([folder['folderName']])
+            let readOnly:boolean = (folder['readOnly'] ? true : false)
+            this.mkdir([folder['folderName']], readOnly);
         };
 
         for(let x = 0; x < data['files'].length; x++){
             let file = data['files'][x];
-            this.touch(file['filename'], file['content'])
+            this.touch(file['filename'], file['content']);
         };
+
+        return true;
     }
 }
 
 export class LaunchFolder {
-
-    public files:LaunchFile[];
     public id:number;
     public name:string;
+    private readOnly:boolean;
 
-    constructor(public folderName:string, folderid:number){
+    constructor(public folderName:string, folderid:number,
+        readOnly:boolean=false){
         this.id = folderid;
         this.name = folderName;
+        this.readOnly = readOnly;
+    }
+
+    isReadOnly() {
+        return this.readOnly;
+    }
+
+    setReadOnly(readOnly: boolean): any {
+        this.readOnly = readOnly;
     }
 }
 
