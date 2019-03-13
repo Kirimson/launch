@@ -64,13 +64,13 @@ define(["require", "exports"], function (require, exports) {
             }
         }
         rm(fileName) {
-            let fileID = this.getFileid(fileName);
+            let fileID = this.getFileID(fileName);
             if (fileID) {
                 // this.files.pop()
                 this.files.splice(fileID, 1);
             }
         }
-        getFileid(fileName) {
+        getFileID(fileName) {
             for (let i = 0; i < this.files.length; i++) {
                 let file = this.files[i];
                 console.log(file.filename);
@@ -83,6 +83,20 @@ define(["require", "exports"], function (require, exports) {
                 }
             }
             return false;
+        }
+        rmdir(folderName) {
+            for (let folderID = 0; folderID < this.folders.length; folderID++) {
+                let folder = this.folders[folderID];
+                console.log(folder.name);
+                if (folder.name == folderName) {
+                    console.log('will delete');
+                    let folderFiles = this.files.filter(file => file.parentId == folder.id);
+                    folderFiles.forEach(file => {
+                        this.rm(file.getLocation());
+                    });
+                    this.folders.splice(folderID, 1);
+                }
+            }
         }
         createFile(filename, content, parentId, parentName) {
             //  Check if there is any file content
@@ -143,7 +157,7 @@ define(["require", "exports"], function (require, exports) {
                     this.rm(args);
                     break;
                 case 'rmdir':
-                    // TODO rmdir
+                    this.rmdir(args);
                     break;
                 case 'feh':
                     this.setBackground(args);

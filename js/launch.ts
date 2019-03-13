@@ -75,15 +75,14 @@ export class Launcher {
     }
 
     rm(fileName:string){
-        let fileID = this.getFileid(fileName);
+        let fileID = this.getFileID(fileName);
         if(fileID){
             // this.files.pop()
             this.files.splice(fileID,1)
         }
     }
 
-
-    getFileid(fileName:string){
+        getFileID(fileName:string){
         for(let i = 0; i < this.files.length; i++) {
             let file = this.files[i]
             console.log(file.filename)
@@ -96,6 +95,23 @@ export class Launcher {
             }
         }
         return false;
+    }
+
+    rmdir(folderName:string){
+        for(let folderID = 0; folderID < this.folders.length; folderID++) {
+            let folder = this.folders[folderID];
+            console.log(folder.name)
+            if(folder.name == folderName){
+                console.log('will delete')
+                let folderFiles = this.files.filter(file => 
+                    file.parentId == folder.id);
+
+                folderFiles.forEach(file => {
+                    this.rm(file.getLocation())
+                });
+                this.folders.splice(folderID,1)
+            }
+        }
     }
 
     createFile(filename:string, content:string, parentId?:number,
@@ -168,7 +184,7 @@ export class Launcher {
                 this.rm(args)
                 break;
             case 'rmdir':
-                // TODO rmdir
+                this.rmdir(args)
                 break;
             case 'feh':
                 this.setBackground(args)
