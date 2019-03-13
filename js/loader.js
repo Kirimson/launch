@@ -18,15 +18,6 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
         }
         return false;
     }
-    function initLaunch(l) {
-        l.mkdir(['launch']);
-        l.touch('launch/google.lnk', 'https://www.google.com');
-        l.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
-        l.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
-        l.setReadOnly('launch');
-        localStorage.setItem('launch', launch.store());
-        return l;
-    }
     var launch = new launch_1.Launcher();
     let tools = new htmltools_1.Tools();
     let resultList = [];
@@ -36,11 +27,13 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
         if (localStorage.getItem('launch')) {
             // If launch is not succesfully loaded init it
             if (!launch.load(JSON.parse(localStorage.getItem('launch')))) {
-                launch = initLaunch(launch);
+                launch.initLaunch();
+                localStorage.setItem('launch', launch.store());
             }
         }
         else {
-            launch = initLaunch(launch);
+            launch.initLaunch();
+            localStorage.setItem('launch', launch.store());
         }
         tools.updateTree(launch);
         tools.setBackground(launch.getBackground());

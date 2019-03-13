@@ -9,6 +9,13 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.files = [];
             this.background = this.backgroundDefault;
         }
+        initLaunch() {
+            this.mkdir(['launch']);
+            this.touch('launch/google.lnk', 'https://www.google.com');
+            this.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
+            this.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
+            this.setReadOnly('launch');
+        }
         checkHttp(text) {
             let pattern = /(http(s)?:\/\/.).*/g;
             if (text.match(pattern)) {
@@ -66,15 +73,30 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 this.files.push(this.createFile(newFile, content));
             }
         }
+        /**
+         * Deletes a file, if the file's parent folder is not read only
+         * @param fileName name of file to delete
+         */
         rm(fileName) {
             let fileID = this.getFileID(fileName);
-            if (fileID) {
-                // If folder file is in is not ready only, remove it
-                if (!this.getFileFolder(this.files[fileID]).isReadOnly()) {
+            if (fileID != -1) {
+                let file = this.files[fileID];
+                // If file is in a folder
+                if (file.parentId != undefined) {
+                    // If folder file is in is not ready only, remove it
+                    if (!this.getFileFolder(file).isReadOnly()) {
+                        this.files.splice(fileID, 1);
+                    }
+                }
+                else {
                     this.files.splice(fileID, 1);
                 }
             }
         }
+        /**
+         * Gets the index of a file to delete, given a filename
+         * @param fileName file to search for
+         */
         getFileID(fileName) {
             for (let i = 0; i < this.files.length; i++) {
                 let file = this.files[i];
@@ -86,20 +108,33 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     return i;
                 }
             }
-            return false;
+            return -1;
         }
-        rmdir(folderName) {
-            for (let folderID = 0; folderID < this.folders.length; folderID++) {
-                let folder = this.folders[folderID];
-                if (folder.name == folderName && folder.isReadOnly() == false) {
-                    let folderFiles = this.files.filter(file => file.parentId == folder.id);
-                    folderFiles.forEach(file => {
-                        this.rm(file.getLocation());
-                    });
-                    this.folders.splice(folderID, 1);
+        /**
+         * Deletes a folder/set of folders, assuming folder is not read only
+         * @param folderNames string[] of folders to remove
+         */
+        rmdir(folderNames) {
+            folderNames.forEach(folderName => {
+                for (let folderID = 0; folderID < this.folders.length; folderID++) {
+                    let folder = this.folders[folderID];
+                    if (folder.name == folderName && folder.isReadOnly() == false) {
+                        let folderFiles = this.files.filter(file => file.parentId == folder.id);
+                        folderFiles.forEach(file => {
+                            this.rm(file.getLocation());
+                        });
+                        this.folders.splice(folderID, 1);
+                    }
                 }
-            }
+            });
         }
+        /**
+         * Creates a new file, file type based on filename
+         * @param filename name of file to create
+         * @param content file content. if undefined default to '#'
+         * @param parentId folder id, if file is in a folder
+         * @param parentName  folder name, if file is in a folder
+         */
         createFile(filename, content, parentId, parentName) {
             //  Check if there is any file content
             if (!content) {
@@ -115,14 +150,17 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 return new launchquery_1.LaunchQuery(filename, content, parentId, parentName);
             }
         }
-        // Needs full path to execute, e.g launch/google.link
-        runFile(entry) {
+        /**
+         * Executes a file given a full file name/path, such as launch/google.lnk
+         * Checks if term speocfies a query and searchs based on shorthand if it is
+         * @param fileName string of file name
+         */
+        runFile(fileName) {
             // Split with spaces if using query
             let queryArg;
-            let fileName = entry;
-            if (this.isQuerySearch(entry)) {
-                fileName = entry.split(':')[0] + ':';
-                queryArg = entry.substr(fileName.length).trim();
+            if (this.isQuerySearch(fileName)) {
+                fileName = fileName.split(':')[0] + ':';
+                queryArg = fileName.substr(fileName.length).trim();
             }
             for (let i = 0; i < this.files.length; i++) {
                 let file = this.files[i];
@@ -134,9 +172,14 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 }
             }
             ;
-            this.runFile('g: ' + entry);
+            this.runFile('g: ' + fileName);
             return;
         }
+        /**
+         * Parses a string to find a command and execute
+         * with the provided parameters
+         * @param term command with arguments
+         */
         execCommand(term) {
             let command = term.split(' ')[0];
             /** Remove the length the command of the text sent to launch to get
@@ -153,7 +196,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     this.rm(args);
                     break;
                 case 'rmdir':
-                    this.rmdir(args);
+                    this.rmdir(args.split(' '));
                     break;
                 case 'feh':
                     this.setBackground(args);
@@ -172,19 +215,28 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 .filter(file => file.match(term));
             return links;
         }
+        /**
+         * Checks if a search string contains a query search shorthand notation
+         * @param term search string passed from view
+         * @returns boolean: true if search term contains query shorthand
+         */
         isQuerySearch(term) {
             // Build bang from search term if exists
-            let bang = term.split(':')[0] + ':';
+            let shorthand = term.split(':')[0] + ':';
             let links = this.files
                 .filter(x => x instanceof launchquery_1.LaunchQuery)
                 .map(x => x.toString());
             for (let i = 0; i < links.length; i++) {
-                if (links[i] == bang) {
+                if (links[i] == shorthand) {
                     return true;
                 }
             }
             return false;
         }
+        /**
+         * Lists available commands
+         * @returns string[]: array fo available commands
+         */
         getCommands() {
             return ['mkdir', 'touch', 'rm', 'rmdir', 'feh'];
         }
@@ -194,13 +246,19 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @returns LaunchFolder of file's folder
          */
         getFileFolder(file) {
-            this.folders.forEach(folder => {
+            for (let i = 0; i < this.folders.length; i++) {
+                let folder = this.folders[i];
                 if (folder.id == file.parentId) {
                     return folder;
                 }
-            });
+            }
+            ;
             return null;
         }
+        /**
+         * Serialises the Launch instance into a JSON string
+         * @returns string: stringified JSON data of Launch instance
+         */
         store() {
             let filesData = [];
             this.files.forEach(file => {

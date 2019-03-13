@@ -16,6 +16,14 @@ export class Launcher {
         this.files = [];
         this.background = this.backgroundDefault;
     }
+
+    initLaunch(){
+        this.mkdir(['launch'])
+        this.touch('launch/google.lnk', 'https://www.google.com');
+        this.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
+        this.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
+        this.setReadOnly('launch');
+    }
     
     private checkHttp(text:string):string{
         let pattern = /(http(s)?:\/\/.).*/g
@@ -86,16 +94,30 @@ export class Launcher {
         }
     }
 
+    /**
+     * Deletes a file, if the file's parent folder is not read only
+     * @param fileName name of file to delete
+     */
     rm(fileName:string){
         let fileID = this.getFileID(fileName);
-        if(fileID){
-            // If folder file is in is not ready only, remove it
-            if(!this.getFileFolder(this.files[fileID]).isReadOnly()){
+        if(fileID != -1){
+            let file = this.files[fileID];
+            // If file is in a folder
+            if(file.parentId != undefined){
+                // If folder file is in is not ready only, remove it
+                if(!this.getFileFolder(file).isReadOnly()){
+                    this.files.splice(fileID,1)
+                }
+            } else {
                 this.files.splice(fileID,1)
             }
         }
     }
 
+    /**
+     * Gets the index of a file to delete, given a filename
+     * @param fileName file to search for
+     */
     getFileID(fileName:string){
         for(let i = 0; i < this.files.length; i++) {
             let file = this.files[i]
@@ -108,27 +130,40 @@ export class Launcher {
                 return i;
             }
         }
-        return false;
+        return -1;
     }
 
-    rmdir(folderName:string){
-        for(let folderID = 0; folderID < this.folders.length; folderID++) {
-            let folder = this.folders[folderID];
-
-            if(folder.name == folderName && folder.isReadOnly() == false){
-
-                let folderFiles = this.files.filter(file => 
-                    file.parentId == folder.id);
-
-                folderFiles.forEach(file => {
-                    this.rm(file.getLocation())
-                });
-
-                this.folders.splice(folderID,1)
+    /**
+     * Deletes a folder/set of folders, assuming folder is not read only
+     * @param folderNames string[] of folders to remove
+     */
+    rmdir(folderNames:string[]){
+        folderNames.forEach(folderName => {
+            for(let folderID = 0; folderID < this.folders.length; folderID++) {
+                let folder = this.folders[folderID];
+    
+                if(folder.name == folderName && folder.isReadOnly() == false){
+    
+                    let folderFiles = this.files.filter(file => 
+                        file.parentId == folder.id);
+    
+                    folderFiles.forEach(file => {
+                        this.rm(file.getLocation())
+                    });
+    
+                    this.folders.splice(folderID,1)
+                }
             }
-        }
+        });
     }
 
+    /**
+     * Creates a new file, file type based on filename
+     * @param filename name of file to create
+     * @param content file content. if undefined default to '#'
+     * @param parentId folder id, if file is in a folder
+     * @param parentName  folder name, if file is in a folder
+     */
     createFile(filename:string, content:string, parentId?:number,
         parentName?:string): LaunchFile{
             //  Check if there is any file content
@@ -148,16 +183,19 @@ export class Launcher {
             }
     }
 
-    // Needs full path to execute, e.g launch/google.link
-    runFile(entry:string){
+    /**
+     * Executes a file given a full file name/path, such as launch/google.lnk
+     * Checks if term speocfies a query and searchs based on shorthand if it is 
+     * @param fileName string of file name
+     */
+    runFile(fileName:string){
 
         // Split with spaces if using query
         let queryArg:string
-        let fileName = entry
 
-        if(this.isQuerySearch(entry)){
-            fileName = entry.split(':')[0]+':'
-            queryArg = entry.substr(fileName.length).trim();
+        if(this.isQuerySearch(fileName)){
+            fileName = fileName.split(':')[0]+':'
+            queryArg = fileName.substr(fileName.length).trim();
         }
 
         for(let i = 0; i < this.files.length; i++){
@@ -170,10 +208,15 @@ export class Launcher {
             }
         };
 
-        this.runFile('g: '+entry)
+        this.runFile('g: '+fileName)
         return
     }
 
+    /**
+     * Parses a string to find a command and execute 
+     * with the provided parameters
+     * @param term command with arguments
+     */
     execCommand(term:string){
         let command = term.split(' ')[0]
 
@@ -193,7 +236,7 @@ export class Launcher {
                 this.rm(args)
                 break;
             case 'rmdir':
-                this.rmdir(args)
+                this.rmdir(args.split(' '))
                 break;
             case 'feh':
                 this.setBackground(args)
@@ -215,16 +258,21 @@ export class Launcher {
         return links
     }
 
+    /**
+     * Checks if a search string contains a query search shorthand notation
+     * @param term search string passed from view
+     * @returns boolean: true if search term contains query shorthand
+     */
     isQuerySearch(term:string):boolean{
         // Build bang from search term if exists
-        let bang = term.split(':')[0]+':'
+        let shorthand = term.split(':')[0]+':'
 
         let links = this.files
         .filter(x => x instanceof LaunchQuery)
         .map(x => x.toString());
 
         for(let i = 0; i < links.length; i++){
-            if(links[i] == bang){
+            if(links[i] == shorthand){
                 return true
             }
         }
@@ -232,6 +280,10 @@ export class Launcher {
         return false
     }
 
+    /**
+     * Lists available commands
+     * @returns string[]: array fo available commands
+     */
     getCommands():string[] {
         return ['mkdir', 'touch', 'rm', 'rmdir', 'feh']
     }
@@ -242,14 +294,19 @@ export class Launcher {
      * @returns LaunchFolder of file's folder
      */
     getFileFolder(file:LaunchFile):LaunchFolder{
-        this.folders.forEach(folder => {
+        for(let i = 0; i < this.folders.length; i++){
+            let folder:LaunchFolder = this.folders[i];
             if(folder.id == file.parentId){
                 return folder;
             }
-        });
+        };
         return null
     }
 
+    /**
+     * Serialises the Launch instance into a JSON string
+     * @returns string: stringified JSON data of Launch instance
+     */
     store():string{
 
         let filesData = []

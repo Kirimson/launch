@@ -87,11 +87,11 @@ Usage `rmdir directoryName`
 # Customisation
 
 Nothing's worse than a boring startpage that cant be personalised.
-It mimicking is even more reason for you to be able to *rice* it!
+It mimicking a linux console is even more reason for you to be able to *rice* it!
 
 ## Set background
 
-Like how all lazy i3 *power users* do it. **feh**.
+Like how all lazy i3 *power users* do it. **feh**. 
 
 Command: `feh`
 

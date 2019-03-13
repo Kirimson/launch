@@ -22,16 +22,6 @@ function guardedMatch(text:string, pattern:RegExp){
     return false;
 }
 
-function initLaunch(l:Launcher){
-    l.mkdir(['launch'])
-    l.touch('launch/google.lnk', 'https://www.google.com');
-    l.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
-    l.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
-    l.setReadOnly('launch');
-    localStorage.setItem('launch', launch.store())
-    return l;
-}
-
 var launch = new Launcher();
 
 let tools = new Tools()
@@ -43,10 +33,12 @@ $(function(){
     if(localStorage.getItem('launch')){
         // If launch is not succesfully loaded init it
         if(!launch.load(JSON.parse(localStorage.getItem('launch')))){
-            launch = initLaunch(launch);
+            launch.initLaunch()
+            localStorage.setItem('launch', launch.store())
         }
     } else {
-        launch = initLaunch(launch);
+        launch.initLaunch()
+        localStorage.setItem('launch', launch.store())
     }
 
     tools.updateTree(launch)
