@@ -64,7 +64,7 @@ $(function(){
                 // Third, if running a query/standard search 
                 // (technically the same)
                 if(isUrl(launchVal)){
-                    window.location.href = checkHttp(launchVal);          
+                    window.location.href = checkHttp(launchVal);
                 } else if(resultList.length != 0){
                     launch.runFile(resultList[resultIndex])
                 } else {

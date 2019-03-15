@@ -15,7 +15,7 @@ export class LaunchQuery extends LaunchFile{
         }
     
     execute(queryArg:string){
-        window.location.href = this.link.replace('${}', queryArg);        
+        window.location.href = this.link.replace('${}', queryArg);
     }
 
     toString():string {

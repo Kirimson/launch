@@ -10,6 +10,7 @@ export class Launcher {
     private nextFolderId = 0;
     private backgroundDefault:string = 'img/default.png'
     private background:string;
+    private defaultSearch = 'g:'
 
     constructor() {
         this.folders = [];
@@ -189,13 +190,13 @@ export class Launcher {
      * @param fileName string of file name
      */
     runFile(fileName:string){
-
         // Split with spaces if using query
         let queryArg:string
 
         if(this.isQuerySearch(fileName)){
-            fileName = fileName.split(':')[0]+':'
-            queryArg = fileName.substr(fileName.length).trim();
+            let shorthand = fileName.split(':')[0]+':'
+            queryArg = fileName.substr(shorthand.length).trim();
+            fileName = shorthand;
         }
 
         for(let i = 0; i < this.files.length; i++){
@@ -207,8 +208,7 @@ export class Launcher {
                 return
             }
         };
-
-        this.runFile('g: '+fileName)
+        this.runFile(this.defaultSearch+fileName)
         return
     }
 

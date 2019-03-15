@@ -5,6 +5,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         constructor() {
             this.nextFolderId = 0;
             this.backgroundDefault = 'img/default.png';
+            this.defaultSearch = 'g:';
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -159,8 +160,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             // Split with spaces if using query
             let queryArg;
             if (this.isQuerySearch(fileName)) {
-                fileName = fileName.split(':')[0] + ':';
-                queryArg = fileName.substr(fileName.length).trim();
+                let shorthand = fileName.split(':')[0] + ':';
+                queryArg = fileName.substr(shorthand.length).trim();
+                fileName = shorthand;
             }
             for (let i = 0; i < this.files.length; i++) {
                 let file = this.files[i];
@@ -172,7 +174,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 }
             }
             ;
-            this.runFile('g: ' + fileName);
+            this.runFile(this.defaultSearch + fileName);
             return;
         }
         /**
