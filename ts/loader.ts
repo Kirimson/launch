@@ -1,5 +1,6 @@
 import { Launcher } from "launch"
 import {Tools} from "htmltools"
+import { Tree } from "./tree";
 
 function isUrl(text:string):boolean{
     let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
@@ -41,7 +42,9 @@ $(function(){
         localStorage.setItem('launch', launch.store())
     }
 
-    tools.updateTree(launch)
+    let tree = new Tree(launch);
+    
+    tools.hideTree(launch.getTreeHidden())
     tools.setBackground(launch.getBackground())
 
     tools.getLaunchBox().on('keyup', function(key){
@@ -54,9 +57,10 @@ $(function(){
                 tools.clearLaunchBox();
                 localStorage.setItem('launch', launch.store())
 
-                tools.updateTree(launch)
-
+                tree.updateTree(launch)
+                
                 tools.setBackground(launch.getBackground())
+                tools.hideTree(launch.getTreeHidden())
 
             } else {
                 // First, check if url before anything else. least taxing

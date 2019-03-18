@@ -5,12 +5,16 @@ import { LaunchQuery } from "./launchquery";
 
 
 export class Launcher {
-    private folders:LaunchFolder[];
-    private files:LaunchFile[];
+    private folders: LaunchFolder[];
+    private files: LaunchFile[];
     private nextFolderId = 0;
-    private backgroundDefault:string = 'img/default.png'
-    private background:string;
+    private backgroundDefault: string = 'img/default.png'
+    private background: string;
     private defaultSearch = 'g:'
+    private treeHidden: boolean = true;
+
+    private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
+                                            'rmdir', 'feh', 'tree']
 
     constructor() {
         this.folders = [];
@@ -44,6 +48,18 @@ export class Launcher {
         } else {
             this.background = newBackground;
         }
+    }
+
+    getCommands(): string[]{
+        return this.availableCommands;
+    }
+
+    getTreeHidden(): boolean {
+        return this.treeHidden;
+    }
+
+    setTreeHidden(hidden:boolean){
+        this.treeHidden = hidden;
     }
 
     getFolders():LaunchFolder[]{
@@ -240,6 +256,8 @@ export class Launcher {
                 break;
             case 'feh':
                 this.setBackground(args)
+            case 'tree':
+                this.setTreeHidden(!this.getTreeHidden())
         }
     }
 
@@ -278,14 +296,6 @@ export class Launcher {
         }
 
         return false
-    }
-
-    /**
-     * Lists available commands
-     * @returns string[]: array fo available commands
-     */
-    getCommands():string[] {
-        return ['mkdir', 'touch', 'rm', 'rmdir', 'feh']
     }
 
     /**
@@ -333,7 +343,8 @@ export class Launcher {
             'nextFolderId': this.nextFolderId,
             'files': filesData,
             'folders': foldersData,
-            'background': this.background
+            'background': this.background,
+            'tree': this.getTreeHidden()
         }
 
         return JSON.stringify(data)
@@ -345,7 +356,6 @@ export class Launcher {
      * @returns boolean: true if loading is successful
      */
     load(data:JSON):boolean{
-        console.log(data)
         if(data['folders'].length == 0 || data['files'].length == 0){
             console.error('YOU BROKE LAUNCH. YOU MONSTER!');
             return false;
@@ -354,6 +364,7 @@ export class Launcher {
         this.nextFolderId = 0
         this.folders = []
         this.files = []
+        this.treeHidden = data['tree']
 
         //  If there is a user stored background, load it
         if(data['background']){

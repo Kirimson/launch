@@ -6,6 +6,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.nextFolderId = 0;
             this.backgroundDefault = 'img/default.png';
             this.defaultSearch = 'g:';
+            this.treeHidden = true;
+            this.availableCommands = ['mkdir', 'touch', 'rm',
+                'rmdir', 'feh', 'tree'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -34,6 +37,15 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             else {
                 this.background = newBackground;
             }
+        }
+        getCommands() {
+            return this.availableCommands;
+        }
+        getTreeHidden() {
+            return this.treeHidden;
+        }
+        setTreeHidden(hidden) {
+            this.treeHidden = hidden;
         }
         getFolders() {
             return this.folders;
@@ -202,6 +214,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     break;
                 case 'feh':
                     this.setBackground(args);
+                case 'tree':
+                    this.setTreeHidden(!this.getTreeHidden());
             }
         }
         /**
@@ -234,13 +248,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 }
             }
             return false;
-        }
-        /**
-         * Lists available commands
-         * @returns string[]: array fo available commands
-         */
-        getCommands() {
-            return ['mkdir', 'touch', 'rm', 'rmdir', 'feh'];
         }
         /**
          * Get a files folder
@@ -284,7 +291,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'nextFolderId': this.nextFolderId,
                 'files': filesData,
                 'folders': foldersData,
-                'background': this.background
+                'background': this.background,
+                'tree': this.getTreeHidden()
             };
             return JSON.stringify(data);
         }
@@ -294,7 +302,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @returns boolean: true if loading is successful
          */
         load(data) {
-            console.log(data);
             if (data['folders'].length == 0 || data['files'].length == 0) {
                 console.error('YOU BROKE LAUNCH. YOU MONSTER!');
                 return false;
@@ -302,6 +309,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.nextFolderId = 0;
             this.folders = [];
             this.files = [];
+            this.treeHidden = data['tree'];
             //  If there is a user stored background, load it
             if (data['background']) {
                 this.background = data['background'];

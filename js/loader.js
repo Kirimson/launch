@@ -1,4 +1,4 @@
-define(["require", "exports", "launch", "htmltools"], function (require, exports, launch_1, htmltools_1) {
+define(["require", "exports", "launch", "htmltools", "./tree"], function (require, exports, launch_1, htmltools_1, tree_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function isUrl(text) {
@@ -35,7 +35,8 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
             launch.initLaunch();
             localStorage.setItem('launch', launch.store());
         }
-        tools.updateTree(launch);
+        let tree = new tree_1.Tree(launch);
+        tools.hideTree(launch.getTreeHidden());
         tools.setBackground(launch.getBackground());
         tools.getLaunchBox().on('keyup', function (key) {
             // Listen for enter
@@ -45,8 +46,9 @@ define(["require", "exports", "launch", "htmltools"], function (require, exports
                     launch.execCommand(launchVal);
                     tools.clearLaunchBox();
                     localStorage.setItem('launch', launch.store());
-                    tools.updateTree(launch);
+                    tree.updateTree(launch);
                     tools.setBackground(launch.getBackground());
+                    tools.hideTree(launch.getTreeHidden());
                 }
                 else {
                     // First, check if url before anything else. least taxing
