@@ -101,6 +101,12 @@ footer {
     justify-content: center;
     align-items: center;
     overflow: scroll;
+    /* For Gecko */
+    scrollbar-width: none;
+}
+/* For Chromium */
+#tree-content::-webkit-scrollbar {
+    display: none;
 }
 
 #tree {
@@ -151,6 +157,7 @@ footer {
 #console {
     background-color: transparent;
     border: none;
+    outline: none;
     color: inherit;
     width: 100%;
     font-family: inherit;
