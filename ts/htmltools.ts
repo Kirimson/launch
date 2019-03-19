@@ -4,15 +4,23 @@ export class Tools {
 
     private console:JQuery;
     private body:HTMLElement;
+    private terminal:JQuery;
+    private consoleHistory:JQuery;
 
     constructor(){
         this.console = $('#console');
         this.console.focus();
-        this.body = document.body
+        this.body = document.body;
+        this.consoleHistory = $('#console-history');
+        this.terminal = $('#terminal-window');
     }
 
-    getLaunchBox():JQuery{
+    getConsole():JQuery{
         return this.console;
+    }
+
+    getTerminal():JQuery{
+        return this.terminal;
     }
 
     getLaunchBoxValue():string{
@@ -34,6 +42,15 @@ export class Tools {
         } else {
             treeWrapper.css('display', 'flex')
         }
+    }
+
+    addHistory(command:string){
+        this.consoleHistory.prepend(`<span>$ ${command}</span>`)
+    }
+
+    showLaunch(){
+        $('.app').css('display', 'flex');
+        this.console.focus();
     }
 
 }

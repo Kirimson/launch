@@ -22,23 +22,30 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
     let tools = new htmltools_1.Tools();
     let resultList = [];
     let resultIndex = 0;
-    $(function () {
-        // Load or initialise launch
-        if (localStorage.getItem('launch')) {
-            // If launch is not succesfully loaded init it
-            if (!launch.load(JSON.parse(localStorage.getItem('launch')))) {
-                launch.initLaunch();
-                localStorage.setItem('launch', launch.store());
-            }
-        }
-        else {
+    // Load or initialise launch
+    if (localStorage.getItem('launch')) {
+        // If launch is not succesfully loaded init it
+        if (!launch.load(JSON.parse(localStorage.getItem('launch')))) {
             launch.initLaunch();
             localStorage.setItem('launch', launch.store());
         }
-        let tree = new tree_1.Tree(launch);
-        tools.hideTree(launch.getTreeHidden());
+    }
+    else {
+        launch.initLaunch();
+        localStorage.setItem('launch', launch.store());
+    }
+    let tree = new tree_1.Tree(launch);
+    tools.hideTree(launch.getTreeHidden());
+    tools.showLaunch();
+    console.log(launch);
+    $(function () {
         tools.setBackground(launch.getBackground());
-        tools.getLaunchBox().on('keyup', function (key) {
+        // Clicking in console to focus
+        tools.getTerminal().click(function () {
+            tools.getConsole().focus();
+        });
+        // When typing in console
+        tools.getConsole().on('keyup', function (key) {
             // Listen for enter
             let launchVal = tools.getLaunchBoxValue();
             if (key.which == 13) {
@@ -65,6 +72,7 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
                         launch.runFile(launchVal);
                     }
                 }
+                tools.addHistory(launchVal);
             }
             else {
                 // search for links

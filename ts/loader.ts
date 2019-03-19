@@ -29,25 +29,36 @@ let tools = new Tools()
 let resultList:string[] = []
 let resultIndex:number = 0;
 
-$(function(){
-    // Load or initialise launch
-    if(localStorage.getItem('launch')){
-        // If launch is not succesfully loaded init it
-        if(!launch.load(JSON.parse(localStorage.getItem('launch')))){
-            launch.initLaunch()
-            localStorage.setItem('launch', launch.store())
-        }
-    } else {
+// Load or initialise launch
+if(localStorage.getItem('launch')){
+    // If launch is not succesfully loaded init it
+    if(!launch.load(JSON.parse(localStorage.getItem('launch')))){
         launch.initLaunch()
         localStorage.setItem('launch', launch.store())
     }
+} else {
+    launch.initLaunch()
+    localStorage.setItem('launch', launch.store())
+}
 
-    let tree = new Tree(launch);
+let tree = new Tree(launch);
+tools.hideTree(launch.getTreeHidden())
+
+tools.showLaunch();
+
+console.log(launch);
+
+$(function(){
     
-    tools.hideTree(launch.getTreeHidden())
     tools.setBackground(launch.getBackground())
 
-    tools.getLaunchBox().on('keyup', function(key){
+    // Clicking in console to focus
+    tools.getTerminal().click(function(){
+        tools.getConsole().focus();
+    });
+
+    // When typing in console
+    tools.getConsole().on('keyup', function(key){
         // Listen for enter
         let launchVal:string = tools.getLaunchBoxValue()
         if(key.which == 13){
@@ -75,6 +86,7 @@ $(function(){
                     launch.runFile(launchVal);
                 }
             }
+            tools.addHistory(launchVal)
         } else {
             // search for links
             if(tools.getLaunchBoxValue()){

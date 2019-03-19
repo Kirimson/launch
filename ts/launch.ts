@@ -246,7 +246,8 @@ export class Launcher {
                 this.mkdir(args.split(' '))
                 break;
             case 'touch':
-                this.touch(args.split(' ')[0], args.split(' ')[1])
+                this.touch(args.split(' ')[0], 
+                            args.substr(args.split(' ')[0].length).trim())
                 break;
             case 'rm':
                 this.rm(args)

@@ -15,25 +15,21 @@
 	<section class="app">
 		<div id='wrapper'>
 
-			<div id='tree-wrapper'>
-				<div class='window' id='tree-window'>
-					<div class='window-content' id='tree-content'>
-						<div id='tree'></div>
-					</div>
-				</div>
-			</div>
+			<div id='tree-wrapper'></div>
 
 			<div id='console-wrapper'>
 				<div class="window" id='terminal-window'>
 					<div class='window-content' id='terminal-content'>
-						<input type="text" name="console" id="console" autocomplete="off"/>
+						<div id="console-history"></div>
+						<div id='console-input-line'>
+							<div>$&nbsp;</div>
+							<input type="text" name="console" 
+							id="console" autocomplete="off"/>
+						</div>
 					</div>
 				</div>
 			</div>
 
-		</div>
-		<div class="footer">
-			Test
 		</div>
 	</section>
 </body>

@@ -16,15 +16,15 @@ a {
     text-decoration: none;
 }
 
-.app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-}
-
-.footer {
+footer {
     background-color: #5e921b;
     height: 1.5em;
+}
+
+.app {
+    display: none;
+    flex-direction: column;
+    min-height: 100%;
 }
 
 .tree-base {
@@ -76,11 +76,12 @@ a {
 #wrapper {
     display: flex;
     flex: 1;
+    justify-content: space-around;
 }
 
 #tree-wrapper {
     width: 30%;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
 }
@@ -122,18 +123,40 @@ a {
 #terminal-window{
     height: 60%;
     width: 80%;
+    display: flex;
+    flex-direction: column;
 }
 
 #terminal-content {
     margin-top: 2%;
+    margin-bottom: 2%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
 }
 
-#terminal-content > input {
+#console-history {
+    display: flex;
+    flex-direction: column-reverse;
+    overflow: hidden;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+#console-input-line {
+    display: flex;
+}
+
+#console {
     background-color: transparent;
-    border: solid thin white;
-    /* border: none; */
+    border: none;
     color: inherit;
-    font-family: inherit;
     width: 100%;
-    font-size: 2vh;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    min-height: 2vh;
+    max-height: 2vh;
+    flex: 1;
 }
