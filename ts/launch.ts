@@ -355,24 +355,27 @@ export class Launcher {
 
         switch(command) {
             case 'mkdir':
-                commandReturn = this.mkdir(args.split(' '))
+                commandReturn = this.mkdir(args.split(' '));
                 break;
             case 'touch':
                 commandReturn = this.touch(args.split(' ')[0], 
-                            args.substr(args.split(' ')[0].length).trim())
+                            args.substr(args.split(' ')[0].length).trim());
                 break;
             case 'rm':
-                commandReturn = this.rm(args)
+                commandReturn = this.rm(args);
                 break;
             case 'rmdir':
-                commandReturn = this.rmdir(args.split(' '))
+                commandReturn = this.rmdir(args.split(' '));
                 break;
             case 'feh':
-                commandReturn = this.setBackground(args)
+                commandReturn = this.setBackground(args);
+                break;
             case 'tree':
-                commandReturn = this.setTreeHidden(!this.getTreeHidden())
+                commandReturn = this.setTreeHidden(!this.getTreeHidden());
+                break;
             case 'setsearch':
-                commandReturn = this.setDefaultSearch(args)
+                commandReturn = this.setDefaultSearch(args);
+                break;
         }
 
         // Return commandreturn if command gave a return statement.

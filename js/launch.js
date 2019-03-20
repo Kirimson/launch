@@ -322,10 +322,13 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     break;
                 case 'feh':
                     commandReturn = this.setBackground(args);
+                    break;
                 case 'tree':
                     commandReturn = this.setTreeHidden(!this.getTreeHidden());
+                    break;
                 case 'setsearch':
                     commandReturn = this.setDefaultSearch(args);
+                    break;
             }
             // Return commandreturn if command gave a return statement.
             // Else, return the command the user provided
