@@ -53,4 +53,8 @@ export class Tools {
         this.console.focus();
     }
 
+    setText(text:string){
+        this.console.val(text)
+    }
+
 }

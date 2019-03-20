@@ -7,6 +7,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.backgroundDefault = 'img/default.png';
             this.defaultSearch = 'g:';
             this.treeHidden = true;
+            this.history = [''];
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'feh', 'tree',
                 'setsearch'];
@@ -66,6 +67,21 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         }
         getFiles() {
             return this.files;
+        }
+        /**
+         * Get a command one up/down in history, based on current historyIndex
+         * @param up If going up the history tree or not
+         */
+        getHistory(up) {
+            let historyLength = this.history.length;
+            if (up && this.historyIndex < (this.history.length - 1)) {
+                console.log('tr');
+                this.historyIndex++;
+            }
+            else if (!up && this.historyIndex > 0) {
+                this.historyIndex--;
+            }
+            return this.history[historyLength - this.historyIndex];
         }
         /**
          * set a new default search provider. Checks if .qry shorthand exists
@@ -302,6 +318,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @returns return statement from command
          */
         execCommand(term) {
+            this.history.push(term);
+            this.historyIndex = 0;
             let command = term.split(' ')[0];
             /** Remove the length the command of the text sent to launch to get
             the arguments to parse */

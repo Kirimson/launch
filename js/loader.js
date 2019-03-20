@@ -37,7 +37,6 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
     let tree = new tree_1.Tree(launch);
     tools.hideTree(launch.getTreeHidden());
     tools.showLaunch();
-    console.log(launch);
     $(function () {
         tools.setBackground(launch.getBackground());
         // Clicking in console to focus
@@ -48,38 +47,45 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
         tools.getConsole().on('keyup', function (key) {
             // Listen for enter
             let launchVal = tools.getLaunchBoxValue();
-            if (key.which == 13) {
-                // Check if using a command
-                if (launch.getCommands().includes(launchVal.split(' ')[0])) {
-                    let returnStatement = launch.execCommand(launchVal);
-                    tools.clearLaunchBox();
-                    localStorage.setItem('launch', launch.store());
-                    tree.updateTree(launch);
-                    tools.setBackground(launch.getBackground());
-                    tools.hideTree(launch.getTreeHidden());
-                    tools.addHistory(returnStatement);
-                }
-                else {
-                    // First, check if url before anything else. least taxing
-                    // Second, send the currently selected link item
-                    // Third, if running a query/standard search 
-                    // (technically the same)
-                    if (isUrl(launchVal)) {
-                        window.location.href = checkHttp(launchVal);
-                    }
-                    else if (resultList.length != 0) {
-                        launch.runFile(resultList[resultIndex]);
+            switch (key.key) {
+                case 'Enter':
+                    // Check if using a command
+                    if (launch.getCommands().includes(launchVal.split(' ')[0])) {
+                        let returnStatement = launch.execCommand(launchVal);
+                        tools.clearLaunchBox();
+                        localStorage.setItem('launch', launch.store());
+                        tree.updateTree(launch);
+                        tools.setBackground(launch.getBackground());
+                        tools.hideTree(launch.getTreeHidden());
+                        tools.addHistory(returnStatement);
                     }
                     else {
-                        launch.runFile(launchVal);
+                        // First, check if url before anything else. least taxing
+                        // Second, send the currently selected link item
+                        // Third, if running a query/standard search 
+                        // (technically the same)
+                        if (isUrl(launchVal)) {
+                            window.location.href = checkHttp(launchVal);
+                        }
+                        else if (resultList.length != 0) {
+                            launch.runFile(resultList[resultIndex]);
+                        }
+                        else {
+                            launch.runFile(launchVal);
+                        }
                     }
-                }
-            }
-            else {
-                // search for links
-                if (tools.getLaunchBoxValue()) {
-                    resultList = launch.search(launchVal);
-                }
+                    break;
+                case 'ArrowUp':
+                    tools.setText(launch.getHistory(true));
+                    break;
+                case 'ArrowDown':
+                    tools.setText(launch.getHistory(false));
+                    break;
+                default:
+                    // search for links
+                    if (tools.getLaunchBoxValue()) {
+                        resultList = launch.search(launchVal);
+                    }
             }
         });
     });

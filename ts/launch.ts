@@ -12,6 +12,8 @@ export class Launcher {
     private background: string;
     private defaultSearch = 'g:'
     private treeHidden: boolean = true;
+    private history:string[] = [''];
+    private historyIndex:number;
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'feh', 'tree',
@@ -85,6 +87,22 @@ export class Launcher {
 
     getFiles():LaunchFile[]{
         return this.files;
+    }
+
+    /**
+     * Get a command one up/down in history, based on current historyIndex
+     * @param up If going up the history tree or not
+     */
+    getHistory(up:boolean):string{
+        let historyLength = this.history.length
+        if(up && this.historyIndex < (this.history.length-1)){
+            console.log('tr')
+            this.historyIndex++;
+        } else if(!up && this.historyIndex > 0) {
+            this.historyIndex--;
+        }
+
+        return this.history[historyLength - this.historyIndex];
     }
 
     /**
@@ -345,6 +363,9 @@ export class Launcher {
      * @returns return statement from command
      */
     execCommand(term:string):string {
+        this.history.push(term)
+        this.historyIndex = 0;
+
         let command = term.split(' ')[0]
 
         /** Remove the length the command of the text sent to launch to get

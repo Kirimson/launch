@@ -40,6 +40,9 @@ define(["require", "exports", "loader"], function (require, exports) {
             $('.app').css('display', 'flex');
             this.console.focus();
         }
+        setText(text) {
+            this.console.val(text);
+        }
     }
     exports.Tools = Tools;
 });
