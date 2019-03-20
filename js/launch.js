@@ -8,7 +8,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.defaultSearch = 'g:';
             this.treeHidden = true;
             this.availableCommands = ['mkdir', 'touch', 'rm',
-                'rmdir', 'feh', 'tree'];
+                'rmdir', 'feh', 'tree',
+                'setsearch'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -54,6 +55,21 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         }
         getFiles() {
             return this.files;
+        }
+        setDefaultSearch(shorthand) {
+            for (let i = 0; i < this.getFiles().length; i++) {
+                let file = this.getFiles()[i];
+                if (file instanceof launchquery_1.LaunchQuery) {
+                    // Get shorthand without the ':' in case user does no add ':'
+                    let fileShorthand = file.shortHand.substr(0, file.shortHand.length - 1);
+                    if (shorthand == fileShorthand + ':' ||
+                        shorthand == fileShorthand) {
+                        this.defaultSearch = file.shortHand;
+                        return `Default search set to ${file.shortHand}`;
+                    }
+                }
+            }
+            return `Error: No shorthand for ${shorthand} found`;
         }
         mkdir(args, readOnly = false) {
             let errors = [];
@@ -279,6 +295,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     commandReturn = this.setBackground(args);
                 case 'tree':
                     commandReturn = this.setTreeHidden(!this.getTreeHidden());
+                case 'setsearch':
+                    commandReturn = this.setDefaultSearch(args);
             }
             // Return commandreturn if command gave a return statement.
             // Else, return the command the user provided

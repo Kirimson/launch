@@ -14,7 +14,8 @@ export class Launcher {
     private treeHidden: boolean = true;
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
-                                            'rmdir', 'feh', 'tree']
+                                            'rmdir', 'feh', 'tree',
+                                            'setsearch']
 
     constructor() {
         this.folders = [];
@@ -73,6 +74,22 @@ export class Launcher {
 
     getFiles():LaunchFile[]{
         return this.files;
+    }
+
+    setDefaultSearch(shorthand:string){
+        for(let i = 0; i < this.getFiles().length; i++){
+            let file:LaunchFile = this.getFiles()[i];
+            if(file instanceof LaunchQuery){
+                // Get shorthand without the ':' in case user does no add ':'
+                let fileShorthand = file.shortHand.substr(0, file.shortHand.length - 1)
+                if(shorthand == fileShorthand+':' || 
+                    shorthand == fileShorthand) {
+                        this.defaultSearch = file.shortHand;
+                        return `Default search set to ${file.shortHand}`
+                }
+            }
+        }
+        return `Error: No shorthand for ${shorthand} found`
     }
 
     mkdir(args:string[], readOnly:boolean=false) {
@@ -325,6 +342,8 @@ export class Launcher {
                 commandReturn = this.setBackground(args)
             case 'tree':
                 commandReturn = this.setTreeHidden(!this.getTreeHidden())
+            case 'setsearch':
+                commandReturn = this.setDefaultSearch(args)
         }
 
         // Return commandreturn if command gave a return statement.
