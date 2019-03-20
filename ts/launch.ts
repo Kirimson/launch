@@ -48,6 +48,7 @@ export class Launcher {
         } else {
             this.background = newBackground;
         }
+        return '';
     }
 
     getCommands(): string[]{
@@ -60,6 +61,7 @@ export class Launcher {
 
     setTreeHidden(hidden:boolean){
         this.treeHidden = hidden;
+        return '';
     }
 
     getFolders():LaunchFolder[]{
@@ -71,13 +73,25 @@ export class Launcher {
     }
 
     mkdir(args:string[], readOnly:boolean=false) {
-        args.forEach(folderName => {
+        let errors:string[] = []
+
+        for(let i = 0; i < args.length; i++){
+            let folderName = args[i]
             if(!this.getFolder(folderName)){
                 this.folders.push(new LaunchFolder(folderName, this.nextFolderId,
                                   readOnly))
                 this.nextFolderId++;
+            } else {
+                errors.push(folderName)
             }
-        });
+        }
+
+        if(errors.length > 0){
+            let plural = errors.length == 1 ? 'folder' : 'folders';
+            return `Error: ${plural} ${errors} already exists.`;
+        } else {
+            return '';
+        }
     }
 
     setReadOnly(folderName:string){
@@ -99,13 +113,25 @@ export class Launcher {
     }
 
     touch(newFile:string, content?:string) {
+        for(let i = 0; i < this.getFiles().length; i++){
+            let fileName = this.getFiles()[i].getLocation();
+
+            if(newFile == fileName){
+                return `Error: file ${newFile} already exists`;
+            }
+        }
+
         if(newFile.match('/')) {
             let args = newFile.split('/');
 
             let parentFolder:LaunchFolder = this.getFolder(args[0]);
+            if(parentFolder){
+                this.files.push(this.createFile(args[1], content, 
+                parentFolder.id, parentFolder.name))
+            } else {
+                return `Error: folder ${args[0]} does not exist`
+            }
 
-            this.files.push(this.createFile(args[1], content, 
-            parentFolder.id, parentFolder.name))
         } else {
             this.files.push(this.createFile(newFile, content))
         }
@@ -116,6 +142,17 @@ export class Launcher {
      * @param fileName name of file to delete
      */
     rm(fileName:string){
+
+        if(fileName == '-rf'){
+            this.files = [];
+            this.folders = [];
+            return `[K[[1;31m TIME [0m] Timed out waiting for device launch.<br/>
+            [[1;33mDEPEND[0m] Dependency failed for /.<br/>
+            [[1;33mDEPEND[0m] Dependency failed for Local File Systems.<br/>
+            …<br/>
+            Welcome to emergency mode! Please refresh to rebuild launch...`
+        }
+
         let fileID = this.getFileID(fileName);
         if(fileID != -1){
             let file = this.files[fileID];
@@ -128,7 +165,10 @@ export class Launcher {
             } else {
                 this.files.splice(fileID,1)
             }
+        } else {
+            return `Error: file ${fileName} not found`
         }
+        return '';
     }
 
     /**
@@ -155,10 +195,14 @@ export class Launcher {
      * @param folderNames string[] of folders to remove
      */
     rmdir(folderNames:string[]){
-        folderNames.forEach(folderName => {
+        let errors:string[] = []
+
+        for(let i = 0; i < folderNames.length; i++){
+            let folderName = folderNames[i]
             for(let folderID = 0; folderID < this.folders.length; folderID++) {
                 let folder = this.folders[folderID];
     
+                // Check if folder to delete is a real folder
                 if(folder.name == folderName && folder.isReadOnly() == false){
     
                     let folderFiles = this.files.filter(file => 
@@ -169,9 +213,19 @@ export class Launcher {
                     });
     
                     this.folders.splice(folderID,1)
+                } else {
+                    errors.push(folderName)
                 }
             }
-        });
+        };
+
+        if(errors.length > 0){
+            let pluralFolders = errors.length == 1 ? 'folder' : 'folders';
+            let pluralDo = errors.length == 1 ? 'does' : 'do';
+            return `Error: ${pluralFolders} ${errors} ${pluralDo} not exist.`;
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -232,34 +286,40 @@ export class Launcher {
      * Parses a string to find a command and execute 
      * with the provided parameters
      * @param term command with arguments
+     * @returns return statement from command
      */
-    execCommand(term:string){
+    execCommand(term:string):string {
         let command = term.split(' ')[0]
 
         /** Remove the length the command of the text sent to launch to get
         the arguments to parse */
 
         let args = term.substr(command.length).trim();
+        let commandReturn: string = '';
 
         switch(command) {
             case 'mkdir':
-                this.mkdir(args.split(' '))
+                commandReturn = this.mkdir(args.split(' '))
                 break;
             case 'touch':
-                this.touch(args.split(' ')[0], 
+                commandReturn = this.touch(args.split(' ')[0], 
                             args.substr(args.split(' ')[0].length).trim())
                 break;
             case 'rm':
-                this.rm(args)
+                commandReturn = this.rm(args)
                 break;
             case 'rmdir':
-                this.rmdir(args.split(' '))
+                commandReturn = this.rmdir(args.split(' '))
                 break;
             case 'feh':
-                this.setBackground(args)
+                commandReturn = this.setBackground(args)
             case 'tree':
-                this.setTreeHidden(!this.getTreeHidden())
+                commandReturn = this.setTreeHidden(!this.getTreeHidden())
         }
+
+        // Return commandreturn if command gave a return statement.
+        // Else, return the command the user provided
+        return (commandReturn ? commandReturn : term)
     }
 
     /**

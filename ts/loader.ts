@@ -63,8 +63,9 @@ $(function(){
         let launchVal:string = tools.getLaunchBoxValue()
         if(key.which == 13){
 
+            // Check if using a command
             if(launch.getCommands().includes(launchVal.split(' ')[0])){
-                launch.execCommand(launchVal)
+                let returnStatement:string = launch.execCommand(launchVal)
                 tools.clearLaunchBox();
                 localStorage.setItem('launch', launch.store())
 
@@ -72,7 +73,8 @@ $(function(){
                 
                 tools.setBackground(launch.getBackground())
                 tools.hideTree(launch.getTreeHidden())
-
+                
+                tools.addHistory(returnStatement)
             } else {
                 // First, check if url before anything else. least taxing
                 // Second, send the currently selected link item
@@ -86,7 +88,6 @@ $(function(){
                     launch.runFile(launchVal);
                 }
             }
-            tools.addHistory(launchVal)
         } else {
             // search for links
             if(tools.getLaunchBoxValue()){

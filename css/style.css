@@ -98,7 +98,7 @@ footer {
 #tree-content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     overflow: scroll;
     /* For Gecko */
@@ -111,6 +111,8 @@ footer {
 
 #tree {
     border-color: white;
+    position: relative;
+    padding-bottom: 25%;
 }
 
 #console-wrapper {

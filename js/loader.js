@@ -49,13 +49,15 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
             // Listen for enter
             let launchVal = tools.getLaunchBoxValue();
             if (key.which == 13) {
+                // Check if using a command
                 if (launch.getCommands().includes(launchVal.split(' ')[0])) {
-                    launch.execCommand(launchVal);
+                    let returnStatement = launch.execCommand(launchVal);
                     tools.clearLaunchBox();
                     localStorage.setItem('launch', launch.store());
                     tree.updateTree(launch);
                     tools.setBackground(launch.getBackground());
                     tools.hideTree(launch.getTreeHidden());
+                    tools.addHistory(returnStatement);
                 }
                 else {
                     // First, check if url before anything else. least taxing
@@ -72,7 +74,6 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
                         launch.runFile(launchVal);
                     }
                 }
-                tools.addHistory(launchVal);
             }
             else {
                 // search for links
