@@ -77,7 +77,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         getHistory(up) {
             let historyLength = this.history.length;
             if (up && this.historyIndex < (this.history.length - 1)) {
-                console.log('tr');
                 this.historyIndex++;
             }
             else if (!up && this.historyIndex > 0) {

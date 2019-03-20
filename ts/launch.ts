@@ -98,7 +98,6 @@ export class Launcher {
     getHistory(up:boolean):string{
         let historyLength = this.history.length
         if(up && this.historyIndex < (this.history.length-1)){
-            console.log('tr')
             this.historyIndex++;
         } else if(!up && this.historyIndex > 0) {
             this.historyIndex--;

@@ -19,7 +19,6 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
         return false;
     }
     function startPageImport() {
-        console.log('helllo');
         launch.initLaunch();
         let startJson = JSON.parse(localStorage.getItem('personal-links'));
         for (let index = 0; index < startJson['titles'].length; index++) {

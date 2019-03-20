@@ -24,7 +24,6 @@ function guardedMatch(text:string, pattern:RegExp){
 }
 
 function startPageImport(){
-    console.log('helllo')
     launch.initLaunch();
     let startJson:JSON = JSON.parse(localStorage.getItem('personal-links'));
 
