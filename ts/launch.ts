@@ -29,6 +29,8 @@ export class Launcher {
      * Create default structure of launch
      */
     initLaunch(){
+        this.files = []
+        this.folders = []
         this.mkdir(['launch'])
         this.touch('launch/google.lnk', 
                     'https://www.google.com');

@@ -18,6 +18,27 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
         }
         return false;
     }
+    function startPageImport() {
+        console.log('helllo');
+        launch.initLaunch();
+        let startJson = JSON.parse(localStorage.getItem('personal-links'));
+        for (let index = 0; index < startJson['titles'].length; index++) {
+            let title = startJson['titles'][index];
+            title.replace(' ', '_');
+            title = title.toLowerCase();
+            launch.mkdir([title]);
+            startJson['links'][index].forEach(link => {
+                let linkName = link[0].replace(' ', '_');
+                linkName = linkName.toLowerCase();
+                launch.touch(`${title}/${linkName}.lnk`, link[1]);
+                tree.updateTree(launch);
+            });
+            tree.updateTree(launch);
+        }
+        tools.clearLaunchBox();
+        localStorage.setItem('launch', launch.store());
+        tree.updateTree(launch);
+    }
     var launch = new launch_1.Launcher();
     let tools = new htmltools_1.Tools();
     let resultList = [];
@@ -43,12 +64,28 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
         tools.getTerminal().click(function () {
             tools.getConsole().focus();
         });
+        // Prevent default for up/down
+        tools.getConsole().on('keydown', function (key) {
+            switch (key.key) {
+                case 'ArrowUp':
+                    key.preventDefault();
+                    break;
+                case 'ArrowDown':
+                    key.preventDefault();
+                    break;
+            }
+        });
         // When typing in console
         tools.getConsole().on('keyup', function (key) {
             // Listen for enter
             let launchVal = tools.getLaunchBoxValue();
             switch (key.key) {
                 case 'Enter':
+                    // import
+                    if (launchVal == '!importfromstartpage') {
+                        startPageImport();
+                        break;
+                    }
                     // Check if using a command
                     if (launch.getCommands().includes(launchVal.split(' ')[0])) {
                         let returnStatement = launch.execCommand(launchVal);

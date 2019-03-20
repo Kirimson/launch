@@ -23,6 +23,31 @@ function guardedMatch(text:string, pattern:RegExp){
     return false;
 }
 
+function startPageImport(){
+    console.log('helllo')
+    launch.initLaunch();
+    let startJson:JSON = JSON.parse(localStorage.getItem('personal-links'));
+
+    for(let index = 0; index < startJson['titles'].length; index++){
+        let title:string = startJson['titles'][index]
+        title.replace(' ', '_');
+        title = title.toLowerCase();
+
+        launch.mkdir([title])
+
+        startJson['links'][index].forEach(link => {
+            let linkName = link[0].replace(' ', '_');
+            linkName = linkName.toLowerCase();
+            launch.touch(`${title}/${linkName}.lnk`, link[1]);
+            tree.updateTree(launch)
+        });
+        tree.updateTree(launch)
+    }
+    tools.clearLaunchBox();
+    localStorage.setItem('launch', launch.store())
+    tree.updateTree(launch)
+}
+
 var launch = new Launcher();
 
 let tools = new Tools()
@@ -55,12 +80,30 @@ $(function(){
         tools.getConsole().focus();
     });
 
+    // Prevent default for up/down
+    tools.getConsole().on('keydown', function(key){
+        switch(key.key){
+            case 'ArrowUp':
+                key.preventDefault();
+                break;
+            case 'ArrowDown':
+                key.preventDefault();
+                break;
+        }
+    })
+
     // When typing in console
     tools.getConsole().on('keyup', function(key){
         // Listen for enter
         let launchVal:string = tools.getLaunchBoxValue()
+        
         switch(key.key){
             case 'Enter':
+                // import
+                if(launchVal == '!importfromstartpage'){
+                    startPageImport();
+                    break;
+                }
                 // Check if using a command
                 if(launch.getCommands().includes(launchVal.split(' ')[0])){
                     let returnStatement:string = launch.execCommand(launchVal)
@@ -91,7 +134,7 @@ $(function(){
                 tools.setText(launch.getHistory(true))
                 break;
             case 'ArrowDown':
-                tools.setText(launch.getHistory(false))                
+                tools.setText(launch.getHistory(false))
                 break;
             default:
                 // search for links
