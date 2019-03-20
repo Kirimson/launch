@@ -100,3 +100,17 @@ Usage: `feh [backgroundUrl]`
                 Clears the background and returns to default```
 
 - sets background property in launch
+
+## Toggle tree
+
+toggle the tree section, hidden by default
+
+Command: `tree`
+
+## Default Search
+
+Change the default search provider using existing .qry files
+
+Command: `setsearch`
+
+Usage: `setsearch [shorthand]`

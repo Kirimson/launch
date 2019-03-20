@@ -14,6 +14,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.files = [];
             this.background = this.backgroundDefault;
         }
+        /**
+         * Create default structure of launch
+         */
         initLaunch() {
             this.mkdir(['launch']);
             this.touch('launch/google.lnk', 'https://www.google.com');
@@ -21,6 +24,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
             this.setReadOnly('launch');
         }
+        /**
+         * Checks if text contains http, if not, prepend it
+         * @param text text to check
+         */
         checkHttp(text) {
             let pattern = /(http(s)?:\/\/.).*/g;
             if (text.match(pattern)) {
@@ -31,6 +38,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         getBackground() {
             return this.background;
         }
+        /**
+         * sets background string, used by htmltools to set background
+         * @param newBackground background url/uri
+         */
         setBackground(newBackground) {
             if (newBackground == '--clear') {
                 this.background = this.backgroundDefault;
@@ -56,6 +67,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         getFiles() {
             return this.files;
         }
+        /**
+         * set a new default search provider. Checks if .qry shorthand exists
+         * @param shorthand new shorthand to set as default
+         */
         setDefaultSearch(shorthand) {
             for (let i = 0; i < this.getFiles().length; i++) {
                 let file = this.getFiles()[i];
@@ -71,6 +86,11 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             return `Error: No shorthand for ${shorthand} found`;
         }
+        /**
+         * Create new folder/s from given list
+         * @param args list of folders to make
+         * @param readOnly if folder/s are read only
+         */
         mkdir(args, readOnly = false) {
             let errors = [];
             for (let i = 0; i < args.length; i++) {
@@ -91,6 +111,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 return '';
             }
         }
+        /**
+         * sets a folder as read only
+         * @param folderName folder to set as readOnly
+         */
         setReadOnly(folderName) {
             let folder = this.getFolder(folderName);
             if (folder) {
@@ -106,6 +130,11 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             });
             return parent;
         }
+        /**
+         * Creates a new file, attached to a folder if provided
+         * @param newFile file to create
+         * @param content content to add to file
+         */
         touch(newFile, content) {
             for (let i = 0; i < this.getFiles().length; i++) {
                 let fileName = this.getFiles()[i].getLocation();

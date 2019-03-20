@@ -23,6 +23,9 @@ export class Launcher {
         this.background = this.backgroundDefault;
     }
 
+    /**
+     * Create default structure of launch
+     */
     initLaunch(){
         this.mkdir(['launch'])
         this.touch('launch/google.lnk', 
@@ -34,6 +37,10 @@ export class Launcher {
         this.setReadOnly('launch');
     }
     
+    /**
+     * Checks if text contains http, if not, prepend it
+     * @param text text to check
+     */
     private checkHttp(text:string):string{
         let pattern = /(http(s)?:\/\/.).*/g
         if(text.match(pattern)){
@@ -46,6 +53,10 @@ export class Launcher {
         return this.background;
     }
 
+    /**
+     * sets background string, used by htmltools to set background
+     * @param newBackground background url/uri
+     */
     setBackground(newBackground:string){
         if(newBackground == '--clear'){
             this.background = this.backgroundDefault;
@@ -76,6 +87,10 @@ export class Launcher {
         return this.files;
     }
 
+    /**
+     * set a new default search provider. Checks if .qry shorthand exists
+     * @param shorthand new shorthand to set as default
+     */
     setDefaultSearch(shorthand:string){
         for(let i = 0; i < this.getFiles().length; i++){
             let file:LaunchFile = this.getFiles()[i];
@@ -92,6 +107,11 @@ export class Launcher {
         return `Error: No shorthand for ${shorthand} found`
     }
 
+    /**
+     * Create new folder/s from given list
+     * @param args list of folders to make
+     * @param readOnly if folder/s are read only
+     */
     mkdir(args:string[], readOnly:boolean=false) {
         let errors:string[] = []
 
@@ -114,6 +134,10 @@ export class Launcher {
         }
     }
 
+    /**
+     * sets a folder as read only
+     * @param folderName folder to set as readOnly
+     */
     setReadOnly(folderName:string){
         let folder = this.getFolder(folderName);
 
@@ -132,6 +156,11 @@ export class Launcher {
         return parent;
     }
 
+    /**
+     * Creates a new file, attached to a folder if provided
+     * @param newFile file to create
+     * @param content content to add to file
+     */
     touch(newFile:string, content?:string) {
         for(let i = 0; i < this.getFiles().length; i++){
             let fileName = this.getFiles()[i].getLocation();
