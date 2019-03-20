@@ -104,7 +104,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     this.files.push(this.createFile(args[1], content, parentFolder.id, parentFolder.name));
                 }
                 else {
-                    return `Error: folder ${args[0]} does not exist`;
+                    return `Error: folder ${args[0]} does not exist. Run 'mkdir ${args[0]}' first`;
                 }
             }
             else {
