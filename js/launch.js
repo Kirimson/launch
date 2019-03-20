@@ -104,7 +104,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     this.files.push(this.createFile(args[1], content, parentFolder.id, parentFolder.name));
                 }
                 else {
-                    return `Error: folder ${args[0]} does not exist. Run 'mkdir ${args[0]}' first`;
+                    return `Error: folder ${args[0]} does not exist. 
+                Run 'mkdir ${args[0]}' first`;
                 }
             }
             else {
@@ -119,10 +120,14 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             if (fileName == '-rf') {
                 this.files = [];
                 this.folders = [];
-                return `[K[[1;31m TIME [0m] Timed out waiting for device launch.<br/>
-            [[1;33mDEPEND[0m] Dependency failed for /.<br/>
-            [[1;33mDEPEND[0m] Dependency failed for Local File Systems.<br/>
-            …<br/>
+                return `[K[[1;31m TIME [0m] Timed out waiting for device launch.
+            <br/>
+            [[1;33mDEPEND[0m] Dependency failed for /.
+            <br/>
+            [[1;33mDEPEND[0m] Dependency failed for Local File Systems.
+            <br/>
+            …
+            <br/>
             Welcome to emergency mode! Please refresh to rebuild launch...`;
             }
             let fileID = this.getFileID(fileName);
@@ -207,6 +212,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 content = '#';
             }
             // Check if extension is specified. If not, append .lnk
+            if (!filename.match('.lnk') && !filename.match('.qry')) {
+                filename += '.lnk';
+            }
             if (filename.match('.lnk')) {
                 // Check content is a proper url
                 content = this.checkHttp(content);
@@ -350,7 +358,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'files': filesData,
                 'folders': foldersData,
                 'background': this.background,
-                'tree': this.getTreeHidden()
+                'tree': this.getTreeHidden(),
+                'defaultSearch': this.defaultSearch
             };
             return JSON.stringify(data);
         }
@@ -368,6 +377,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.folders = [];
             this.files = [];
             this.treeHidden = data['tree'];
+            this.defaultSearch = data['defaultSearch'];
             //  If there is a user stored background, load it
             if (data['background']) {
                 this.background = data['background'];

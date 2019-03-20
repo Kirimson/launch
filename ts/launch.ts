@@ -24,9 +24,12 @@ export class Launcher {
 
     initLaunch(){
         this.mkdir(['launch'])
-        this.touch('launch/google.lnk', 'https://www.google.com');
-        this.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
-        this.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
+        this.touch('launch/google.lnk', 
+                    'https://www.google.com');
+        this.touch('launch/google.qry', 
+                    'g: https://www.google.com/search?q=${}');
+        this.touch('launch/bing.qry', 
+                    'b: https://www.bing.com/search?q=${}');
         this.setReadOnly('launch');
     }
     
@@ -78,8 +81,8 @@ export class Launcher {
         for(let i = 0; i < args.length; i++){
             let folderName = args[i]
             if(!this.getFolder(folderName)){
-                this.folders.push(new LaunchFolder(folderName, this.nextFolderId,
-                                  readOnly))
+                this.folders.push(new LaunchFolder(folderName, 
+                                  this.nextFolderId, readOnly))
                 this.nextFolderId++;
             } else {
                 errors.push(folderName)
@@ -129,7 +132,8 @@ export class Launcher {
                 this.files.push(this.createFile(args[1], content, 
                 parentFolder.id, parentFolder.name))
             } else {
-                return `Error: folder ${args[0]} does not exist. Run 'mkdir ${args[0]}' first`
+                return `Error: folder ${args[0]} does not exist. 
+                Run 'mkdir ${args[0]}' first`
             }
 
         } else {
@@ -146,10 +150,14 @@ export class Launcher {
         if(fileName == '-rf'){
             this.files = [];
             this.folders = [];
-            return `[K[[1;31m TIME [0m] Timed out waiting for device launch.<br/>
-            [[1;33mDEPEND[0m] Dependency failed for /.<br/>
-            [[1;33mDEPEND[0m] Dependency failed for Local File Systems.<br/>
-            …<br/>
+            return `[K[[1;31m TIME [0m] Timed out waiting for device launch.
+            <br/>
+            [[1;33mDEPEND[0m] Dependency failed for /.
+            <br/>
+            [[1;33mDEPEND[0m] Dependency failed for Local File Systems.
+            <br/>
+            …
+            <br/>
             Welcome to emergency mode! Please refresh to rebuild launch...`
         }
 
@@ -243,7 +251,9 @@ export class Launcher {
             }
 
             // Check if extension is specified. If not, append .lnk
-
+            if(!filename.match('.lnk') && !filename.match('.qry')){
+                filename += '.lnk';
+            }
 
             if(filename.match('.lnk')){
                 // Check content is a proper url
@@ -405,7 +415,8 @@ export class Launcher {
             'files': filesData,
             'folders': foldersData,
             'background': this.background,
-            'tree': this.getTreeHidden()
+            'tree': this.getTreeHidden(),
+            'defaultSearch': this.defaultSearch
         }
 
         return JSON.stringify(data)
@@ -426,6 +437,7 @@ export class Launcher {
         this.folders = []
         this.files = []
         this.treeHidden = data['tree']
+        this.defaultSearch = data['defaultSearch']
 
         //  If there is a user stored background, load it
         if(data['background']){
