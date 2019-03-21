@@ -23,9 +23,11 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.files = [];
             this.folders = [];
             this.mkdir(['launch']);
-            this.touch('launch/google.lnk', 'https://www.google.com');
             this.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
             this.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
+            this.touch('launch/amazon.qry', 'ama: https://www.amazon.co.uk/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords=${}');
+            this.touch('launch/google_maps.qry', 'map: https://www.google.co.uk/maps/search/${}');
+            this.touch('launch/duckduckgo.qry', 'ddg: https://duckduckgo.com/?q=${}');
             this.setReadOnly('launch');
         }
         /**
