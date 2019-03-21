@@ -14,10 +14,11 @@ export class Launcher {
     private treeHidden: boolean = true;
     private history:string[] = [''];
     private historyIndex:number;
+    private color = '#333';
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'feh', 'tree',
-                                            'setsearch', 'mv']
+                                            'setsearch', 'mv', 'colo']
 
     constructor() {
         this.folders = [];
@@ -67,6 +68,15 @@ export class Launcher {
         } else {
             this.background = newBackground;
         }
+        return '';
+    }
+
+    getColor(): string {
+        return this.color;
+    }
+
+    setColor(color:string){
+        this.color = color;
         return '';
     }
 
@@ -209,6 +219,9 @@ export class Launcher {
             case 'feh':
                 commandReturn = this.setBackground(args);
                 break;
+            case 'colo':
+                commandReturn = this.setColor(args);
+                break;
             case 'tree':
                 commandReturn = this.setTreeHidden(!this.getTreeHidden());
                 break;
@@ -216,7 +229,8 @@ export class Launcher {
                 commandReturn = this.setDefaultSearch(args);
                 break;
             case 'mv':
-                commandReturn = this.mv(args.split(' '));
+                commandReturn = this.mv(args.split(' ')[0], 
+                                args.substr(args.split(' ')[0].length).trim());
                 break;
         }
 
@@ -252,9 +266,12 @@ export class Launcher {
         }
     }
 
-    mv(args:string[]):string {
-        let target:string = args[0];
-        let newName:string = args[1];
+    /**
+     * Moves a file/folder to a new location (can be used to reanme element)
+     * @param target object to move
+     * @param newName new ocation
+     */
+    mv(target:string, newName:string):string {
 
         let targetFolder = this.getFolder(target);
         let targetFile = this.getFile(target);
@@ -559,7 +576,8 @@ export class Launcher {
             'folders': foldersData,
             'background': this.background,
             'tree': this.getTreeHidden(),
-            'defaultSearch': this.defaultSearch
+            'defaultSearch': this.defaultSearch,
+            'color': this.color
         }
 
         return JSON.stringify(data)
@@ -581,6 +599,7 @@ export class Launcher {
         this.files = []
         this.treeHidden = data['tree']
         this.defaultSearch = data['defaultSearch']
+        this.color = data['color']
 
         //  If there is a user stored background, load it
         if(data['background']){

@@ -23,6 +23,12 @@ export class Tools {
         return this.terminal;
     }
 
+    setWindowColor(newColor:string){
+        let windows = $('.window');
+
+        windows.css('background-color', newColor);
+    }
+
     getLaunchBoxValue():string{
         return String(this.console.val());
     }

@@ -54,8 +54,8 @@ footer {
     display: flex;
     min-height: 3vh;
     width: 100%;
-    background-color: #111;
-    opacity: 0.8;
+    background-color: #000;
+    opacity: 0.5;
     color: white;
     flex-direction: column;
     justify-content: center;

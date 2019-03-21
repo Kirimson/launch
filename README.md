@@ -96,10 +96,21 @@ Like how all lazy i3 *power users* do it. **feh**.
 Command: `feh`
 
 Usage: `feh [backgroundUrl]`
-        ```--clear
-                Clears the background and returns to default```
+
+        --clear
+                Clears the background and returns to default
+
 
 - sets background property in launch
+
+## Set Window Color
+
+Set the window color, vim style. Yes, it's very all over the place, but I have 
+no clue what default linux command would do this
+
+Command: `colo`
+
+Usage: `colo [color]`
 
 ## Toggle tree
 

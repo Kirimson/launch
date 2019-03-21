@@ -15,6 +15,10 @@ define(["require", "exports", "loader"], function (require, exports) {
         getTerminal() {
             return this.terminal;
         }
+        setWindowColor(newColor) {
+            let windows = $('.window');
+            windows.css('background-color', newColor);
+        }
         getLaunchBoxValue() {
             return String(this.console.val());
         }

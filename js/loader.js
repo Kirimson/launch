@@ -59,6 +59,7 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
     tools.showLaunch();
     $(function () {
         tools.setBackground(launch.getBackground());
+        tools.setWindowColor(launch.getColor());
         // Clicking in console to focus
         tools.getTerminal().click(function () {
             tools.getConsole().focus();
@@ -98,6 +99,7 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
                         localStorage.setItem('launch', launch.store());
                         tree.updateTree(launch);
                         tools.setBackground(launch.getBackground());
+                        tools.setWindowColor(launch.getColor());
                         tools.hideTree(launch.getTreeHidden());
                         tools.addHistory(returnStatement);
                     }

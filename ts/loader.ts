@@ -72,7 +72,8 @@ tools.showLaunch();
 
 $(function(){
     
-    tools.setBackground(launch.getBackground())
+    tools.setBackground(launch.getBackground());
+    tools.setWindowColor(launch.getColor());
 
     // Clicking in console to focus
     tools.getTerminal().click(function(){
@@ -120,6 +121,7 @@ $(function(){
                     tree.updateTree(launch)
                     
                     tools.setBackground(launch.getBackground())
+                    tools.setWindowColor(launch.getColor())
                     tools.hideTree(launch.getTreeHidden())
                     
                     tools.addHistory(returnStatement)

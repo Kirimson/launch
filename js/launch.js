@@ -8,9 +8,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.defaultSearch = 'g:';
             this.treeHidden = true;
             this.history = [''];
+            this.color = '#333';
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'feh', 'tree',
-                'setsearch', 'mv'];
+                'setsearch', 'mv', 'colo'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -52,6 +53,13 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             else {
                 this.background = newBackground;
             }
+            return '';
+        }
+        getColor() {
+            return this.color;
+        }
+        setColor(color) {
+            this.color = color;
             return '';
         }
         getCommands() {
@@ -176,6 +184,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 case 'feh':
                     commandReturn = this.setBackground(args);
                     break;
+                case 'colo':
+                    commandReturn = this.setColor(args);
+                    break;
                 case 'tree':
                     commandReturn = this.setTreeHidden(!this.getTreeHidden());
                     break;
@@ -183,7 +194,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     commandReturn = this.setDefaultSearch(args);
                     break;
                 case 'mv':
-                    commandReturn = this.mv(args.split(' '));
+                    commandReturn = this.mv(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim());
                     break;
             }
             // Return commandreturn if command gave a return statement.
@@ -215,9 +226,12 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 return '';
             }
         }
-        mv(args) {
-            let target = args[0];
-            let newName = args[1];
+        /**
+         * Moves a file/folder to a new location (can be used to reanme element)
+         * @param target object to move
+         * @param newName new ocation
+         */
+        mv(target, newName) {
             let targetFolder = this.getFolder(target);
             let targetFile = this.getFile(target);
             // If a folder
@@ -492,7 +506,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'folders': foldersData,
                 'background': this.background,
                 'tree': this.getTreeHidden(),
-                'defaultSearch': this.defaultSearch
+                'defaultSearch': this.defaultSearch,
+                'color': this.color
             };
             return JSON.stringify(data);
         }
@@ -511,6 +526,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.files = [];
             this.treeHidden = data['tree'];
             this.defaultSearch = data['defaultSearch'];
+            this.color = data['color'];
             //  If there is a user stored background, load it
             if (data['background']) {
                 this.background = data['background'];
