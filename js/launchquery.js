@@ -10,6 +10,7 @@ define(["require", "exports", "./launchfile"], function (require, exports, launc
             this.parentName = parentName;
             this.shortHand = content.substr(0, content.indexOf(' '));
             this.link = content.substr(content.indexOf(' ') + 1);
+            this.extension = '.qry';
         }
         execute(queryArg) {
             window.location.href = this.link.replace('${}', queryArg);

@@ -3,11 +3,15 @@ export class LaunchFolder {
     public name:string;
     private readOnly:boolean;
 
-    constructor(public folderName:string, folderid:number,
+    constructor(folderName:string, folderid:number,
         readOnly:boolean=false){
         this.id = folderid;
         this.name = folderName;
         this.readOnly = readOnly;
+    }
+
+    rename(newName:string){
+        this.name = newName;
     }
 
     isReadOnly() {

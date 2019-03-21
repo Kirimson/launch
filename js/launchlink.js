@@ -8,6 +8,7 @@ define(["require", "exports", "./launchfile"], function (require, exports, launc
             this.content = content;
             this.parentId = parentId;
             this.parentName = parentName;
+            this.extension = '.lnk';
         }
         execute() {
             window.location.href = this.content;

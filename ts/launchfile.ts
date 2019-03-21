@@ -4,6 +4,7 @@ export class LaunchFile {
     constructor(public filename:string, 
         public content:string, public parentId?:number, 
         public parentName?:string){}
+        public extension:string;
 
     getLocation():string {
         if(this.parentName){
@@ -11,6 +12,15 @@ export class LaunchFile {
         } else return this.filename;
     }
     
+    rename(newName:string) {
+        this.filename = newName;
+    }
+
+    move(parentId:number, parentName:string){
+        this.parentId = parentId;
+        this.parentName = parentName;
+    }
+
     // Overrriden functions
     execute(queryArg?:string){}
     toString():string{return ''}

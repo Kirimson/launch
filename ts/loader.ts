@@ -103,6 +103,14 @@ $(function(){
                     startPageImport();
                     break;
                 }
+
+                // Debig
+                if(launchVal == '!!DEBUG!!'){
+                    console.log(launch);
+                    tools.clearLaunchBox();
+                    break;
+                }
+
                 // Check if using a command
                 if(launch.getCommands().includes(launchVal.split(' ')[0])){
                     let returnStatement:string = launch.execCommand(launchVal)

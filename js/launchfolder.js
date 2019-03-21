@@ -3,10 +3,12 @@ define(["require", "exports"], function (require, exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     class LaunchFolder {
         constructor(folderName, folderid, readOnly = false) {
-            this.folderName = folderName;
             this.id = folderid;
             this.name = folderName;
             this.readOnly = readOnly;
+        }
+        rename(newName) {
+            this.name = newName;
         }
         isReadOnly() {
             return this.readOnly;

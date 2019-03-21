@@ -17,6 +17,13 @@ define(["require", "exports"], function (require, exports) {
             else
                 return this.filename;
         }
+        rename(newName) {
+            this.filename = newName;
+        }
+        move(parentId, parentName) {
+            this.parentId = parentId;
+            this.parentName = parentName;
+        }
         // Overrriden functions
         execute(queryArg) { }
         toString() { return ''; }

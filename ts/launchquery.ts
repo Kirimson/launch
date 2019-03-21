@@ -12,6 +12,7 @@ export class LaunchQuery extends LaunchFile{
 
             this.shortHand = content.substr(0,content.indexOf(' '));
             this.link = content.substr(content.indexOf(' ')+1);
+            this.extension = '.qry';
         }
     
     execute(queryArg:string){

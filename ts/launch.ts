@@ -17,7 +17,7 @@ export class Launcher {
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'feh', 'tree',
-                                            'setsearch']
+                                            'setsearch', 'mv']
 
     constructor() {
         this.folders = [];
@@ -92,6 +92,54 @@ export class Launcher {
     }
 
     /**
+     * Returns a folder given a name
+     * @param folderName folder name to search for
+     */
+    getFolder(folderName:string):LaunchFolder{
+        let parent:LaunchFolder = null;
+        this.folders.forEach(folder => {
+            if(folder.name == folderName){
+                parent = folder;
+            }
+        });
+        return parent;
+    }
+
+    /**
+     * Gets the index of a file to delete, given a filename
+     * @param fileName file to search for
+     */
+    getFileID(fileName:string){
+        for(let i = 0; i < this.files.length; i++) {
+            let file = this.files[i]
+
+            let fileLocation = file.getLocation()
+            // Check if file matches full filename or filename w/out ext
+            if(fileLocation == fileName || 
+                fileLocation.substr(0,fileLocation.length-4) == fileName){
+                // return index
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    getFile(fileName:string){
+        for(let i = 0; i < this.files.length; i++) {
+            let file = this.files[i]
+
+            let fileLocation = file.getLocation()
+            // Check if file matches full filename or filename w/out ext
+            if(fileLocation == fileName || 
+                fileLocation.substr(0,fileLocation.length-4) == fileName){
+                // return index
+                return file;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get a command one up/down in history, based on current historyIndex
      * @param up If going up the history tree or not
      */
@@ -127,6 +175,57 @@ export class Launcher {
     }
 
     /**
+     * Parses a string to find a command and execute 
+     * with the provided parameters
+     * @param term command with arguments
+     * @returns return statement from command
+     */
+    execCommand(term:string):string {
+        this.history.push(term)
+        this.historyIndex = 0;
+
+        let command = term.split(' ')[0]
+
+        /** Remove the length the command of the text sent to launch to get
+        the arguments to parse */
+
+        let args = term.substr(command.length).trim();
+        let commandReturn: string = '';
+
+        switch(command) {
+            case 'mkdir':
+                commandReturn = this.mkdir(args.split(' '));
+                break;
+            case 'touch':
+                commandReturn = this.touch(args.split(' ')[0], 
+                            args.substr(args.split(' ')[0].length).trim());
+                break;
+            case 'rm':
+                commandReturn = this.rm(args);
+                break;
+            case 'rmdir':
+                commandReturn = this.rmdir(args.split(' '));
+                break;
+            case 'feh':
+                commandReturn = this.setBackground(args);
+                break;
+            case 'tree':
+                commandReturn = this.setTreeHidden(!this.getTreeHidden());
+                break;
+            case 'setsearch':
+                commandReturn = this.setDefaultSearch(args);
+                break;
+            case 'mv':
+                commandReturn = this.mv(args.split(' '));
+                break;
+        }
+
+        // Return commandreturn if command gave a return statement.
+        // Else, return the command the user provided
+        return (commandReturn ? commandReturn : term)
+    }
+
+    /**
      * Create new folder/s from given list
      * @param args list of folders to make
      * @param readOnly if folder/s are read only
@@ -153,6 +252,49 @@ export class Launcher {
         }
     }
 
+    mv(args:string[]):string {
+        let target:string = args[0];
+        let newName:string = args[1];
+
+        let targetFolder = this.getFolder(target);
+        let targetFile = this.getFile(target);
+
+        // If a folder
+        if(targetFolder){
+            targetFolder.rename(newName);
+        } else if(targetFile) {
+
+            // Add extension if not there
+            if(newName.substr(newName.length - 4, 3) != targetFile.extension){
+                newName = `${newName}${targetFile.extension}`
+            }
+
+            // Check if moving folder, else just plain old rename
+            if(newName.match('/')) {
+                let folderFile = newName.split('/');
+                let newFolder = this.getFolder(folderFile[0])
+
+                // Check if new folder exists
+                if(newFolder){
+                    targetFile.rename(folderFile[1]);
+                    targetFile.move(newFolder.id, newFolder.name);
+                } else if(folderFile[0] == ''){
+                    targetFile.rename(folderFile[1]);
+                    targetFile.move(undefined, undefined);
+                } else {
+                    return `Error: new folder ${folderFile[0]} does not exist`
+                }
+            } else {
+                targetFile.rename(newName);
+            }
+
+        } else {
+            return `Error: ${target} does not exist`
+        }
+
+        return ''
+    }
+
     /**
      * sets a folder as read only
      * @param folderName folder to set as readOnly
@@ -163,16 +305,6 @@ export class Launcher {
         if(folder){
             folder.setReadOnly(true)
         }
-    }
-
-    getFolder(folderName:string):LaunchFolder{
-        let parent:LaunchFolder = null;
-        this.folders.forEach(folder => {
-            if(folder.name == folderName){
-                parent = folder;
-            }
-        });
-        return parent;
     }
 
     /**
@@ -242,25 +374,6 @@ export class Launcher {
             return `Error: file ${fileName} not found`
         }
         return '';
-    }
-
-    /**
-     * Gets the index of a file to delete, given a filename
-     * @param fileName file to search for
-     */
-    getFileID(fileName:string){
-        for(let i = 0; i < this.files.length; i++) {
-            let file = this.files[i]
-
-            let fileLocation = file.getLocation()
-            // Check if file matches full filename or filename w/out ext
-            if(fileLocation == fileName || 
-                fileLocation.substr(0,fileLocation.length-4) == fileName){
-                // return index
-                return i;
-            }
-        }
-        return -1;
     }
 
     /**
@@ -358,54 +471,6 @@ export class Launcher {
     }
 
     /**
-     * Parses a string to find a command and execute 
-     * with the provided parameters
-     * @param term command with arguments
-     * @returns return statement from command
-     */
-    execCommand(term:string):string {
-        this.history.push(term)
-        this.historyIndex = 0;
-
-        let command = term.split(' ')[0]
-
-        /** Remove the length the command of the text sent to launch to get
-        the arguments to parse */
-
-        let args = term.substr(command.length).trim();
-        let commandReturn: string = '';
-
-        switch(command) {
-            case 'mkdir':
-                commandReturn = this.mkdir(args.split(' '));
-                break;
-            case 'touch':
-                commandReturn = this.touch(args.split(' ')[0], 
-                            args.substr(args.split(' ')[0].length).trim());
-                break;
-            case 'rm':
-                commandReturn = this.rm(args);
-                break;
-            case 'rmdir':
-                commandReturn = this.rmdir(args.split(' '));
-                break;
-            case 'feh':
-                commandReturn = this.setBackground(args);
-                break;
-            case 'tree':
-                commandReturn = this.setTreeHidden(!this.getTreeHidden());
-                break;
-            case 'setsearch':
-                commandReturn = this.setDefaultSearch(args);
-                break;
-        }
-
-        // Return commandreturn if command gave a return statement.
-        // Else, return the command the user provided
-        return (commandReturn ? commandReturn : term)
-    }
-
-    /**
      * Searchs through all .lnk files given a search term
      * @param term  search term
      * @returns string[] of LaunchLink toString representations that match the 
@@ -475,9 +540,8 @@ export class Launcher {
         let foldersData = []
         this.folders.forEach(folder => {
             let folderData = {
-                'folderName': folder.folderName,
-                'id': folder.id,
                 'name': folder.name,
+                'id': folder.id,
                 'readonly': folder.isReadOnly()
             }
             foldersData.push(folder)
@@ -520,7 +584,7 @@ export class Launcher {
         for(let i = 0; i < data['folders'].length; i++){
             let folder = data['folders'][i];
             let readOnly:boolean = (folder['readOnly'] ? true : false)
-            this.mkdir([folder['folderName']], readOnly);
+            this.mkdir([folder['name']], readOnly);
         };
 
         for(let x = 0; x < data['files'].length; x++){
