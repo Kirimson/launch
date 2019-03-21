@@ -262,6 +262,12 @@ export class Launcher {
         // If a folder
         if(targetFolder){
             targetFolder.rename(newName);
+            let folderFiles = this.files.filter(file => file.parentId 
+                                                == targetFolder.id);
+            folderFiles.forEach(file => {
+               file.move(targetFolder.id, targetFolder.name ); 
+            });
+
         } else if(targetFile) {
 
             // Add extension if not there
