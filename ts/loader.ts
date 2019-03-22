@@ -105,7 +105,7 @@ $(function(){
                     break;
                 }
 
-                // Debig
+                // Debug
                 if(launchVal == '!!DEBUG!!'){
                     console.log(launch);
                     tools.clearLaunchBox();

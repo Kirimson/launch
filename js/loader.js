@@ -86,7 +86,7 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
                         startPageImport();
                         break;
                     }
-                    // Debig
+                    // Debug
                     if (launchVal == '!!DEBUG!!') {
                         console.log(launch);
                         tools.clearLaunchBox();

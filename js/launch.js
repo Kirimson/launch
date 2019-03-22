@@ -150,11 +150,11 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     if (shorthand == fileShorthand + ':' ||
                         shorthand == fileShorthand) {
                         this.defaultSearch = file.shortHand;
-                        return `Default search set to ${file.shortHand}`;
+                        return `Info: Default search set to ${file.shortHand}`;
                     }
                 }
             }
-            return `Error: No shorthand for ${shorthand} found`;
+            return `Error: ${shorthand} not found`;
         }
         /**
          * Parses a string to find a command and execute
@@ -181,7 +181,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     commandReturn = this.rm(args);
                     break;
                 case 'rmdir':
-                    commandReturn = this.rmdir(args.split(' '));
+                    commandReturn = this.rmdir(args);
                     break;
                 case 'feh':
                     commandReturn = this.setBackground(args);
@@ -222,7 +222,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             if (errors.length > 0) {
                 let plural = errors.length == 1 ? 'folder' : 'folders';
-                return `Error: ${plural} ${errors} already exists.`;
+                return `Error: ${plural} ${errors} already exists`;
             }
             else {
                 return '';
@@ -264,7 +264,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                         targetFile.move(undefined, undefined);
                     }
                     else {
-                        return `Error: new folder ${folderFile[0]} does not exist`;
+                        return `Error: new folder '${folderFile[0]}' not found`;
                     }
                 }
                 else {
@@ -272,7 +272,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 }
             }
             else {
-                return `Error: ${target} does not exist`;
+                return `Error: '${target}' not found`;
             }
             return '';
         }
@@ -295,7 +295,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             for (let i = 0; i < this.getFiles().length; i++) {
                 let fileName = this.getFiles()[i].getLocation();
                 if (newFile == fileName) {
-                    return `Error: file ${newFile} already exists`;
+                    return `Error: file '${newFile}' already exists`;
                 }
             }
             if (newFile.match('/')) {
@@ -305,8 +305,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     this.files.push(this.createFile(args[1], content, parentFolder.id, parentFolder.name));
                 }
                 else {
-                    return `Error: folder ${args[0]} does not exist. 
-                Run 'mkdir ${args[0]}' first`;
+                    return `Error: folder '${args[0]}' not found`;
                 }
             }
             else {
@@ -321,15 +320,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             if (fileName == '-rf') {
                 this.files = [];
                 this.folders = [];
-                return `[K[[1;31m TIME [0m] Timed out waiting for device launch.
-            <br/>
-            [[1;33mDEPEND[0m] Dependency failed for /.
-            <br/>
-            [[1;33mDEPEND[0m] Dependency failed for Local File Systems.
-            <br/>
-            …
-            <br/>
-            Welcome to emergency mode! Please refresh to rebuild launch...`;
+                return `All Files/Folders have been deleted`;
             }
             let fileID = this.getFileID(fileName);
             if (fileID != -1) {
@@ -346,42 +337,28 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 }
             }
             else {
-                return `Error: file ${fileName} not found`;
+                return `Error: file '${fileName}' not found`;
             }
             return '';
         }
         /**
          * Deletes a folder/set of folders, assuming folder is not read only
-         * @param folderNames string[] of folders to remove
+         * @param folderName string[] of folders to remove
          */
-        rmdir(folderNames) {
-            let errors = [];
-            for (let i = 0; i < folderNames.length; i++) {
-                let folderName = folderNames[i];
-                for (let folderID = 0; folderID < this.folders.length; folderID++) {
-                    let folder = this.folders[folderID];
-                    // Check if folder to delete is a real folder
-                    if (folder.name == folderName && folder.isReadOnly() == false) {
-                        let folderFiles = this.files.filter(file => file.parentId == folder.id);
-                        folderFiles.forEach(file => {
-                            this.rm(file.getLocation());
-                        });
-                        this.folders.splice(folderID, 1);
-                    }
-                    else {
-                        errors.push(folderName);
-                    }
+        rmdir(folderName) {
+            for (let folderID = 0; folderID < this.folders.length; folderID++) {
+                let folder = this.folders[folderID];
+                // Check if folder to delete is a real folder
+                if (folder.name == folderName && folder.isReadOnly() == false) {
+                    let folderFiles = this.files.filter(file => file.parentId == folder.id);
+                    folderFiles.forEach(file => {
+                        this.rm(file.getLocation());
+                    });
+                    this.folders.splice(folderID, 1);
+                    return '';
                 }
             }
-            ;
-            if (errors.length > 0) {
-                let pluralFolders = errors.length == 1 ? 'folder' : 'folders';
-                let pluralDo = errors.length == 1 ? 'does' : 'do';
-                return `Error: ${pluralFolders} ${errors} ${pluralDo} not exist.`;
-            }
-            else {
-                return '';
-            }
+            return `Error: folder '${folderName}' not found`;
         }
         /**
          * Creates a new file, file type based on filename
@@ -520,7 +497,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          */
         load(data) {
             if (data['folders'].length == 0 || data['files'].length == 0) {
-                console.error('YOU BROKE LAUNCH. YOU MONSTER!');
                 return false;
             }
             this.nextFolderId = 0;
