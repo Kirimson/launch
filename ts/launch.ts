@@ -138,7 +138,7 @@ export class Launcher {
         return -1;
     }
 
-    getFile(fileName:string){
+    getFile(fileName:string):LaunchFile{
         for(let i = 0; i < this.files.length; i++) {
             let file = this.files[i]
 

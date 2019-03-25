@@ -33,7 +33,7 @@ export class Tree {
             // Create folder div element
             let folderDiv:HTMLElement = document.createElement('div');
             folderDiv.className = 'tree-base';
-            folderDiv.id = `tree-folder-${folder.name}`
+            folderDiv.id = `${folder.name}`
 
             let folderName:HTMLElement = document.createElement('span');
             folderName.className = 'tree-folder-name';
@@ -57,15 +57,18 @@ export class Tree {
                 fileDiv.id = `tree-file-${file.filename}`
 
                 let fileName:HTMLElement;
-
+                fileName = document.createElement('a');
+                
                 if(file instanceof LaunchLink){
-                    fileName = document.createElement('a');
                     fileName.setAttribute('href', file.content)
                 } else {
-                    fileName = document.createElement('span');
+                    // fileName = document.createElement('span');
+                    fileName.setAttribute('href', '#')
+                    fileName.setAttribute('folder', folder.name)
+                    fileName.className = 'query '
                 }
                 
-                fileName.className = 'tree-file-name';
+                fileName.className += 'tree-file-name';
                 fileName.append(file.filename)
 
                 fileDiv.append(fileName)

@@ -21,7 +21,7 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
                 // Create folder div element
                 let folderDiv = document.createElement('div');
                 folderDiv.className = 'tree-base';
-                folderDiv.id = `tree-folder-${folder.name}`;
+                folderDiv.id = `${folder.name}`;
                 let folderName = document.createElement('span');
                 folderName.className = 'tree-folder-name';
                 folderName.append(folder.name);
@@ -39,14 +39,17 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
                         fileDiv.className = 'tree-file';
                         fileDiv.id = `tree-file-${file.filename}`;
                         let fileName;
+                        fileName = document.createElement('a');
                         if (file instanceof launchlink_1.LaunchLink) {
-                            fileName = document.createElement('a');
                             fileName.setAttribute('href', file.content);
                         }
                         else {
-                            fileName = document.createElement('span');
+                            // fileName = document.createElement('span');
+                            fileName.setAttribute('href', '#');
+                            fileName.setAttribute('folder', folder.name);
+                            fileName.className = 'query ';
                         }
-                        fileName.className = 'tree-file-name';
+                        fileName.className += 'tree-file-name';
                         fileName.append(file.filename);
                         fileDiv.append(fileName);
                         filesDiv.append(fileDiv);

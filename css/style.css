@@ -11,8 +11,8 @@ body {
 }
 
 a {
-    color: rgb(93, 109, 255);
-    font-weight: normal;
+    color: inherit;
+    font-weight: inherit;
     text-decoration: none;
 }
 

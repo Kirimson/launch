@@ -1,4 +1,4 @@
-define(["require", "exports", "launch", "htmltools", "./tree"], function (require, exports, launch_1, htmltools_1, tree_1) {
+define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"], function (require, exports, launch_1, htmltools_1, tree_1, launchquery_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function isUrl(text) {
@@ -131,6 +131,16 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
                     if (tools.getLaunchBoxValue()) {
                         resultList = launch.search(launchVal);
                     }
+            }
+        });
+        $('.query').on('click', function () {
+            let fileName = this.innerHTML;
+            let folderName = this.getAttribute('folder');
+            let fileLocation = `${folderName}/${fileName}`;
+            let queryFile = launch.getFile(fileLocation);
+            if (queryFile instanceof launchquery_1.LaunchQuery) {
+                tools.getConsole().val(queryFile.shortHand);
+                tools.getConsole().focus();
             }
         });
     });

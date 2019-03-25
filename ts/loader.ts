@@ -1,6 +1,8 @@
 import { Launcher } from "launch"
 import {Tools} from "htmltools"
 import { Tree } from "./tree";
+import { LaunchQuery } from "./launchquery";
+import { LaunchFile } from "./launchfile";
 
 function isUrl(text:string):boolean{
     let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
@@ -150,6 +152,20 @@ $(function(){
                 if(tools.getLaunchBoxValue()){
                     resultList = launch.search(launchVal);
                 }
+        }
+    });
+
+    $('.query').on('click', function(){
+
+        let fileName = this.innerHTML;
+        let folderName = this.getAttribute('folder')
+
+        let fileLocation = `${folderName}/${fileName}`
+
+        let queryFile:LaunchFile = launch.getFile(fileLocation);
+        if(queryFile instanceof LaunchQuery){
+            tools.getConsole().val(queryFile.shortHand);
+            tools.getConsole().focus();
         }
     });
 
