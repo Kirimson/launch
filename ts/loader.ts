@@ -57,6 +57,7 @@ let resultIndex:number = 0;
 if(localStorage.getItem('launch')){
     // If launch is not succesfully loaded init it
     if(!launch.load(JSON.parse(localStorage.getItem('launch')))){
+        tools.addHistory('Launch is corrupted, rebuilding...')
         launch.initLaunch()
         localStorage.setItem('launch', launch.store())
     }
@@ -68,13 +69,12 @@ if(localStorage.getItem('launch')){
 let tree = new Tree(launch);
 tools.hideTree(launch.getTreeHidden())
 
+tools.setBackground(launch.getBackground());
 tools.showLaunch();
+tools.setWindowColor(launch.getColor());
 
 $(function(){
     
-    tools.setBackground(launch.getBackground());
-    tools.setWindowColor(launch.getColor());
-
     // Clicking in console to focus
     tools.getTerminal().click(function(){
         tools.getConsole().focus();
@@ -96,7 +96,7 @@ $(function(){
     tools.getConsole().on('keyup', function(key){
         // Listen for enter
         let launchVal:string = tools.getLaunchBoxValue()
-        
+
         switch(key.key){
             case 'Enter':
                 // import

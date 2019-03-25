@@ -46,6 +46,7 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
     if (localStorage.getItem('launch')) {
         // If launch is not succesfully loaded init it
         if (!launch.load(JSON.parse(localStorage.getItem('launch')))) {
+            tools.addHistory('Launch is corrupted, rebuilding...');
             launch.initLaunch();
             localStorage.setItem('launch', launch.store());
         }
@@ -56,10 +57,10 @@ define(["require", "exports", "launch", "htmltools", "./tree"], function (requir
     }
     let tree = new tree_1.Tree(launch);
     tools.hideTree(launch.getTreeHidden());
+    tools.setBackground(launch.getBackground());
     tools.showLaunch();
+    tools.setWindowColor(launch.getColor());
     $(function () {
-        tools.setBackground(launch.getBackground());
-        tools.setWindowColor(launch.getColor());
         // Clicking in console to focus
         tools.getTerminal().click(function () {
             tools.getConsole().focus();

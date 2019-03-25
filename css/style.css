@@ -82,7 +82,7 @@ footer {
 
 #tree-wrapper {
     width: 30%;
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
