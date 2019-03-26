@@ -182,7 +182,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     }
                 }
             }
-            return this.search(value)[0];
+            let fullAutocomplete = this.search(value)[0];
+            return fullAutocomplete ? fullAutocomplete : value;
         }
         /**
          * Parses a string to find a command and execute

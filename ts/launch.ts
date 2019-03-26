@@ -216,7 +216,9 @@ export class Launcher {
                 }
             }
         }
-        return this.search(value)[0]
+
+        let fullAutocomplete = this.search(value)[0];
+        return fullAutocomplete ? fullAutocomplete : value
     }
 
     /**
