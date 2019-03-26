@@ -49,27 +49,37 @@ function startPageImport(){
     tree.updateTree(launch)
 }
 
+function rebuildLaunch(){
+    tools.addHistory('Launch is corrupted, rebuilding...')
+    launch.initLaunch()
+    localStorage.setItem('launch', launch.store())
+}
+
 var launch = new Launcher();
 
-let tools = new Tools()
-let resultList:string[] = []
+let tools = new Tools();
+let resultList:string[] = [];
 let resultIndex:number = 0;
 
 // Load or initialise launch
 if(localStorage.getItem('launch')){
     // If launch is not succesfully loaded init it
-    if(!launch.load(JSON.parse(localStorage.getItem('launch')))){
-        tools.addHistory('Launch is corrupted, rebuilding...')
-        launch.initLaunch()
-        localStorage.setItem('launch', launch.store())
+    let launchData:JSON
+    try{
+        launchData = JSON.parse(localStorage.getItem('launch'));
+        if(!launch.load(launchData)){
+            rebuildLaunch();
+        }
+    } catch {
+        rebuildLaunch();
     }
 } else {
-    launch.initLaunch()
-    localStorage.setItem('launch', launch.store())
+    launch.initLaunch();
+    localStorage.setItem('launch', launch.store());
 }
 
 let tree = new Tree(launch);
-tools.hideTree(launch.getTreeHidden())
+tools.hideTree(launch.getTreeHidden());
 
 tools.setBackground(launch.getBackground());
 tools.setWindowColor(launch.getColor());
@@ -101,7 +111,7 @@ $(function(){
     // When typing in console
     tools.getConsole().on('keyup', function(key){
         // Listen for enter
-        let launchVal:string = tools.getConsoleVal()
+        let launchVal:string = tools.getConsoleVal();
 
         switch(key.key){
             case 'Enter':
@@ -122,13 +132,13 @@ $(function(){
                 if(launch.getCommands().includes(launchVal.split(' ')[0])){
                     let returnStatement:string = launch.execCommand(launchVal)
                     tools.clearLaunchBox();
-                    localStorage.setItem('launch', launch.store())
+                    localStorage.setItem('launch', launch.store());
 
-                    tree.updateTree(launch)
+                    tree.updateTree(launch);
                     
-                    tools.setBackground(launch.getBackground())
-                    tools.setWindowColor(launch.getColor())
-                    tools.hideTree(launch.getTreeHidden())
+                    tools.setBackground(launch.getBackground());
+                    tools.setWindowColor(launch.getColor());
+                    tools.hideTree(launch.getTreeHidden());
                     
                     tools.addHistory(returnStatement)
                 } else {
@@ -139,17 +149,17 @@ $(function(){
                     if(isUrl(launchVal)){
                         window.location.href = checkHttp(launchVal);
                     } else if(resultList.length != 0){
-                        launch.runFile(resultList[resultIndex])
+                        launch.runFile(resultList[resultIndex]);
                     } else {
                         launch.runFile(launchVal);
                     }
                 }
                 break;
             case 'ArrowUp':
-                tools.setConsoleText(launch.getHistory(true))
+                tools.setConsoleText(launch.getHistory(true));
                 break;
             case 'ArrowDown':
-                tools.setConsoleText(launch.getHistory(false))
+                tools.setConsoleText(launch.getHistory(false));
                 break;
             default:
                 // When normally typing search for links from launch
@@ -159,18 +169,18 @@ $(function(){
         }
     });
 
-    $('.query').on('click', function(){
+    $('#tree').on('click','.query',function() {
 
         let fileName = this.innerHTML;
-        let folderName = this.getAttribute('folder')
-
-        let fileLocation = `${folderName}/${fileName}`
-
+        let folderName = this.getAttribute('folder');
+    
+        let fileLocation = `${folderName}/${fileName}`;
+    
         let queryFile:LaunchFile = launch.getFile(fileLocation);
         if(queryFile instanceof LaunchQuery){
             tools.getConsole().val(queryFile.shortHand);
             tools.getConsole().focus();
         }
     });
-
+    
 })

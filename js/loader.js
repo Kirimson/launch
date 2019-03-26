@@ -38,6 +38,11 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
         localStorage.setItem('launch', launch.store());
         tree.updateTree(launch);
     }
+    function rebuildLaunch() {
+        tools.addHistory('Launch is corrupted, rebuilding...');
+        launch.initLaunch();
+        localStorage.setItem('launch', launch.store());
+    }
     var launch = new launch_1.Launcher();
     let tools = new htmltools_1.Tools();
     let resultList = [];
@@ -45,10 +50,15 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
     // Load or initialise launch
     if (localStorage.getItem('launch')) {
         // If launch is not succesfully loaded init it
-        if (!launch.load(JSON.parse(localStorage.getItem('launch')))) {
-            tools.addHistory('Launch is corrupted, rebuilding...');
-            launch.initLaunch();
-            localStorage.setItem('launch', launch.store());
+        let launchData;
+        try {
+            launchData = JSON.parse(localStorage.getItem('launch'));
+            if (!launch.load(launchData)) {
+                rebuildLaunch();
+            }
+        }
+        catch (_a) {
+            rebuildLaunch();
         }
     }
     else {
@@ -137,7 +147,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     }
             }
         });
-        $('.query').on('click', function () {
+        $('#tree').on('click', '.query', function () {
             let fileName = this.innerHTML;
             let folderName = this.getAttribute('folder');
             let fileLocation = `${folderName}/${fileName}`;

@@ -15,7 +15,7 @@ export class LaunchFile {
     addExtension(fileName:string, extension:string){
         // Add extension if not there
         if(fileName.substr(fileName.length - 4, 3) != extension){
-            return `${fileName}${extension}`
+            return `${fileName}${extension}`;
         }
         return fileName;
     }
@@ -31,5 +31,5 @@ export class LaunchFile {
 
     // Overrriden functions
     execute(queryArg?:string){}
-    toString():string{return ''}
+    toString():string{return '';}
 }

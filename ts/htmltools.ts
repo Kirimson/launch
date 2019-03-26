@@ -44,7 +44,7 @@ export class Tools {
         
         // get RBG value of div from color passed
         let contrastColor = window.getComputedStyle(fakeDiv)
-        .getPropertyValue("color");
+                                  .getPropertyValue("color");
         document.body.removeChild(fakeDiv);
         
         let windows = $('.window');
@@ -67,14 +67,14 @@ export class Tools {
     hideTree(hidden:boolean){
         let treeWrapper = $('#tree-wrapper');
         if(hidden){
-            treeWrapper.css('display', 'none')
+            treeWrapper.css('display', 'none');
         } else {
-            treeWrapper.css('display', 'flex')
+            treeWrapper.css('display', 'flex');
         }
     }
 
     addHistory(command:string){
-        this.consoleHistory.prepend(`<span>$ ${command}</span>`)
+        this.consoleHistory.prepend(`<span>$ ${command}</span>`);
     }
 
     showLaunch(){
@@ -83,7 +83,7 @@ export class Tools {
     }
 
     setConsoleText(text:string){
-        this.console.val(text)
+        this.console.val(text);
     }
 
 }

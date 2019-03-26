@@ -19,7 +19,7 @@ export class Launcher {
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'feh', 'tree',
-                                            'setsearch', 'mv', 'colo']
+                                            'setsearch', 'mv', 'colo'];
 
     constructor() {
         this.folders = [];
@@ -31,9 +31,9 @@ export class Launcher {
      * Create default structure of launch
      */
     initLaunch(){
-        this.files = []
-        this.folders = []
-        this.mkdir(['launch'])
+        this.files = [];
+        this.folders = [];
+        this.mkdir(['launch']);
         this.touch('launch/google.qry', 
                     'g: https://www.google.com/search?q=${}');
         this.touch('launch/bing.qry', 
@@ -43,8 +43,7 @@ export class Launcher {
         this.touch('launch/google_maps.qry', 
                     'map: https://www.google.co.uk/maps/search/${}');
         this.touch('launch/duckduckgo.qry',
-                    'ddg: https://duckduckgo.com/?q=${}')
-        this.setReadOnly('launch');
+                    'ddg: https://duckduckgo.com/?q=${}');
     }
     
     /**
@@ -139,6 +138,10 @@ export class Launcher {
         return -1;
     }
 
+    /**
+     *  Returns a LaunchFile given a fileName
+     * @param fileName Name of file to search for
+     */
     getFile(fileName:string):LaunchFile{
         for(let i = 0; i < this.files.length; i++) {
             let file = this.files[i]
@@ -178,11 +181,11 @@ export class Launcher {
             let file:LaunchFile = this.getFiles()[i];
             if(file instanceof LaunchQuery){
                 // Get shorthand without the ':' in case user does no add ':'
-                let fileShorthand = file.shortHand.substr(0, file.shortHand.length - 1)
+                let fileShorthand = file.shortHand.substr(0, file.shortHand.length - 1);
                 if(shorthand == fileShorthand+':' || 
                     shorthand == fileShorthand) {
                         this.defaultSearch = file.shortHand;
-                        return `Info: Default search set to ${file.shortHand}`
+                        return `Info: Default search set to ${file.shortHand}`;
                 }
             }
         }
@@ -194,7 +197,7 @@ export class Launcher {
         // let search = value;
         // if(value.includes(' ')){
         let compositeValue:string[] = value.split(' ');
-        let search = compositeValue[compositeValue.length-1]
+        let search = compositeValue[compositeValue.length-1];
         // }
         // check if simialar to a folder or not
         if(search.includes('/')){
@@ -203,12 +206,12 @@ export class Launcher {
                 folder = split[0],
                 fileName = split[1];
             if(fileName){
-                let fileLinks = this.files.filter(file => file instanceof LaunchLink)
-                fileLinks = fileLinks.filter(file => file.parentName == folder)
+                let fileLinks = this.files.filter(file => file instanceof LaunchLink);
+                fileLinks = fileLinks.filter(file => file.parentName == folder);
                 for(let i = 0; i < fileLinks.length; i++){
                     let file = fileLinks[i];
                     if(file.filename.startsWith(fileName)){
-                        compositeValue[compositeValue.length-1] = file.getLocation()
+                        compositeValue[compositeValue.length-1] = file.getLocation();
                         return compositeValue.join(' ');                        
                     }
                 }
@@ -219,7 +222,7 @@ export class Launcher {
             for(let i = 0; i < folders.length; i++){
                 let folder = folders[i];
                 if(folder.name.startsWith(search)){
-                    compositeValue[compositeValue.length-1] = `${folder.name}/`
+                    compositeValue[compositeValue.length-1] = `${folder.name}/`;
                     return compositeValue.join(' ');
                 }
             }
@@ -227,10 +230,10 @@ export class Launcher {
 
         let fullAutocomplete = this.search(search)[0];
         if(fullAutocomplete){
-            compositeValue[compositeValue.length-1] = fullAutocomplete
+            compositeValue[compositeValue.length-1] = fullAutocomplete;
             return compositeValue.join(' ');
         } else {
-            return value
+            return value;
         }
         // return fullAutocomplete ? fullAutocomplete : search
     }
@@ -242,10 +245,10 @@ export class Launcher {
      * @returns return statement from command
      */
     execCommand(term:string):string {
-        this.history.push(term)
+        this.history.push(term);
         this.historyIndex = 0;
 
-        let command = term.split(' ')[0]
+        let command = term.split(' ')[0];
 
         /** Remove the length the command of the text sent to launch to get
         the arguments to parse */
@@ -287,7 +290,7 @@ export class Launcher {
 
         // Return commandreturn if command gave a return statement.
         // Else, return the command the user provided
-        return (commandReturn ? commandReturn : term)
+        return (commandReturn ? commandReturn : term);
     }
 
     /**
@@ -295,17 +298,17 @@ export class Launcher {
      * @param args list of folders to make
      * @param readOnly if folder/s are read only
      */
-    mkdir(args:string[], readOnly:boolean=false) {
+    mkdir(args:string[]) {
         let errors:string[] = []
 
         for(let i = 0; i < args.length; i++){
             let folderName = args[i]
             if(!this.getFolder(folderName)){
                 this.folders.push(new LaunchFolder(folderName, 
-                                  this.nextFolderId, readOnly))
+                                  this.nextFolderId));
                 this.nextFolderId++;
             } else {
-                errors.push(folderName)
+                errors.push(folderName);
             }
         }
 
@@ -352,7 +355,7 @@ export class Launcher {
             // Check if moving to a new folder
             } else if(newName.match('/')) {
                 let folderFile = newName.split('/');
-                let newFolder = this.getFolder(folderFile[0])
+                let newFolder = this.getFolder(folderFile[0]);
 
                 // console.log(folderFile[1])
                 // Rename file if needed
@@ -366,7 +369,7 @@ export class Launcher {
                       
                 // Folder does not exist, error
                 } else {
-                    return `Error: new folder '${folderFile[0]}' not found`
+                    return `Error: new folder '${folderFile[0]}' not found`;
                 }
             //  Else just normal rename, rename the file
             } else {
@@ -374,22 +377,10 @@ export class Launcher {
             }
 
         } else {
-            return `Error: '${target}' not found`
+            return `Error: '${target}' not found`;
         }
 
         return ''
-    }
-
-    /**
-     * sets a folder as read only
-     * @param folderName folder to set as readOnly
-     */
-    setReadOnly(folderName:string){
-        let folder = this.getFolder(folderName);
-
-        if(folder){
-            folder.setReadOnly(true)
-        }
     }
 
     /**
@@ -412,13 +403,13 @@ export class Launcher {
             let parentFolder:LaunchFolder = this.getFolder(args[0]);
             if(parentFolder){
                 this.files.push(this.createFile(args[1], content, 
-                parentFolder.id, parentFolder.name))
+                parentFolder.id, parentFolder.name));
             } else {
-                return `Error: folder '${args[0]}' not found`
+                return `Error: folder '${args[0]}' not found`;
             }
 
         } else {
-            this.files.push(this.createFile(newFile, content))
+            this.files.push(this.createFile(newFile, content));
         }
     }
 
@@ -431,7 +422,7 @@ export class Launcher {
         if(fileName == '-rf'){
             this.files = [];
             this.folders = [];
-            return `All Files/Folders have been deleted`
+            return `All Files/Folders have been deleted`;
         }
 
         let fileID = this.getFileID(fileName);
@@ -439,15 +430,10 @@ export class Launcher {
             let file = this.files[fileID];
             // If file is in a folder
             if(file.parentId != undefined){
-                // If folder file is in is not ready only, remove it
-                if(!this.getFileFolder(file).isReadOnly()){
-                    this.files.splice(fileID,1)
-                }
-            } else {
-                this.files.splice(fileID,1)
+                this.files.splice(fileID,1);
             }
         } else {
-            return `Error: file '${fileName}' not found`
+            return `Error: file '${fileName}' not found`;
         }
         return '';
     }
@@ -461,17 +447,17 @@ export class Launcher {
             let folder = this.folders[folderID];
 
             // Check if folder to delete is a real folder
-            if(folder.name == folderName && folder.isReadOnly() == false){
+            if(folder.name == folderName){
 
                 let folderFiles = this.files.filter(file => 
                     file.parentId == folder.id);
 
                 folderFiles.forEach(file => {
-                    this.rm(file.getLocation())
+                    this.rm(file.getLocation());
                 });
 
-                this.folders.splice(folderID,1)
-                return ''
+                this.folders.splice(folderID,1);
+                return '';
             }
         }
         return `Error: folder '${folderName}' not found`;
@@ -488,7 +474,7 @@ export class Launcher {
         parentName?:string): LaunchFile{
             //  Check if there is any file content
             if(!content){
-                content = '#'
+                content = '#';
             }
 
             // Check if extension is specified. If not, append .lnk
@@ -499,9 +485,9 @@ export class Launcher {
             if(filename.match('.lnk')){
                 // Check content is a proper url
                 content = this.checkHttp(content)
-                return new LaunchLink(filename, content, parentId, parentName)
+                return new LaunchLink(filename, content, parentId, parentName);
             } else {
-                return new LaunchQuery(filename, content, parentId, parentName)
+                return new LaunchQuery(filename, content, parentId, parentName);
             }
     }
 
@@ -512,7 +498,7 @@ export class Launcher {
      */
     runFile(fileName:string){
         // Split with spaces if using query
-        let queryArg:string
+        let queryArg:string;
 
         if(this.isQuerySearch(fileName)){
             let shorthand = fileName.split(':')[0]+':'
@@ -525,12 +511,11 @@ export class Launcher {
             // Check if filename (e.g launch/google.lnk or g:) 
             // matches description of file. If so, execute that file
             if(file.toString() == fileName || file.getLocation() == fileName){
-                file.execute(queryArg)
-                return
+                file.execute(queryArg);
+                return;
             }
         };
-        this.runFile(this.defaultSearch+fileName)
-        return
+        this.runFile(this.defaultSearch+fileName);
     }
 
     /**
@@ -545,7 +530,7 @@ export class Launcher {
         .map(file => file.getLocation())
         .filter(file => file.match(term));
 
-        return links
+        return links;
     }
 
     /**
@@ -563,11 +548,11 @@ export class Launcher {
 
         for(let i = 0; i < links.length; i++){
             if(links[i] == shorthand){
-                return true
+                return true;
             }
         }
 
-        return false
+        return false;
     }
 
     /**
@@ -582,7 +567,7 @@ export class Launcher {
                 return folder;
             }
         };
-        return null
+        return null;
     }
 
     /**
@@ -597,7 +582,7 @@ export class Launcher {
                 'filename': file.getLocation(),
                 'content': file.content,
             }
-            filesData.push(fileData)
+            filesData.push(fileData);
         });
 
         let foldersData = []
@@ -605,9 +590,8 @@ export class Launcher {
             let folderData = {
                 'name': folder.name,
                 'id': folder.id,
-                'readonly': folder.isReadOnly()
             }
-            foldersData.push(folder)
+            foldersData.push(folder);
         })
 
         let data = {
@@ -620,7 +604,7 @@ export class Launcher {
             'color': this.color
         }
 
-        return JSON.stringify(data)
+        return JSON.stringify(data);
     }
 
     /**
@@ -629,33 +613,34 @@ export class Launcher {
      * @returns boolean: true if loading is successful
      */
     load(data:JSON):boolean{
-        if(data['folders'].length == 0 || data['files'].length == 0){
+        // Try our best to import the data. If it is corrupt, return false
+        try{
+            this.nextFolderId = 0;
+            this.folders = [];
+            this.files = [];
+            this.treeHidden = data['tree'];
+            this.defaultSearch = data['defaultSearch'];
+            this.color = data['color'];
+    
+            //  If there is a user stored background, load it
+            if(data['background']){
+                this.background = data['background'];
+            }
+    
+            for(let i = 0; i < data['folders'].length; i++){
+                let folder = data['folders'][i];
+                let readOnly:boolean = (folder['readOnly'] ? true : false);
+                this.mkdir([folder['name']]);
+            };
+    
+            for(let x = 0; x < data['files'].length; x++){
+                let file = data['files'][x];
+                this.touch(file['filename'], file['content']);
+            };
+    
+            return true;
+        } catch {
             return false;
         }
-
-        this.nextFolderId = 0
-        this.folders = []
-        this.files = []
-        this.treeHidden = data['tree']
-        this.defaultSearch = data['defaultSearch']
-        this.color = data['color']
-
-        //  If there is a user stored background, load it
-        if(data['background']){
-            this.background = data['background']
-        }
-
-        for(let i = 0; i < data['folders'].length; i++){
-            let folder = data['folders'][i];
-            let readOnly:boolean = (folder['readOnly'] ? true : false)
-            this.mkdir([folder['name']], readOnly);
-        };
-
-        for(let x = 0; x < data['files'].length; x++){
-            let file = data['files'][x];
-            this.touch(file['filename'], file['content']);
-        };
-
-        return true;
     }
 }

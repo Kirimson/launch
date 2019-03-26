@@ -28,7 +28,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.touch('launch/amazon.qry', 'ama: https://www.amazon.co.uk/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords=${}');
             this.touch('launch/google_maps.qry', 'map: https://www.google.co.uk/maps/search/${}');
             this.touch('launch/duckduckgo.qry', 'ddg: https://duckduckgo.com/?q=${}');
-            this.setReadOnly('launch');
         }
         /**
          * Checks if text contains http, if not, prepend it
@@ -110,6 +109,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             return -1;
         }
+        /**
+         *  Returns a LaunchFile given a fileName
+         * @param fileName Name of file to search for
+         */
         getFile(fileName) {
             for (let i = 0; i < this.files.length; i++) {
                 let file = this.files[i];
@@ -251,12 +254,12 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param args list of folders to make
          * @param readOnly if folder/s are read only
          */
-        mkdir(args, readOnly = false) {
+        mkdir(args) {
             let errors = [];
             for (let i = 0; i < args.length; i++) {
                 let folderName = args[i];
                 if (!this.getFolder(folderName)) {
-                    this.folders.push(new launchfolder_1.LaunchFolder(folderName, this.nextFolderId, readOnly));
+                    this.folders.push(new launchfolder_1.LaunchFolder(folderName, this.nextFolderId));
                     this.nextFolderId++;
                 }
                 else {
@@ -329,16 +332,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             return '';
         }
         /**
-         * sets a folder as read only
-         * @param folderName folder to set as readOnly
-         */
-        setReadOnly(folderName) {
-            let folder = this.getFolder(folderName);
-            if (folder) {
-                folder.setReadOnly(true);
-            }
-        }
-        /**
          * Creates a new file, attached to a folder if provided
          * @param newFile file to create
          * @param content content to add to file
@@ -379,12 +372,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 let file = this.files[fileID];
                 // If file is in a folder
                 if (file.parentId != undefined) {
-                    // If folder file is in is not ready only, remove it
-                    if (!this.getFileFolder(file).isReadOnly()) {
-                        this.files.splice(fileID, 1);
-                    }
-                }
-                else {
                     this.files.splice(fileID, 1);
                 }
             }
@@ -401,7 +388,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             for (let folderID = 0; folderID < this.folders.length; folderID++) {
                 let folder = this.folders[folderID];
                 // Check if folder to delete is a real folder
-                if (folder.name == folderName && folder.isReadOnly() == false) {
+                if (folder.name == folderName) {
                     let folderFiles = this.files.filter(file => file.parentId == folder.id);
                     folderFiles.forEach(file => {
                         this.rm(file.getLocation());
@@ -461,7 +448,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             ;
             this.runFile(this.defaultSearch + fileName);
-            return;
         }
         /**
          * Searchs through all .lnk files given a search term
@@ -527,7 +513,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 let folderData = {
                     'name': folder.name,
                     'id': folder.id,
-                    'readonly': folder.isReadOnly()
                 };
                 foldersData.push(folder);
             });
@@ -548,31 +533,34 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @returns boolean: true if loading is successful
          */
         load(data) {
-            if (data['folders'].length == 0 || data['files'].length == 0) {
+            // Try our best to import the data. If it is corrupt, return false
+            try {
+                this.nextFolderId = 0;
+                this.folders = [];
+                this.files = [];
+                this.treeHidden = data['tree'];
+                this.defaultSearch = data['defaultSearch'];
+                this.color = data['color'];
+                //  If there is a user stored background, load it
+                if (data['background']) {
+                    this.background = data['background'];
+                }
+                for (let i = 0; i < data['folders'].length; i++) {
+                    let folder = data['folders'][i];
+                    let readOnly = (folder['readOnly'] ? true : false);
+                    this.mkdir([folder['name']]);
+                }
+                ;
+                for (let x = 0; x < data['files'].length; x++) {
+                    let file = data['files'][x];
+                    this.touch(file['filename'], file['content']);
+                }
+                ;
+                return true;
+            }
+            catch (_a) {
                 return false;
             }
-            this.nextFolderId = 0;
-            this.folders = [];
-            this.files = [];
-            this.treeHidden = data['tree'];
-            this.defaultSearch = data['defaultSearch'];
-            this.color = data['color'];
-            //  If there is a user stored background, load it
-            if (data['background']) {
-                this.background = data['background'];
-            }
-            for (let i = 0; i < data['folders'].length; i++) {
-                let folder = data['folders'][i];
-                let readOnly = (folder['readOnly'] ? true : false);
-                this.mkdir([folder['name']], readOnly);
-            }
-            ;
-            for (let x = 0; x < data['files'].length; x++) {
-                let file = data['files'][x];
-                this.touch(file['filename'], file['content']);
-            }
-            ;
-            return true;
         }
     }
     exports.Launcher = Launcher;
