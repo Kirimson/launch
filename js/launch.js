@@ -156,6 +156,34 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             return `Error: ${shorthand} not found`;
         }
+        getSimilar(value) {
+            // check if simialar to a folder or not
+            if (value.includes('/')) {
+                // Check aginst file
+                let split = value.split('/'), folder = split[0], fileName = split[1];
+                if (fileName) {
+                    let fileLinks = this.files.filter(file => file instanceof launchlink_1.LaunchLink);
+                    fileLinks = fileLinks.filter(file => file.parentName == folder);
+                    for (let i = 0; i < fileLinks.length; i++) {
+                        let file = fileLinks[i];
+                        if (file.filename.startsWith(fileName)) {
+                            return file.getLocation();
+                        }
+                    }
+                }
+            }
+            else {
+                // Check against folder
+                let folders = this.folders;
+                for (let i = 0; i < folders.length; i++) {
+                    let folder = folders[i];
+                    if (folder.name.startsWith(value)) {
+                        return `${folder.name}/`;
+                    }
+                }
+            }
+            return value;
+        }
         /**
          * Parses a string to find a command and execute
          * with the provided parameters
@@ -402,7 +430,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 let file = this.files[i];
                 // Check if filename (e.g launch/google.lnk or g:) 
                 // matches description of file. If so, execute that file
-                if (file.toString() == fileName) {
+                if (file.toString() == fileName || file.getLocation() == fileName) {
                     file.execute(queryArg);
                     return;
                 }

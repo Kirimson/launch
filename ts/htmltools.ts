@@ -52,7 +52,7 @@ export class Tools {
         windows.css('color', this.rgbContrast(contrastColor))
     }
 
-    getLaunchBoxValue():string{
+    getConsoleVal():string{
         return String(this.console.val());
     }
 
@@ -82,7 +82,7 @@ export class Tools {
         this.console.focus();
     }
 
-    setText(text:string){
+    setConsoleText(text:string){
         this.console.val(text)
     }
 

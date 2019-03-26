@@ -34,7 +34,7 @@ define(["require", "exports", "loader"], function (require, exports) {
             windows.css('background-color', newColor);
             windows.css('color', this.rgbContrast(contrastColor));
         }
-        getLaunchBoxValue() {
+        getConsoleVal() {
             return String(this.console.val());
         }
         clearLaunchBox() {
@@ -59,7 +59,7 @@ define(["require", "exports", "loader"], function (require, exports) {
             $('.app').css('display', 'flex');
             this.console.focus();
         }
-        setText(text) {
+        setConsoleText(text) {
             this.console.val(text);
         }
     }

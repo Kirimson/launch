@@ -72,8 +72,8 @@ let tree = new Tree(launch);
 tools.hideTree(launch.getTreeHidden())
 
 tools.setBackground(launch.getBackground());
-tools.showLaunch();
 tools.setWindowColor(launch.getColor());
+tools.showLaunch();
 
 $(function(){
     
@@ -91,13 +91,17 @@ $(function(){
             case 'ArrowDown':
                 key.preventDefault();
                 break;
+            case 'Tab':
+                key.preventDefault();
+                let autocomplete = launch.getSimilar(tools.getConsoleVal());
+                tools.setConsoleText(autocomplete);
         }
     })
 
     // When typing in console
     tools.getConsole().on('keyup', function(key){
         // Listen for enter
-        let launchVal:string = tools.getLaunchBoxValue()
+        let launchVal:string = tools.getConsoleVal()
 
         switch(key.key){
             case 'Enter':
@@ -142,14 +146,14 @@ $(function(){
                 }
                 break;
             case 'ArrowUp':
-                tools.setText(launch.getHistory(true))
+                tools.setConsoleText(launch.getHistory(true))
                 break;
             case 'ArrowDown':
-                tools.setText(launch.getHistory(false))
+                tools.setConsoleText(launch.getHistory(false))
                 break;
             default:
                 // search for links
-                if(tools.getLaunchBoxValue()){
+                if(launchVal){
                     resultList = launch.search(launchVal);
                 }
         }

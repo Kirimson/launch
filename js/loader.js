@@ -58,8 +58,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
     let tree = new tree_1.Tree(launch);
     tools.hideTree(launch.getTreeHidden());
     tools.setBackground(launch.getBackground());
-    tools.showLaunch();
     tools.setWindowColor(launch.getColor());
+    tools.showLaunch();
     $(function () {
         // Clicking in console to focus
         tools.getTerminal().click(function () {
@@ -74,12 +74,16 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                 case 'ArrowDown':
                     key.preventDefault();
                     break;
+                case 'Tab':
+                    key.preventDefault();
+                    let autocomplete = launch.getSimilar(tools.getConsoleVal());
+                    tools.setConsoleText(autocomplete);
             }
         });
         // When typing in console
         tools.getConsole().on('keyup', function (key) {
             // Listen for enter
-            let launchVal = tools.getLaunchBoxValue();
+            let launchVal = tools.getConsoleVal();
             switch (key.key) {
                 case 'Enter':
                     // import
@@ -121,14 +125,14 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     }
                     break;
                 case 'ArrowUp':
-                    tools.setText(launch.getHistory(true));
+                    tools.setConsoleText(launch.getHistory(true));
                     break;
                 case 'ArrowDown':
-                    tools.setText(launch.getHistory(false));
+                    tools.setConsoleText(launch.getHistory(false));
                     break;
                 default:
                     // search for links
-                    if (tools.getLaunchBoxValue()) {
+                    if (launchVal) {
                         resultList = launch.search(launchVal);
                     }
             }
