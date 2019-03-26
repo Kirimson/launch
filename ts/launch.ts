@@ -216,7 +216,7 @@ export class Launcher {
                 }
             }
         }
-        return value
+        return this.search(value)[0]
     }
 
     /**
@@ -515,7 +515,7 @@ export class Launcher {
     search(term:string):string[] {
         let links = this.files
         .filter(file => file instanceof LaunchLink)
-        .map(file => file.toString())
+        .map(file => file.getLocation())
         .filter(file => file.match(term));
 
         return links

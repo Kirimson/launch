@@ -110,7 +110,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     }
                     else {
                         // First, check if url before anything else. least taxing
-                        // Second, send the currently selected link item
+                        // Second, send the currently selected link from search
                         // Third, if running a query/standard search 
                         // (technically the same)
                         if (isUrl(launchVal)) {
@@ -131,7 +131,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     tools.setConsoleText(launch.getHistory(false));
                     break;
                 default:
-                    // search for links
+                    // When normally typing search for links from launch
                     if (launchVal) {
                         resultList = launch.search(launchVal);
                     }

@@ -182,7 +182,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     }
                 }
             }
-            return value;
+            return this.search(value)[0];
         }
         /**
          * Parses a string to find a command and execute
@@ -448,7 +448,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         search(term) {
             let links = this.files
                 .filter(file => file instanceof launchlink_1.LaunchLink)
-                .map(file => file.toString())
+                .map(file => file.getLocation())
                 .filter(file => file.match(term));
             return links;
         }
