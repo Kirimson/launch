@@ -324,6 +324,9 @@ export class Launcher {
      */
     mv(target:string, newName:string):string {
 
+        if(target.endsWith('/')){
+            target = target.substr(0, target.length - 1)
+        }
         let targetFolder = this.getFolder(target);
         let targetFile = this.getFile(target);
 
@@ -337,8 +340,7 @@ export class Launcher {
             });
 
         } else if(targetFile) {
-
-            
+           
             // Check if moving folder to root
             if(newName.startsWith('/') || newName.startsWith('.')){
                 // Check if new name has been given

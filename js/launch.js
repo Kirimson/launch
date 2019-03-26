@@ -277,6 +277,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param newName new ocation
          */
         mv(target, newName) {
+            if (target.endsWith('/')) {
+                target = target.substr(0, target.length - 1);
+            }
             let targetFolder = this.getFolder(target);
             let targetFile = this.getFile(target);
             // If a folder
