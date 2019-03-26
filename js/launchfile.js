@@ -12,13 +12,20 @@ define(["require", "exports"], function (require, exports) {
         }
         getLocation() {
             if (this.parentName) {
-                return this.parentName + '/' + this.filename;
+                return `${this.parentName}/${this.filename}`;
             }
             else
-                return this.filename;
+                return `${this.filename}`;
+        }
+        addExtension(fileName, extension) {
+            // Add extension if not there
+            if (fileName.substr(fileName.length - 4, 3) != extension) {
+                return `${fileName}${extension}`;
+            }
+            return fileName;
         }
         rename(newName) {
-            this.filename = newName;
+            this.filename = this.addExtension(newName, this.extension);
         }
         move(parentId, parentName) {
             this.parentId = parentId;

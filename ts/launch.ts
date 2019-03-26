@@ -338,26 +338,35 @@ export class Launcher {
 
         } else if(targetFile) {
 
-            // Add extension if not there
-            if(newName.substr(newName.length - 4, 3) != targetFile.extension){
-                newName = `${newName}${targetFile.extension}`
-            }
-
-            // Check if moving folder, else just plain old rename
-            if(newName.match('/')) {
+            
+            // Check if moving folder to root
+            if(newName.startsWith('/') || newName.startsWith('.')){
+                // Check if new name has been given
+                if(newName.substr(1)){
+                    targetFile.rename(newName.substr(1));
+                }
+                targetFile.move(undefined, undefined);
+            
+            // Check if moving to a new folder
+            } else if(newName.match('/')) {
                 let folderFile = newName.split('/');
                 let newFolder = this.getFolder(folderFile[0])
 
-                // Check if new folder exists
+                // console.log(folderFile[1])
+                // Rename file if needed
+                if(folderFile[1]){
+                    targetFile.rename(folderFile[1]);
+                }
+
+                // Check if new folder exists to move file to
                 if(newFolder){
-                    targetFile.rename(folderFile[1]);
                     targetFile.move(newFolder.id, newFolder.name);
-                } else if(folderFile[0] == ''){
-                    targetFile.rename(folderFile[1]);
-                    targetFile.move(undefined, undefined);
+                      
+                // Folder does not exist, error
                 } else {
                     return `Error: new folder '${folderFile[0]}' not found`
                 }
+            //  Else just normal rename, rename the file
             } else {
                 targetFile.rename(newName);
             }

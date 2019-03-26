@@ -8,12 +8,20 @@ export class LaunchFile {
 
     getLocation():string {
         if(this.parentName){
-            return this.parentName + '/' + this.filename;
-        } else return this.filename;
+            return `${this.parentName}/${this.filename}`;
+        } else return `${this.filename}`;
+    }
+
+    addExtension(fileName:string, extension:string){
+        // Add extension if not there
+        if(fileName.substr(fileName.length - 4, 3) != extension){
+            return `${fileName}${extension}`
+        }
+        return fileName;
     }
     
     rename(newName:string) {
-        this.filename = newName;
+        this.filename = this.addExtension(newName, this.extension);
     }
 
     move(parentId:number, parentName:string){
