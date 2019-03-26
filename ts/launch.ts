@@ -190,10 +190,16 @@ export class Launcher {
     }
 
     getSimilar(value: string): string {
+
+        // let search = value;
+        // if(value.includes(' ')){
+        let compositeValue:string[] = value.split(' ');
+        let search = compositeValue[compositeValue.length-1]
+        // }
         // check if simialar to a folder or not
-        if(value.includes('/')){
+        if(search.includes('/')){
             // Check aginst file
-            let split = value.split('/'),
+            let split = search.split('/'),
                 folder = split[0],
                 fileName = split[1];
             if(fileName){
@@ -202,7 +208,8 @@ export class Launcher {
                 for(let i = 0; i < fileLinks.length; i++){
                     let file = fileLinks[i];
                     if(file.filename.startsWith(fileName)){
-                        return file.getLocation();
+                        compositeValue[compositeValue.length-1] = file.getLocation()
+                        return compositeValue.join(' ');                        
                     }
                 }
             }
@@ -211,14 +218,21 @@ export class Launcher {
             let folders = this.folders;
             for(let i = 0; i < folders.length; i++){
                 let folder = folders[i];
-                if(folder.name.startsWith(value)){
-                    return `${folder.name}/`;
+                if(folder.name.startsWith(search)){
+                    compositeValue[compositeValue.length-1] = `${folder.name}/`
+                    return compositeValue.join(' ');
                 }
             }
         }
 
-        let fullAutocomplete = this.search(value)[0];
-        return fullAutocomplete ? fullAutocomplete : value
+        let fullAutocomplete = this.search(search)[0];
+        if(fullAutocomplete){
+            compositeValue[compositeValue.length-1] = fullAutocomplete
+            return compositeValue.join(' ');
+        } else {
+            return value
+        }
+        // return fullAutocomplete ? fullAutocomplete : search
     }
 
     /**
