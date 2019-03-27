@@ -153,9 +153,9 @@ footer {
     font-weight: inherit;
 }
 
-#autocomplete {
+#suggestion {
     position: absolute;
-    opacity: 0.3;
+    opacity: 0.5;
     font-family: inherit;
     font-size: inherit;
     font-weight: inherit;

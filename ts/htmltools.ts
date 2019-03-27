@@ -87,7 +87,7 @@ export class Tools {
     }
 
     setSuggestion(text:string){
-        $('#autocomplete').attr('placeholder', text)
+        $('#suggestion').attr('placeholder', text)
     }
 
 }
