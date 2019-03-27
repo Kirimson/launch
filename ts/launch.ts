@@ -208,13 +208,8 @@ export class Launcher {
             if(fileName){
                 let fileLinks = this.files.filter(file => file instanceof LaunchLink);
                 fileLinks = fileLinks.filter(file => file.parentName == folder);
-                for(let i = 0; i < fileLinks.length; i++){
-                    let file = fileLinks[i];
-                    if(file.filename.startsWith(fileName)){
-                        compositeValue[compositeValue.length-1] = file.getLocation();
-                        return compositeValue.join(' ');                        
-                    }
-                }
+
+                return this.fuzzyFindFile(fileLinks, compositeValue, fileName)
             }
         } else {
             // Check against folder
@@ -226,6 +221,12 @@ export class Launcher {
                     return compositeValue.join(' ');
                 }
             }
+
+            // Or... Files that are in root
+            let fileLinks = this.files.filter(file => file instanceof LaunchLink);
+            fileLinks = fileLinks.filter(file => !file.parentName);
+
+            return this.fuzzyFindFile(fileLinks, compositeValue, search)
         }
 
         if(fuzzy){
@@ -238,6 +239,17 @@ export class Launcher {
             }
         }
         return ''
+    }
+
+    fuzzyFindFile(fileLinks:LaunchFile[], compositeValue:string[], search:string){
+        for(let i = 0; i < fileLinks.length; i++){
+            let file = fileLinks[i];
+            if(file.filename.startsWith(search)){
+                compositeValue[compositeValue.length-1] = file.getLocation();
+                return compositeValue.join(' ');
+            }
+        }
+        return '';
     }
 
     /**

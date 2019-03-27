@@ -172,13 +172,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 if (fileName) {
                     let fileLinks = this.files.filter(file => file instanceof launchlink_1.LaunchLink);
                     fileLinks = fileLinks.filter(file => file.parentName == folder);
-                    for (let i = 0; i < fileLinks.length; i++) {
-                        let file = fileLinks[i];
-                        if (file.filename.startsWith(fileName)) {
-                            compositeValue[compositeValue.length - 1] = file.getLocation();
-                            return compositeValue.join(' ');
-                        }
-                    }
+                    return this.fuzzyFindFile(fileLinks, compositeValue, fileName);
                 }
             }
             else {
@@ -191,6 +185,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                         return compositeValue.join(' ');
                     }
                 }
+                // Or... Files that are in root
+                let fileLinks = this.files.filter(file => file instanceof launchlink_1.LaunchLink);
+                fileLinks = fileLinks.filter(file => !file.parentName);
+                return this.fuzzyFindFile(fileLinks, compositeValue, search);
             }
             if (fuzzy) {
                 let fullAutocomplete = this.search(search)[0];
@@ -200,6 +198,16 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 }
                 else {
                     return value;
+                }
+            }
+            return '';
+        }
+        fuzzyFindFile(fileLinks, compositeValue, search) {
+            for (let i = 0; i < fileLinks.length; i++) {
+                let file = fileLinks[i];
+                if (file.filename.startsWith(search)) {
+                    compositeValue[compositeValue.length - 1] = file.getLocation();
+                    return compositeValue.join(' ');
                 }
             }
             return '';
