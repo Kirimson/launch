@@ -1,127 +1,190 @@
 # Launch
 
-## Basics
+A terminal-esc startpage with (hopefully) easy to use commands with quick customisation options to make your page unique
 
-There will be some basic stuff baked in
+## Structure
 
-- premade folder `launch`
-- inside `launch` will be some search queries
-  - google g:
-  - amazon ama: 
-  - maps maps: 
-  - etc...
+Launch is made up primarially of folders and files.
+To keep things simple an quick, only one layer of folders are allowed (no nested folders, sorry!)
 
-There will be no directory switching
+Files do not need to belong to a folder though, they can exist in the root directory as well, if that's what you want.
 
-  - I want this fast to use. Why should we need to `cd` into 5 sub folders 
-  to be able to go to a site to make it """granular"""
+There are two types of files. Links (.lnk) and Queries (.qry)
 
-Fuzzy searching will be used to get *Max Performance*
-- can use either folder name or file name to search for stuff
-- files will use a 'long name' to help searching eg:
-  - `work/jira`
-    - can type `jira` or `work` or any part of the two to find `work/jira`
+### Links
 
-- Search queries will use a set syntax, using url params to make things 
-universal (so long the site does not rely solely on POST)
-  - example for google
-    - `g: https://www.google.com/search?q=${}`
-      - with input example of `g: what is the meaning of life`, `${}` will 
-      be replaced with *what+is+the+meaning+of+life* using web encoding
-      - final url: `https://www.google.com/search?q=what+is+the+meaning+of+life`
-  - search queries need to end in the extension `.qry`
-    - example: `google.qry`
+These redirect you to a set page from running them. the same thing everytime. Nice and consistant
 
-In the terminal, typing without a prefix will default to finding links. 
-To use a query, the prefix needs to be used
+### Queries
 
-## Making Folders
+Useful for linking to other pages that would require user input. Type the queries shorthand, give it a search term and it will go to the site and fill in the right section of the url with your search term (assuming you set the file up right, of course)
 
-Command: `mkdir`
+## Using Files
 
-Usage: `mkdir directoryName`
+To execute a file, type the beginning of its name with the console focused, press enter and launch will find the closest matching file.
+If you dont want to live life on the edge and want the exact file you want to run, tab autocomplete exists to get to the folder/file you want quickly
 
-- makes a new folder
-- only one folder hierarchy. no folders in folder
-  - essentially, folders can only be made in root
-- multiple folders can be made at once
-  - `mkdir foo bar`
-    - makes folders `foo` and `bar`
+### Links 
 
-## Making Files
+#### Examples
 
-Command: `touch`
+`$ youtube`
+`$ videos/youtube`
+`$ videos/youtube.lnk`
+Will all get you to the same link (maybe even `you` would if nothing else matches)
 
-Usage: `touch filePath`
+#### Creation
 
-  - makes a new file in a given folder
-  - files can be two things
-    - link
-        - `touch folder/website.lnk`
-    - contents are the link to go to
-    - search query
-        - `touch folder/query.qry`
-    - contents are the prefix, then the link with `${}` as placeholder for query string
-
-## Removing Files
-
-Command: `rm`
-
-Usage: `rm fileName`
-
-- can remove a file
-  - `rm folder/file.lnk`
-  - `rm folder/query.qry`
-- cannot remove a directory
-
-## Removing Folders
-
-Command: `rmdir`
-
-Usage `rmdir directoryName`
-
-- can remove a folder
-  - `rmdir folder`
-- will not remove files (unless inside the folder)
-
-# Customisation
-
-Nothing's worse than a boring startpage that cant be personalised.
-It mimicking a linux console is even more reason for you to be able to *rice* it!
-
-## Set background
-
-Like how all lazy i3 *power users* do it. **feh**. 
-
-Command: `feh`
-
-Usage: `feh [backgroundUrl]`
-
-        --clear
-                Clears the background and returns to default
+`touch folderName/fileName.lnk www.website.com`
+See `Commands` below for more info
 
 
-- sets background property in launch
+### Querys
 
-## Set Window Color
+#### Examples
+`g: really clever question`
+`b: cool dog facts`
+Will search whatever `g:` or `b:` is set to. See `Out The Box` below for the defaults
 
-Set the window color, vim style. Yes, it's very all over the place, but I have 
-no clue what default linux command would do this
+#### Creation
 
-Command: `colo`
+`touch folderName/fileName.qry www.website.com/search?q=${}`
+See `Commands` below for more info
+
+## Out the box
+
+A 'launch' folder is originally created with some query files pre-made.
+The shorthand and services are:
+- g: https://www.google.com
+- b: https://www.bing.com
+- ddg: https://duckduckgo.com
+- ama: https://www.amazon.co.uk
+- map: https://www.google.co.uk/maps
+
+## Personalisation
+
+Window colour, background color, and a seperate window for a tree representation can be customised. The default search can be chnaged as well to any other shorthand you have setup in your query files
+
+## Commands
+
+### mkdir
+
+Creates a new folder
+
+Usage: `mkdir [folderName ...]`
+
+Examples:
+- `mkdir videos` 
+- `mkdir reddit social`
+
+---
+
+### rmdir
+
+Removes a folder
+
+Usage: `rmdir [folderName]`
+
+Example:
+- `rmdir videos`
+
+---
+
+### touch
+
+Creates a file with content
+
+Usage: `touch [filePath/fileName] [fileContent]`
+
+Examples:
+- `touch folderName/fileName.lnk www.website.com`
+- `touch folderName/fileName www.website.com`
+- `touch folderName/fileName.qry www.website.com/search?q=${}`
+
+Notes:
+- if no file extension is provided, file will be a .lnk
+- if no content is provided, content will default to '#'
+
+---
+
+### rm
+
+Removes a file
+
+Usage: `rm [-rf] [fileName]`
+
+Example:
+- `rm videos/youtube.lnk`
+- `rm -rf`
+
+Notes:
+- Please take caution when running `rm -rf` it will unforgivingly delete everything without asking
+
+---
+
+### mv
+
+Moves files and folders
+
+Usage: `mv [path1] [path2]`
+
+Examples:
+- `mv videos/yuotbue.lnk videos/youtube.lnk`
+- `mv miscellaneous/ misc/`
+- `mv misc/googledrive.lnk storage/`
+- `mv misc/random.lnk /`
+
+---
+
+### tree
+
+Toggles the tree from view
+
+Usage: `tree`
+
+Notes:
+- .lnk files can be clicked to go to the link
+- .qry files can be clicked to fill the shorthand into the console
+
+---
+
+### feh
+
+Sets wallpaper
+
+Usage: `feh [--clear] [imageUrl]`
+
+Examples:
+- `feh www.website.com/img/coolimg.jpg`
+- `feh --clear`
+
+Notes:
+- `feh --clear` will reset wallpaper to the default image
+
+---
+
+### colo
+
+Sets window color
 
 Usage: `colo [color]`
 
-## Toggle tree
+Examples:
+- `colo #234eb9`
+- `colo rgb(0,100,100)`
+- `colo red`
 
-toggle the tree section, hidden by default
+Notes:
+- When setting the window color the text color will change depending on brightness of background color
 
-Command: `tree`
+---
 
-## Default Search
+### setsearch
 
-Change the default search provider using existing .qry files
+Sets the default query link to use, based off of shorthand
 
-Command: `setsearch`
+Usage: `setsearch [shortHand]`
 
-Usage: `setsearch [shorthand]`
+Examples:
+- `setsearch g:`
+- `setsearch b:`
