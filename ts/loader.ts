@@ -165,8 +165,16 @@ $(function(){
                 // When normally typing search for links from launch
                 if(launchVal){
                     resultList = launch.search(launchVal);
+                    if(launchVal.endsWith('/') == false){
+                        let suggestion = launch.getSimilar(tools.getConsoleVal());
+                        tools.setSuggestion(suggestion)
+                    } else {
+                        tools.setSuggestion('')
+                    }
+                } else {
+                    tools.setSuggestion('')
                 }
-        }
+            }
     });
 
     $('#tree').on('click','.query',function() {

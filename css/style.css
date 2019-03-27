@@ -153,11 +153,19 @@ footer {
     font-weight: inherit;
 }
 
+#autocomplete {
+    position: absolute;
+    opacity: 0.3;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
 #console-input-line {
     display: flex;
 }
 
-#console {
+.console-input{
     background-color: transparent;
     border: none;
     outline: none;
@@ -166,7 +174,7 @@ footer {
     font-family: inherit;
     font-size: inherit;
     font-weight: inherit;
-    min-height: 2vh;
-    max-height: 2vh;
+    /* min-height: 2vh; */
+    /* max-height: 2vh; */
     flex: 1;
 }

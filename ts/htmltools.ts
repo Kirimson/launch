@@ -86,4 +86,8 @@ export class Tools {
         this.console.val(text);
     }
 
+    setSuggestion(text:string){
+        $('#autocomplete').attr('placeholder', text)
+    }
+
 }

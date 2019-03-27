@@ -62,6 +62,9 @@ define(["require", "exports", "loader"], function (require, exports) {
         setConsoleText(text) {
             this.console.val(text);
         }
+        setSuggestion(text) {
+            $('#autocomplete').attr('placeholder', text);
+        }
     }
     exports.Tools = Tools;
 });
