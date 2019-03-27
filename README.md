@@ -28,22 +28,25 @@ If you dont want to live life on the edge and want the exact file you want to ru
 
 #### Examples
 
-`$ youtube`
-`$ videos/youtube`
-`$ videos/youtube.lnk`
+- `$ youtube`
+- `$ videos/youtube`
+- `$ videos/youtube.lnk`
+
 Will all get you to the same link (maybe even `you` would if nothing else matches)
 
 #### Creation
 
 `touch folderName/fileName.lnk www.website.com`
+
 See `Commands` below for more info
 
 
 ### Querys
 
 #### Examples
-`g: really clever question`
-`b: cool dog facts`
+- `g: really clever question`
+- `b: cool dog facts`
+
 Will search whatever `g:` or `b:` is set to. See `Out The Box` below for the defaults
 
 #### Creation
@@ -102,6 +105,7 @@ Examples:
 - `touch folderName/fileName.qry www.website.com/search?q=${}`
 
 Notes:
+- ${} in a .qry files link will be replaced by whatever is after the shorthand when ran
 - if no file extension is provided, file will be a .lnk
 - if no content is provided, content will default to '#'
 
