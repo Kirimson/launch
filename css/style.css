@@ -21,6 +21,10 @@ footer {
     height: 1.5em;
 }
 
+.full-width {
+    width: 100%;
+}
+
 .app {
     display: none;
     flex-direction: column;
