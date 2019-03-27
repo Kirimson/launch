@@ -192,7 +192,7 @@ export class Launcher {
         return `Error: ${shorthand} not found`
     }
 
-    getSimilar(value: string): string {
+    getSimilar(value: string, fuzzy:boolean=true): string {
 
         // let search = value;
         // if(value.includes(' ')){
@@ -228,14 +228,15 @@ export class Launcher {
             }
         }
 
-        let fullAutocomplete = this.search(search)[0];
-        if(fullAutocomplete){
-            compositeValue[compositeValue.length-1] = fullAutocomplete;
-            return compositeValue.join(' ');
-        } else {
-            return value;
+        if(fuzzy){
+            let fullAutocomplete = this.search(search)[0];
+            if(fullAutocomplete){
+                compositeValue[compositeValue.length-1] = fullAutocomplete;
+                return compositeValue.join(' ');
+            } else {
+                return value;
+            }
         }
-        // return fullAutocomplete ? fullAutocomplete : search
     }
 
     /**

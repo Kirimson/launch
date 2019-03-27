@@ -159,7 +159,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             return `Error: ${shorthand} not found`;
         }
-        getSimilar(value) {
+        getSimilar(value, fuzzy = true) {
             // let search = value;
             // if(value.includes(' ')){
             let compositeValue = value.split(' ');
@@ -192,15 +192,16 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     }
                 }
             }
-            let fullAutocomplete = this.search(search)[0];
-            if (fullAutocomplete) {
-                compositeValue[compositeValue.length - 1] = fullAutocomplete;
-                return compositeValue.join(' ');
+            if (fuzzy) {
+                let fullAutocomplete = this.search(search)[0];
+                if (fullAutocomplete) {
+                    compositeValue[compositeValue.length - 1] = fullAutocomplete;
+                    return compositeValue.join(' ');
+                }
+                else {
+                    return value;
+                }
             }
-            else {
-                return value;
-            }
-            // return fullAutocomplete ? fullAutocomplete : search
         }
         /**
          * Parses a string to find a command and execute
