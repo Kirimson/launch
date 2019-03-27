@@ -202,6 +202,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     return value;
                 }
             }
+            return '';
         }
         /**
          * Parses a string to find a command and execute

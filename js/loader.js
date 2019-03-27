@@ -145,7 +145,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     if (launchVal) {
                         resultList = launch.search(launchVal);
                         if (launchVal.endsWith('/') == false) {
-                            let suggestion = launch.getSimilar(tools.getConsoleVal(), false);
+                            let suggestion = launch.getSimilar(launchVal, false);
+                            console.log(suggestion);
                             tools.setSuggestion(suggestion);
                         }
                         else {

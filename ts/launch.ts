@@ -237,6 +237,7 @@ export class Launcher {
                 return value;
             }
         }
+        return ''
     }
 
     /**
