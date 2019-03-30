@@ -192,68 +192,6 @@ export class Launcher {
         return `Error: ${shorthand} not found`
     }
 
-    getSimilar(value: string, fuzzy:boolean=true): string {
-
-        // let search = value;
-        // if(value.includes(' ')){
-        let compositeValue:string[] = value.split(' ');
-        let search = compositeValue[compositeValue.length-1];
-        // }
-        // check if simialar to a folder or not
-        if(search.includes('/')){
-            // Check aginst file
-            let split = search.split('/'),
-                folder = split[0],
-                fileName = split[1];
-            if(fileName){
-                let fileLinks = this.files.filter(file => file instanceof LaunchLink);
-                fileLinks = fileLinks.filter(file => file.parentName == folder);
-
-                return this.fuzzyFindFile(fileLinks, compositeValue, fileName)
-            }
-        }
-
-        // Check against folder
-        let folders = this.folders;
-        for(let i = 0; i < folders.length; i++){
-            let folder = folders[i];
-            if(folder.name.startsWith(search)){
-                compositeValue[compositeValue.length-1] = `${folder.name}/`;
-                return compositeValue.join(' ');
-            }
-        }
-
-        // Or... Files that are in root
-        let fileLinks = this.files.filter(file => file instanceof LaunchLink);
-        fileLinks = fileLinks.filter(file => !file.parentName);
-
-        let found = this.fuzzyFindFile(fileLinks, compositeValue, search)
-        if(found){
-            return found;
-        }
-        
-        if(fuzzy){
-            let fullAutocomplete = this.search(search)[0];
-            if(fullAutocomplete){
-                compositeValue[compositeValue.length-1] = fullAutocomplete;
-                return compositeValue.join(' ');
-            }
-        }
-        
-        return value;
-    }
-
-    fuzzyFindFile(fileLinks:LaunchFile[], compositeValue:string[], search:string){
-        for(let i = 0; i < fileLinks.length; i++){
-            let file = fileLinks[i];
-            if(file.filename.startsWith(search)){
-                compositeValue[compositeValue.length-1] = file.getLocation();
-                return compositeValue.join(' ');
-            }
-        }
-        return '';
-    }
-
     /**
      * Parses a string to find a command and execute 
      * with the provided parameters

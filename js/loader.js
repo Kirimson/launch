@@ -1,4 +1,4 @@
-define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"], function (require, exports, launch_1, htmltools_1, tree_1, launchquery_1) {
+define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", "./launchlink"], function (require, exports, launch_1, htmltools_1, tree_1, launchquery_1, launchlink_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function isUrl(text) {
@@ -43,6 +43,57 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
         launch.initLaunch();
         localStorage.setItem('launch', launch.store());
     }
+    function getSimilar(value, fuzzy = true) {
+        // let search = value;
+        // if(value.includes(' ')){
+        let compositeValue = value.split(' ');
+        let search = compositeValue[compositeValue.length - 1];
+        // }
+        // check if simialar to a folder or not
+        if (search.includes('/')) {
+            // Check aginst file
+            let split = search.split('/'), folder = split[0], fileName = split[1];
+            if (fileName) {
+                let fileLinks = launch.getFiles().filter(file => file instanceof launchlink_1.LaunchLink);
+                fileLinks = fileLinks.filter(file => file.parentName == folder);
+                return fuzzyFindFile(fileLinks, compositeValue, fileName);
+            }
+        }
+        // Check against folder
+        let folders = launch.getFolders();
+        for (let i = 0; i < folders.length; i++) {
+            let folder = folders[i];
+            if (folder.name.startsWith(search)) {
+                compositeValue[compositeValue.length - 1] = `${folder.name}/`;
+                return compositeValue.join(' ');
+            }
+        }
+        // Or... Files that are in root
+        let fileLinks = launch.getFiles().filter(file => file instanceof launchlink_1.LaunchLink);
+        fileLinks = fileLinks.filter(file => !file.parentName);
+        let found = fuzzyFindFile(fileLinks, compositeValue, search);
+        if (found) {
+            return found;
+        }
+        if (fuzzy) {
+            let fullAutocomplete = launch.search(search)[0];
+            if (fullAutocomplete) {
+                compositeValue[compositeValue.length - 1] = fullAutocomplete;
+                return compositeValue.join(' ');
+            }
+        }
+        return value;
+    }
+    function fuzzyFindFile(fileLinks, compositeValue, search) {
+        for (let i = 0; i < fileLinks.length; i++) {
+            let file = fileLinks[i];
+            if (file.filename.startsWith(search)) {
+                compositeValue[compositeValue.length - 1] = file.getLocation();
+                return compositeValue.join(' ');
+            }
+        }
+        return '';
+    }
     var launch = new launch_1.Launcher();
     let tools = new htmltools_1.Tools();
     let resultList = [];
@@ -86,7 +137,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     break;
                 case 'Tab':
                     key.preventDefault();
-                    let autocomplete = launch.getSimilar(tools.getConsoleVal());
+                    let autocomplete = getSimilar(tools.getConsoleVal());
                     tools.setConsoleText(autocomplete);
             }
         });
@@ -145,7 +196,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     if (launchVal) {
                         resultList = launch.search(launchVal);
                         if (launchVal.endsWith('/') == false) {
-                            let suggestion = launch.getSimilar(launchVal, false);
+                            let suggestion = getSimilar(launchVal, false);
                             if (suggestion != launchVal) {
                                 tools.setSuggestion(suggestion);
                             }
