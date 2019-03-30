@@ -82,7 +82,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                 return compositeValue.join(' ');
             }
         }
-        return value;
+        return '';
     }
     function fuzzyFindFile(fileLinks, compositeValue, search) {
         for (let i = 0; i < fileLinks.length; i++) {

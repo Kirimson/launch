@@ -104,7 +104,7 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
         }
     }
     
-    return value;
+    return '';
 }
 
 function fuzzyFindFile(fileLinks:LaunchFile[], compositeValue:string[], search:string){
