@@ -167,7 +167,9 @@ $(function(){
                     resultList = launch.search(launchVal);
                     if(launchVal.endsWith('/') == false){
                         let suggestion = launch.getSimilar(launchVal, false);
-                        tools.setSuggestion(suggestion)
+                        if(suggestion != launchVal){
+                            tools.setSuggestion(suggestion)
+                        }
                     } else {
                         tools.setSuggestion('')
                     }

@@ -175,38 +175,30 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     return this.fuzzyFindFile(fileLinks, compositeValue, fileName);
                 }
             }
-            else {
-                // Check against folder
-                let folders = this.folders;
-                for (let i = 0; i < folders.length; i++) {
-                    let folder = folders[i];
-                    if (folder.name.startsWith(search)) {
-                        compositeValue[compositeValue.length - 1] = `${folder.name}/`;
-                        return compositeValue.join(' ');
-                    }
-                }
-                // Or... Files that are in root
-                let fileLinks = this.files.filter(file => file instanceof launchlink_1.LaunchLink);
-                fileLinks = fileLinks.filter(file => !file.parentName);
-                let found = this.fuzzyFindFile(fileLinks, compositeValue, search);
-                if (found) {
-                    return found;
-                }
-                else {
-                    if (fuzzy) {
-                        let fullAutocomplete = this.search(search)[0];
-                        if (fullAutocomplete) {
-                            compositeValue[compositeValue.length - 1] = fullAutocomplete;
-                            return compositeValue.join(' ');
-                        }
-                        else {
-                            return value;
-                        }
-                    }
-                    return value;
+            // Check against folder
+            let folders = this.folders;
+            for (let i = 0; i < folders.length; i++) {
+                let folder = folders[i];
+                if (folder.name.startsWith(search)) {
+                    compositeValue[compositeValue.length - 1] = `${folder.name}/`;
+                    return compositeValue.join(' ');
                 }
             }
-            return '';
+            // Or... Files that are in root
+            let fileLinks = this.files.filter(file => file instanceof launchlink_1.LaunchLink);
+            fileLinks = fileLinks.filter(file => !file.parentName);
+            let found = this.fuzzyFindFile(fileLinks, compositeValue, search);
+            if (found) {
+                return found;
+            }
+            if (fuzzy) {
+                let fullAutocomplete = this.search(search)[0];
+                if (fullAutocomplete) {
+                    compositeValue[compositeValue.length - 1] = fullAutocomplete;
+                    return compositeValue.join(' ');
+                }
+            }
+            return value;
         }
         fuzzyFindFile(fileLinks, compositeValue, search) {
             for (let i = 0; i < fileLinks.length; i++) {
