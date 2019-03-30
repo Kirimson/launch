@@ -58,11 +58,8 @@ function rebuildLaunch(){
 
 function getSimilar(value: string, fuzzy:boolean=true): string {
 
-    // let search = value;
-    // if(value.includes(' ')){
     let compositeValue:string[] = value.split(' ');
     let search = compositeValue[compositeValue.length-1];
-    // }
     // check if simialar to a folder or not
     if(search.includes('/')){
         // Check aginst file
@@ -73,7 +70,10 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
             let fileLinks = launch.getFiles().filter(file => file instanceof LaunchLink);
             fileLinks = fileLinks.filter(file => file.parentName == folder);
 
-            return fuzzyFindFile(fileLinks, compositeValue, fileName)
+            let found = fuzzyFindFile(fileLinks, compositeValue, fileName)
+            if(found){
+                return found;
+            }
         }
     }
 
@@ -103,8 +103,7 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
             return compositeValue.join(' ');
         }
     }
-    
-    return '';
+    return value;
 }
 
 function fuzzyFindFile(fileLinks:LaunchFile[], compositeValue:string[], search:string){
@@ -232,6 +231,8 @@ $(function(){
                         let suggestion = getSimilar(launchVal, false);
                         if(suggestion != launchVal){
                             tools.setSuggestion(suggestion)
+                        } else {
+                            tools.setSuggestion('')
                         }
                     } else {
                         tools.setSuggestion('')
