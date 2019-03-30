@@ -226,15 +226,20 @@ export class Launcher {
             let fileLinks = this.files.filter(file => file instanceof LaunchLink);
             fileLinks = fileLinks.filter(file => !file.parentName);
 
-            return this.fuzzyFindFile(fileLinks, compositeValue, search)
-        }
+            let found = this.fuzzyFindFile(fileLinks, compositeValue, search)
 
-        if(fuzzy){
-            let fullAutocomplete = this.search(search)[0];
-            if(fullAutocomplete){
-                compositeValue[compositeValue.length-1] = fullAutocomplete;
-                return compositeValue.join(' ');
+            if(found){
+                return found;
             } else {
+                if(fuzzy){
+                    let fullAutocomplete = this.search(search)[0];
+                    if(fullAutocomplete){
+                        compositeValue[compositeValue.length-1] = fullAutocomplete;
+                        return compositeValue.join(' ');
+                    } else {
+                        return value;
+                    }
+                }
                 return value;
             }
         }

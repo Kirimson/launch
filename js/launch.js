@@ -188,15 +188,21 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 // Or... Files that are in root
                 let fileLinks = this.files.filter(file => file instanceof launchlink_1.LaunchLink);
                 fileLinks = fileLinks.filter(file => !file.parentName);
-                return this.fuzzyFindFile(fileLinks, compositeValue, search);
-            }
-            if (fuzzy) {
-                let fullAutocomplete = this.search(search)[0];
-                if (fullAutocomplete) {
-                    compositeValue[compositeValue.length - 1] = fullAutocomplete;
-                    return compositeValue.join(' ');
+                let found = this.fuzzyFindFile(fileLinks, compositeValue, search);
+                if (found) {
+                    return found;
                 }
                 else {
+                    if (fuzzy) {
+                        let fullAutocomplete = this.search(search)[0];
+                        if (fullAutocomplete) {
+                            compositeValue[compositeValue.length - 1] = fullAutocomplete;
+                            return compositeValue.join(' ');
+                        }
+                        else {
+                            return value;
+                        }
+                    }
                     return value;
                 }
             }
