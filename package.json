@@ -1,7 +1,7 @@
 {
   "name": "launch",
   "version": "1.0.0",
-  "description": "## Basics",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/Kirimson/launch/issues"
   },
-  "homepage": "https://github.com/Kirimson/launch#readme",
+  "homepage": "https://kirimson.github.io/launch/",
   "devDependencies": {
     "@types/jquery": "^3.3.29"
   }
