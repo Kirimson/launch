@@ -108,6 +108,7 @@ footer {
     overflow: scroll;
     /* For Gecko */
     scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 /* For Chromium */
 #tree-content::-webkit-scrollbar {
@@ -158,6 +159,7 @@ footer {
 }
 
 #suggestion {
+    z-index: -1;
     position: fixed;
     opacity: 0.5;
     font-family: inherit;
