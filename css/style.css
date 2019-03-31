@@ -89,6 +89,7 @@ footer {
 
 .fzf-selected::before {
     content: '>';
+    color: white;
 }
 
 #wrapper {

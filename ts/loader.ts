@@ -265,7 +265,7 @@ $(function(){
                     // If launch has a value
                     if(launchVal){
                         // If there is stuff to find
-                        fzfList = launch.search(launchVal)
+                        fzfList = launch.search(launchVal).slice(0,25)
                         if(fzfList.length > 0){
                             fzfIndex = 0;
                             tools.populateFzf(fzfList);
