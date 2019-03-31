@@ -179,7 +179,6 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                     else {
                         // Check if fzf is used and has a link selected
                         if (fzfList.length > 0 && fzfIndex != -1) {
-                            console.log(fzfList[fzfIndex]);
                             launch.runFile(fzfList[fzfIndex]);
                             // check if url before anything else. least taxing
                         }
@@ -194,10 +193,6 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                         else {
                             launch.runFile(launchVal);
                         }
-                    }
-                    if (launch.isfzf()) {
-                        tools.hideConsoleHistory(false);
-                        tools.hideFzf(true);
                     }
                     break;
                 case 'ArrowUp':

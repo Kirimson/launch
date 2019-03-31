@@ -212,11 +212,8 @@ $(function(){
                     
                     tools.addHistory(returnStatement)
                 } else {
-                    
-                    
                     // Check if fzf is used and has a link selected
                     if(fzfList.length > 0 && fzfIndex != -1){
-                        console.log(fzfList[fzfIndex])
                         launch.runFile(fzfList[fzfIndex])
                     // check if url before anything else. least taxing
                     } else if(isUrl(launchVal)){
@@ -228,10 +225,6 @@ $(function(){
                     } else {
                         launch.runFile(launchVal);
                     }
-                }
-                if(launch.isfzf()){
-                    tools.hideConsoleHistory(false)
-                    tools.hideFzf(true)
                 }
                 break;
             case 'ArrowUp':
