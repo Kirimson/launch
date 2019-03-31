@@ -199,18 +199,11 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                             let suggestion = getSimilar(launchVal, false);
                             if (suggestion != launchVal) {
                                 tools.setSuggestion(suggestion);
-                            }
-                            else {
-                                tools.setSuggestion('');
+                                break;
                             }
                         }
-                        else {
-                            tools.setSuggestion('');
-                        }
                     }
-                    else {
-                        tools.setSuggestion('');
-                    }
+                    tools.setSuggestion('');
             }
         });
         $('#tree').on('click', '.query', function () {

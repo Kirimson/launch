@@ -9,9 +9,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.treeHidden = true;
             this.history = [''];
             this.color = '#333';
+            this.fzf = false;
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'feh', 'tree',
-                'setsearch', 'mv', 'colo'];
+                'setsearch', 'mv', 'colo', 'fzf'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -471,7 +472,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     'name': folder.name,
                     'id': folder.id,
                 };
-                foldersData.push(folder);
+                foldersData.push(folderData);
             });
             let data = {
                 'nextFolderId': this.nextFolderId,
@@ -480,7 +481,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'background': this.background,
                 'tree': this.getTreeHidden(),
                 'defaultSearch': this.defaultSearch,
-                'color': this.color
+                'color': this.color,
+                'fzf': this.fzf
             };
             return JSON.stringify(data);
         }
@@ -498,6 +500,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 this.treeHidden = data['tree'];
                 this.defaultSearch = data['defaultSearch'];
                 this.color = data['color'];
+                this.fzf = data['fzf'];
                 //  If there is a user stored background, load it
                 if (data['background']) {
                     this.background = data['background'];

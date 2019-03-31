@@ -16,10 +16,11 @@ export class Launcher {
     private history:string[] = [''];
     private historyIndex:number;
     private color = '#333';
+    private fzf:boolean = false;
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'feh', 'tree',
-                                            'setsearch', 'mv', 'colo'];
+                                            'setsearch', 'mv', 'colo', 'fzf'];
 
     constructor() {
         this.folders = [];
@@ -545,7 +546,7 @@ export class Launcher {
                 'name': folder.name,
                 'id': folder.id,
             }
-            foldersData.push(folder);
+            foldersData.push(folderData);
         })
 
         let data = {
@@ -555,7 +556,8 @@ export class Launcher {
             'background': this.background,
             'tree': this.getTreeHidden(),
             'defaultSearch': this.defaultSearch,
-            'color': this.color
+            'color': this.color,
+            'fzf': this.fzf
         }
 
         return JSON.stringify(data);
@@ -575,6 +577,7 @@ export class Launcher {
             this.treeHidden = data['tree'];
             this.defaultSearch = data['defaultSearch'];
             this.color = data['color'];
+            this.fzf = data['fzf']
     
             //  If there is a user stored background, load it
             if(data['background']){

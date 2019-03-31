@@ -15,9 +15,18 @@ export class Tools {
         this.terminal = $('#terminal-window');
     }
 
+    hideElement(hidden:boolean, element:JQuery){
+        if(hidden){
+            element.css('display', 'none')
+        } else {
+            element.css('display', 'flex')
+        }
+    }
+ 
     getConsole():JQuery{
         return this.console;
     }
+    
 
     getTerminal():JQuery{
         return this.terminal;
@@ -65,12 +74,12 @@ export class Tools {
     }
 
     hideTree(hidden:boolean){
-        let treeWrapper = $('#tree-wrapper');
-        if(hidden){
-            treeWrapper.css('display', 'none');
-        } else {
-            treeWrapper.css('display', 'flex');
-        }
+        this.hideElement(hidden, $('#tree-wrapper'))
+
+    }
+
+    hideConsoleHistory(hidden:boolean){
+        this.hideElement(hidden, this.consoleHistory)
     }
 
     addHistory(command:string){

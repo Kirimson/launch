@@ -9,6 +9,14 @@ define(["require", "exports", "loader"], function (require, exports) {
             this.consoleHistory = $('#console-history');
             this.terminal = $('#terminal-window');
         }
+        hideElement(hidden, element) {
+            if (hidden) {
+                element.css('display', 'none');
+            }
+            else {
+                element.css('display', 'flex');
+            }
+        }
         getConsole() {
             return this.console;
         }
@@ -44,13 +52,10 @@ define(["require", "exports", "loader"], function (require, exports) {
             this.body.style.backgroundImage = `url(${background_url})`;
         }
         hideTree(hidden) {
-            let treeWrapper = $('#tree-wrapper');
-            if (hidden) {
-                treeWrapper.css('display', 'none');
-            }
-            else {
-                treeWrapper.css('display', 'flex');
-            }
+            this.hideElement(hidden, $('#tree-wrapper'));
+        }
+        hideConsoleHistory(hidden) {
+            this.hideElement(hidden, this.consoleHistory);
         }
         addHistory(command) {
             this.consoleHistory.prepend(`<span>$ ${command}</span>`);
