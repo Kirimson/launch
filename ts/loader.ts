@@ -300,5 +300,9 @@ $(function(){
             tools.getConsole().focus();
         }
     });
+
+    $('#fzf').on('click', '.fzf', function(){
+        launch.runFile(String(this.innerHTML.trim()))
+    })
     
 })

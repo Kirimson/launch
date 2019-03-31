@@ -88,6 +88,17 @@ footer {
     white-space: pre;
 }
 
+.fzf:hover {
+    background-color: #000;
+    color: white;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.fzf:hover::before {
+    content: '>'
+}
+
 .fzf-selected::before {
     content: '>';
 }
