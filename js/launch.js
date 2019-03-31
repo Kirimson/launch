@@ -80,6 +80,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         getFiles() {
             return this.files;
         }
+        isfzf() {
+            return this.fzf;
+        }
         /**
          * Returns a folder given a name
          * @param folderName folder name to search for
@@ -201,6 +204,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     break;
                 case 'mv':
                     commandReturn = this.mv(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim());
+                    break;
+                case 'fzf':
+                    commandReturn = '';
+                    this.fzf = !this.fzf;
                     break;
             }
             // Return commandreturn if command gave a return statement.

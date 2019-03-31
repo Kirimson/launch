@@ -57,6 +57,9 @@ define(["require", "exports", "loader"], function (require, exports) {
         hideConsoleHistory(hidden) {
             this.hideElement(hidden, this.consoleHistory);
         }
+        hideFzf(hidden) {
+            this.hideElement(hidden, $('#fzf'));
+        }
         addHistory(command) {
             this.consoleHistory.prepend(`<span>$ ${command}</span>`);
         }
@@ -69,6 +72,16 @@ define(["require", "exports", "loader"], function (require, exports) {
         }
         setSuggestion(text) {
             $('#suggestion').attr('placeholder', text);
+        }
+        populateFzf(fuzzyList) {
+            $('#fzf').html('');
+            fuzzyList.forEach(function (item, i) {
+                let fzfSpan = document.createElement('span');
+                fzfSpan.className = 'fzf';
+                fzfSpan.id = `fzf-${fuzzyList.length - (i + 1)}`;
+                fzfSpan.innerHTML = ` ${item}`;
+                $('#fzf').prepend(fzfSpan);
+            });
         }
     }
     exports.Tools = Tools;

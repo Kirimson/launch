@@ -106,6 +106,10 @@ export class Launcher {
         return this.files;
     }
 
+    isfzf(){
+        return this.fzf;
+    }
+
     /**
      * Returns a folder given a name
      * @param folderName folder name to search for
@@ -240,6 +244,10 @@ export class Launcher {
             case 'mv':
                 commandReturn = this.mv(args.split(' ')[0], 
                                 args.substr(args.split(' ')[0].length).trim());
+                break;
+            case 'fzf':
+                commandReturn = ''
+                this.fzf = !this.fzf;
                 break;
         }
 

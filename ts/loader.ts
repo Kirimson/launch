@@ -117,12 +117,20 @@ function fuzzyFindFile(fileLinks:LaunchFile[], compositeValue:string[], search:s
     return '';
 }
 
+function highlightFzfIndex(offset:number){
+    $(`#fzf-${fzfIndex}`).removeClass('fzf-selected')
+    fzfIndex += offset;
+    $(`#fzf-${fzfIndex}`).addClass('fzf-selected')
+}
+
 var launch = new Launcher();
 
 let tools = new Tools();
 let resultList:string[] = [];
 let resultIndex:number = 0;
 
+let fzfList:string[] = [];
+let fzfIndex = -1;
 // Load or initialise launch
 if(localStorage.getItem('launch')){
     // If launch is not succesfully loaded init it
@@ -204,39 +212,86 @@ $(function(){
                     
                     tools.addHistory(returnStatement)
                 } else {
-                    // First, check if url before anything else. least taxing
-                    // Second, send the currently selected link from search
-                    // Third, if running a query/standard search 
-                    // (technically the same)
-                    if(isUrl(launchVal)){
+                    
+                    
+                    // Check if fzf is used and has a link selected
+                    if(fzfList.length > 0 && fzfIndex != -1){
+                        console.log(fzfList[fzfIndex])
+                        launch.runFile(fzfList[fzfIndex])
+                    // check if url before anything else. least taxing
+                    } else if(isUrl(launchVal)){
                         window.location.href = checkHttp(launchVal);
+                        // send the currently selected link from search
                     } else if(resultList.length != 0){
                         launch.runFile(resultList[resultIndex]);
+                    // check if running a query/standard search 
                     } else {
                         launch.runFile(launchVal);
                     }
                 }
+                if(launch.isfzf()){
+                    tools.hideConsoleHistory(false)
+                    tools.hideFzf(true)
+                }
                 break;
             case 'ArrowUp':
-                tools.setConsoleText(launch.getHistory(true));
+                if(fzfList.length == 0){
+                    tools.setConsoleText(launch.getHistory(true));
+                } else if(fzfIndex < fzfList.length-1) {
+                    // fzfIndex++;
+                    highlightFzfIndex(1)
+                }
                 break;
             case 'ArrowDown':
-                tools.setConsoleText(launch.getHistory(false));
+                if(fzfList.length == 0){
+                    tools.setConsoleText(launch.getHistory(false));
+                } else if(fzfIndex > 0) {
+                    // fzfIndex--;
+                    highlightFzfIndex(-1)
+                }
                 break;
             default:
                 // When normally typing search for links from launch
+                let suggestionSet:boolean = false;
                 if(launchVal){
                     resultList = launch.search(launchVal);
                     if(launchVal.endsWith('/') == false){
                         let suggestion = getSimilar(launchVal, false);
                         if(suggestion != launchVal){
                             tools.setSuggestion(suggestion)
-                            break;
+                            suggestionSet = true;
                         }
                     }
                 }
-                tools.setSuggestion('')
+                if(!suggestionSet){
+                    tools.setSuggestion('')
+                }
+                // fzf stuff
+                if(launch.isfzf()){
+                    let hideFzf:boolean = true;
+                    // If launch has a value
+                    if(launchVal){
+                        // If there is stuff to find
+                        fzfList = launch.search(launchVal)
+                        if(fzfList.length > 0){
+                            fzfIndex = 0;
+                            tools.populateFzf(fzfList);
+                            fzfList.reverse()
+                            tools.hideConsoleHistory(true);
+                            tools.hideFzf(false);
+                            hideFzf = false;
+                            highlightFzfIndex(0);
+                        }
+                    } 
+                    if(hideFzf) {
+                        fzfList = [];
+                        fzfIndex = -1;
+                        tools.hideFzf(true)
+                        tools.hideConsoleHistory(false)
+                    }
+                }
             }
+
     });
 
     $('#tree').on('click','.query',function() {

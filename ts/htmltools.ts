@@ -82,6 +82,10 @@ export class Tools {
         this.hideElement(hidden, this.consoleHistory)
     }
 
+    hideFzf(hidden:boolean){
+        this.hideElement(hidden, $('#fzf'))
+    }
+
     addHistory(command:string){
         this.consoleHistory.prepend(`<span>$ ${command}</span>`);
     }
@@ -97,6 +101,17 @@ export class Tools {
 
     setSuggestion(text:string){
         $('#suggestion').attr('placeholder', text)
+    }
+
+    populateFzf(fuzzyList:string[]){
+        $('#fzf').html('')
+        fuzzyList.forEach(function(item, i) {
+            let fzfSpan = document.createElement('span')
+            fzfSpan.className = 'fzf'
+            fzfSpan.id = `fzf-${fuzzyList.length - (i+1)}`
+            fzfSpan.innerHTML = ` ${item}`
+            $('#fzf').prepend(fzfSpan);
+        });
     }
 
 }

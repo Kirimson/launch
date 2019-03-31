@@ -192,3 +192,12 @@ Usage: `setsearch [shortHand]`
 Examples:
 - `setsearch g:`
 - `setsearch b:`
+
+---
+
+### fzf
+
+Enables an fzf lookalike when typing. Files that can be executed are listed.
+Up/Down arrows navigats between them
+
+Usage: `fzf`

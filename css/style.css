@@ -77,6 +77,20 @@ footer {
     margin: 0 2% 0 2%;
 }
 
+.fzf-selected {
+    background-color: #000;
+    opacity: 0.5;
+}
+
+.fzf::before {
+    content: ' ';
+    white-space: pre;
+}
+
+.fzf-selected::before {
+    content: '>';
+}
+
 #wrapper {
     display: flex;
     flex: 1;
@@ -165,6 +179,12 @@ footer {
     font-family: inherit;
     font-size: inherit;
     font-weight: inherit;
+}
+
+#fzf {
+    display: none;
+    flex-direction: column-reverse;
+    flex: 1;
 }
 
 #console-input-line {
