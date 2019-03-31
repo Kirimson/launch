@@ -262,6 +262,9 @@ export class Launcher {
      * @param readOnly if folder/s are read only
      */
     mkdir(args:string[]) {
+        if(args.length == 0){
+            return 'Error: no new folders were given'
+        }
         let errors:string[] = []
 
         for(let i = 0; i < args.length; i++){
@@ -352,6 +355,10 @@ export class Launcher {
      * @param content content to add to file
      */
     touch(newFile:string, content?:string) {
+        if(newFile == ''){
+            return 'Error: no filename was given'
+        }
+
         for(let i = 0; i < this.getFiles().length; i++){
             let fileName = this.getFiles()[i].getLocation();
 

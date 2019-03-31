@@ -220,6 +220,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param readOnly if folder/s are read only
          */
         mkdir(args) {
+            if (args.length == 0) {
+                return 'Error: no new folders were given';
+            }
             let errors = [];
             for (let i = 0; i < args.length; i++) {
                 let folderName = args[i];
@@ -302,6 +305,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param content content to add to file
          */
         touch(newFile, content) {
+            if (newFile == '') {
+                return 'Error: no filename was given';
+            }
             for (let i = 0; i < this.getFiles().length; i++) {
                 let fileName = this.getFiles()[i].getLocation();
                 if (newFile == fileName) {
