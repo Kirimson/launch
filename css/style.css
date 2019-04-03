@@ -1,24 +1,19 @@
 html, body{
     font-family: 'Fira Code';
     font-weight: lighter;
-    height: 100%;
     margin: 0;
 }
 
 body {
     background-size: cover;
     color: #fff;
+    background-color: #eee;
 }
 
 a {
     color: inherit;
     font-weight: inherit;
     text-decoration: none;
-}
-
-footer {
-    background-color: #5e921b;
-    height: 1.5em;
 }
 
 .full-width {
@@ -28,7 +23,6 @@ footer {
 .app {
     display: none;
     flex-direction: column;
-    min-height: 100%;
 }
 
 .tree-base {
@@ -56,7 +50,7 @@ footer {
 
 .window::before{
     display: flex;
-    min-height: 3vh;
+    min-height: 2em;
     width: 100%;
     background-color: #000;
     opacity: 0.5;
@@ -120,6 +114,7 @@ footer {
 #tree-window {
     height: 50%;
     min-width: 70%;
+    max-width: 70%;
 }
 
 #tree-window::before{
@@ -145,6 +140,7 @@ footer {
     border-color: white;
     position: relative;
     padding-bottom: 25%;
+    word-break: break-all;
 }
 
 #console-wrapper {
