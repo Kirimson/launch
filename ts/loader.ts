@@ -248,7 +248,8 @@ $(function(){
                 let suggestionSet:boolean = false;
                 if(launchVal && !launch.isQuerySearch(launchVal)){
                     resultList = launch.search(launchVal);
-                    if(launchVal.endsWith('/') == false){
+                    if(launchVal.endsWith('/') == false &&
+                        launchVal.endsWith(' ') == false){
                         let suggestion = getSimilar(launchVal, false);
                         if(suggestion != launchVal){
                             tools.setSuggestion(suggestion)
