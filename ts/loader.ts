@@ -246,7 +246,7 @@ $(function(){
             default:
                 // When normally typing search for links from launch
                 let suggestionSet:boolean = false;
-                if(launchVal){
+                if(launchVal && !launch.isQuerySearch(launchVal)){
                     resultList = launch.search(launchVal);
                     if(launchVal.endsWith('/') == false){
                         let suggestion = getSimilar(launchVal, false);
