@@ -256,6 +256,9 @@ $(function(){
                             suggestionSet = true;
                         }
                     }
+                } else {
+                    resultList = [];
+                    resultIndex = 0;
                 }
                 if(!suggestionSet){
                     tools.setSuggestion('')
