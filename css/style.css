@@ -192,6 +192,7 @@ a {
 
 #fzf {
     display: none;
+    overflow: hidden;
     flex-direction: column-reverse;
     flex: 1;
 }
