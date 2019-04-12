@@ -273,7 +273,6 @@ $(function(){
                         if(fzfList.length > 0){
                             fzfIndex = 0;
                             tools.populateFzf(fzfList);
-                            fzfList.reverse()
                             tools.hideConsoleHistory(true);
                             tools.hideFzf(false);
                             hideFzf = false;

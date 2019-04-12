@@ -108,9 +108,9 @@ export class Tools {
         fuzzyList.forEach(function(item, i) {
             let fzfSpan = document.createElement('span')
             fzfSpan.className = 'fzf'
-            fzfSpan.id = `fzf-${fuzzyList.length - (i+1)}`
+            fzfSpan.id = `fzf-${(i)}`
             fzfSpan.innerHTML = ` ${item}`
-            $('#fzf').prepend(fzfSpan);
+            $('#fzf').append(fzfSpan);
         });
     }
 
