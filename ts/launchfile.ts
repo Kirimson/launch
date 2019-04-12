@@ -14,7 +14,7 @@ export class LaunchFile {
 
     addExtension(fileName:string, extension:string){
         // Add extension if not there
-        if(fileName.substr(fileName.length - 4, 3) != extension){
+        if(fileName.substr(fileName.length - 4, 4) != extension){
             return `${fileName}${extension}`;
         }
         return fileName;

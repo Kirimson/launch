@@ -19,7 +19,7 @@ define(["require", "exports"], function (require, exports) {
         }
         addExtension(fileName, extension) {
             // Add extension if not there
-            if (fileName.substr(fileName.length - 4, 3) != extension) {
+            if (fileName.substr(fileName.length - 4, 4) != extension) {
                 return `${fileName}${extension}`;
             }
             return fileName;
