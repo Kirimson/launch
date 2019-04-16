@@ -81,8 +81,8 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
     let folders = launch.getFolders();
     for(let i = 0; i < folders.length; i++){
         let folder = folders[i];
-        let folderName:String = folder.name.toLowerCase()
-        if(folderName.startsWith(search.toLowerCase())){
+        let folderName:String = folder.name
+        if(folderName.startsWith(search)){
             compositeValue[compositeValue.length-1] = `${folder.name}/`;
             return compositeValue.join(' ');
         }
@@ -110,8 +110,8 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
 function fuzzyFindFile(fileLinks:LaunchFile[], compositeValue:string[], search:string){
     for(let i = 0; i < fileLinks.length; i++){
         let file = fileLinks[i];
-        let fileName:String = file.filename.toLowerCase()
-        if(fileName.startsWith(search.toLowerCase())){
+        let fileName:String = file.filename
+        if(fileName.startsWith(search)){
             compositeValue[compositeValue.length-1] = file.getLocation();
             return compositeValue.join(' ');
         }
@@ -201,7 +201,7 @@ $(function(){
                 }
 
                 // Check if using a command
-                let launchCommand = launchVal.split(' ')[0].toLowerCase()
+                let launchCommand = launchVal.split(' ')[0];
                 if(launch.getCommands().includes(launchCommand)){
                     let returnStatement:string = launch.execCommand(launchVal)
                     tools.clearLaunchBox();

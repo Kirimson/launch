@@ -187,7 +187,7 @@ export class Launcher {
             if(file instanceof LaunchQuery){
                 // Get shorthand without the ':' in case user does no add ':'
                 let fileShorthand = file.shortHand.substr(0, file.shortHand.length - 1);
-                if(shorthand.toLowerCase() == fileShorthand.toLowerCase()+':' || 
+                if(shorthand == fileShorthand+':' || 
                     shorthand == fileShorthand) {
                         this.defaultSearch = file.shortHand;
                         return `Info: Default search set to ${file.shortHand}`;
@@ -206,7 +206,7 @@ export class Launcher {
     execCommand(term:string):string {
         this.history.push(term);
         this.historyIndex = 0;
-        let command = term.split(' ')[0].toLowerCase();
+        let command = term.split(' ')[0];
 
         /** Remove the length the command of the text sent to launch to get
         the arguments to parse */
@@ -493,7 +493,7 @@ export class Launcher {
         let links = this.files
         .filter(file => file instanceof LaunchLink)
         .map(file => file.getLocation())
-        .filter(file => file.toLowerCase().match(term.toLowerCase()));
+        .filter(file => file.match(term));
 
         return links;
     }
@@ -512,7 +512,7 @@ export class Launcher {
         .map(x => x.toString());
 
         for(let i = 0; i < links.length; i++){
-            if(links[i].toLowerCase() == shorthand.toLowerCase()){
+            if(links[i] == shorthand){
                 return true;
             }
         }

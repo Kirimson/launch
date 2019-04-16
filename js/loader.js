@@ -63,8 +63,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
         let folders = launch.getFolders();
         for (let i = 0; i < folders.length; i++) {
             let folder = folders[i];
-            let folderName = folder.name.toLowerCase();
-            if (folderName.startsWith(search.toLowerCase())) {
+            let folderName = folder.name;
+            if (folderName.startsWith(search)) {
                 compositeValue[compositeValue.length - 1] = `${folder.name}/`;
                 return compositeValue.join(' ');
             }
@@ -88,8 +88,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
     function fuzzyFindFile(fileLinks, compositeValue, search) {
         for (let i = 0; i < fileLinks.length; i++) {
             let file = fileLinks[i];
-            let fileName = file.filename.toLowerCase();
-            if (fileName.startsWith(search.toLowerCase())) {
+            let fileName = file.filename;
+            if (fileName.startsWith(search)) {
                 compositeValue[compositeValue.length - 1] = file.getLocation();
                 return compositeValue.join(' ');
             }
@@ -168,7 +168,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                         break;
                     }
                     // Check if using a command
-                    let launchCommand = launchVal.split(' ')[0].toLowerCase();
+                    let launchCommand = launchVal.split(' ')[0];
                     if (launch.getCommands().includes(launchCommand)) {
                         let returnStatement = launch.execCommand(launchVal);
                         tools.clearLaunchBox();
