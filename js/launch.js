@@ -340,11 +340,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             let fileID = this.getFileID(fileName);
             if (fileID != -1) {
-                let file = this.files[fileID];
-                // If file is in a folder
-                if (file.parentId != undefined) {
-                    this.files.splice(fileID, 1);
-                }
+                this.files.splice(fileID, 1);
             }
             else {
                 return `Error: file '${fileName}' not found`;
