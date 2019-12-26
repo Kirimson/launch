@@ -7,12 +7,13 @@
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" 
 	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" 
 	crossorigin="anonymous"></script>
-	<script data-main="js/loader" type="text/javascript" src="js/require.js"></script>
-	<link rel="stylesheet" href="fonts/fira_code.css">
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="icon" type="image/png" href="img/favicon.ico">
+	<script data-main="{{ url_for('static', filename='js/loader') }}"
+	type="text/javascript" src="{{ url_for('static', filename='js/require.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='fonts/fira_code.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.ico') }}">
 </head>
-<body>
+<body style="background-image: url({{ url_for('static', filename='img/default.png') }});">
 	<section class="app">
 		<div id='wrapper'>
 
@@ -29,7 +30,8 @@
 								<input class="console-input" 
 								id='suggestion' placeholder="" disabled></input>
 								
-								<input type="text" name="console" 
+								<input autocorrect="off" autocapitalize="none"
+								autocomplete="off" type="text" name="console" 
 								class="console-input" id="console" 
 								autocomplete="off"/>
 							</div>

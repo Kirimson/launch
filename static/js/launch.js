@@ -4,7 +4,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
     class Launcher {
         constructor() {
             this.nextFolderId = 0;
-            this.backgroundDefault = 'img/default.png';
+            this.backgroundDefault = '/static/img/default.png';
             this.defaultSearch = 'g:';
             this.treeHidden = true;
             this.history = [''];
@@ -17,18 +17,41 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.files = [];
             this.background = this.backgroundDefault;
         }
+        save(type, data) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/store", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            let reqdata = { 'type': type, 'data': data };
+            xhr.send(JSON.stringify(reqdata));
+        }
+        delete(type, data) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/delete", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            let reqdata = { 'type': type, 'data': data };
+            xhr.send(JSON.stringify(reqdata));
+        }
         /**
          * Create default structure of launch
          */
         initLaunch() {
             this.files = [];
             this.folders = [];
+            this.color = "#333";
             this.mkdir(['launch']);
             this.touch('launch/google.qry', 'g: https://www.google.com/search?q=${}');
             this.touch('launch/bing.qry', 'b: https://www.bing.com/search?q=${}');
             this.touch('launch/amazon.qry', 'ama: https://www.amazon.co.uk/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords=${}');
             this.touch('launch/google_maps.qry', 'map: https://www.google.co.uk/maps/search/${}');
             this.touch('launch/duckduckgo.qry', 'ddg: https://duckduckgo.com/?q=${}');
+            // nextFolderId is updated as new folders are made
+            // Shouldnt exist now im using a db, but im lazy lol
+            // Gonna likely rewrite the thing at some point soon
+            this.save('metadata', { 'background': this.background });
+            this.save('metadata', { 'hideTree': this.treeHidden });
+            this.save('metadata', { 'defaultSearch': this.defaultSearch });
+            this.save('metadata', { 'color': this.color });
+            this.save('metadata', { 'fzf': this.fzf });
         }
         /**
          * Checks if text contains http, if not, prepend it
@@ -192,15 +215,19 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     break;
                 case 'feh':
                     commandReturn = this.setBackground(args);
+                    this.save('metadata', { 'background': this.background });
                     break;
                 case 'colo':
                     commandReturn = this.setColor(args);
+                    this.save('metadata', { 'color': this.color });
                     break;
                 case 'tree':
                     commandReturn = this.setTreeHidden(!this.getTreeHidden());
+                    this.save('metadata', { 'hideTree': this.treeHidden });
                     break;
                 case 'setsearch':
                     commandReturn = this.setDefaultSearch(args);
+                    this.save('metadata', { 'defaultSearch': this.defaultSearch });
                     break;
                 case 'mv':
                     commandReturn = this.mv(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim());
@@ -208,6 +235,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 case 'fzf':
                     commandReturn = '';
                     this.fzf = !this.fzf;
+                    this.save('metadata', { 'fzf': this.fzf });
                     break;
             }
             // Return commandreturn if command gave a return statement.
@@ -219,7 +247,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param args list of folders to make
          * @param readOnly if folder/s are read only
          */
-        mkdir(args) {
+        mkdir(args, store = true) {
             if (args.length == 0) {
                 return 'Error: no new folders were given';
             }
@@ -227,8 +255,13 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             for (let i = 0; i < args.length; i++) {
                 let folderName = args[i];
                 if (!this.getFolder(folderName)) {
-                    this.folders.push(new launchfolder_1.LaunchFolder(folderName, this.nextFolderId));
+                    let newFolder = new launchfolder_1.LaunchFolder(folderName, this.nextFolderId);
+                    this.folders.push(newFolder);
                     this.nextFolderId++;
+                    if (store) {
+                        this.save('folder', newFolder);
+                        this.save('metadata', { 'nextFolderId': this.nextFolderId });
+                    }
                 }
                 else {
                     errors.push(folderName);
@@ -255,34 +288,42 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             let targetFile = this.getFile(target);
             // If a folder
             if (targetFolder) {
+                this.delete('folder', targetFolder);
                 targetFolder.rename(newName);
+                this.save('folder', targetFolder);
                 let folderFiles = this.files.filter(file => file.parentId
                     == targetFolder.id);
                 folderFiles.forEach(file => {
+                    this.delete('file', file);
                     file.move(targetFolder.id, targetFolder.name);
+                    this.save('file', file);
                 });
             }
             else if (targetFile) {
                 // Check if moving folder to root
                 if (newName.startsWith('/') || newName.startsWith('.')) {
                     // Check if new name has been given
+                    this.delete('file', targetFile);
                     if (newName.substr(1)) {
                         targetFile.rename(newName.substr(1));
                     }
                     targetFile.move(undefined, undefined);
+                    this.save('file', targetFile);
                     // Check if moving to a new folder
                 }
                 else if (newName.match('/')) {
                     let folderFile = newName.split('/');
                     let newFolder = this.getFolder(folderFile[0]);
-                    // console.log(folderFile[1])
-                    // Rename file if needed
-                    if (folderFile[1]) {
-                        targetFile.rename(folderFile[1]);
-                    }
                     // Check if new folder exists to move file to
                     if (newFolder) {
+                        this.delete('file', targetFile);
+                        // console.log(folderFile[1])
+                        // Rename file if needed
+                        if (folderFile[1]) {
+                            targetFile.rename(folderFile[1]);
+                        }
                         targetFile.move(newFolder.id, newFolder.name);
+                        this.save('file', targetFile);
                         // Folder does not exist, error
                     }
                     else {
@@ -291,7 +332,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     //  Else just normal rename, rename the file
                 }
                 else {
+                    this.delete('file', targetFile);
                     targetFile.rename(newName);
+                    this.save('file', targetFile);
                 }
             }
             else {
@@ -304,7 +347,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param newFile file to create
          * @param content content to add to file
          */
-        touch(newFile, content) {
+        touch(newFile, content, store = true) {
             if (newFile == '') {
                 return 'Error: no filename was given';
             }
@@ -318,14 +361,22 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 let args = newFile.split('/');
                 let parentFolder = this.getFolder(args[0]);
                 if (parentFolder) {
-                    this.files.push(this.createFile(args[1], content, parentFolder.id, parentFolder.name));
+                    let file = this.createFile(args[1], content, parentFolder.id, parentFolder.name);
+                    this.files.push(file);
+                    if (store) {
+                        this.save('file', file);
+                    }
                 }
                 else {
                     return `Error: folder '${args[0]}' not found`;
                 }
             }
             else {
-                this.files.push(this.createFile(newFile, content));
+                let file = this.createFile(newFile, content);
+                this.files.push(file);
+                if (store) {
+                    this.save('file', file);
+                }
             }
         }
         /**
@@ -340,6 +391,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             let fileID = this.getFileID(fileName);
             if (fileID != -1) {
+                let targetFile = this.files[fileID];
+                this.delete('file', targetFile);
                 this.files.splice(fileID, 1);
             }
             else {
@@ -354,12 +407,15 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         rmdir(folderName) {
             for (let folderID = 0; folderID < this.folders.length; folderID++) {
                 let folder = this.folders[folderID];
+                folderName = folderName.replace(/\/$/, "");
                 // Check if folder to delete is a real folder
                 if (folder.name == folderName) {
                     let folderFiles = this.files.filter(file => file.parentId == folder.id);
                     folderFiles.forEach(file => {
                         this.rm(file.getLocation());
                     });
+                    let targetFolder = this.folders[folderID];
+                    this.delete('folder', targetFolder);
                     this.folders.splice(folderID, 1);
                     return '';
                 }
@@ -500,36 +556,38 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param data JSON object data of launch from localstorage
          * @returns boolean: true if loading is successful
          */
-        load(data) {
+        load() {
             // Try our best to import the data. If it is corrupt, return false
-            try {
-                this.nextFolderId = 0;
-                this.folders = [];
-                this.files = [];
-                this.treeHidden = data['tree'];
-                this.defaultSearch = data['defaultSearch'];
-                this.color = data['color'];
-                this.fzf = data['fzf'];
-                //  If there is a user stored background, load it
-                if (data['background']) {
-                    this.background = data['background'];
-                }
-                for (let i = 0; i < data['folders'].length; i++) {
-                    let folder = data['folders'][i];
-                    let readOnly = (folder['readOnly'] ? true : false);
-                    this.mkdir([folder['name']]);
-                }
-                ;
-                for (let x = 0; x < data['files'].length; x++) {
-                    let file = data['files'][x];
-                    this.touch(file['filename'], file['content']);
-                }
-                ;
-                return true;
+            let data = $.ajax({
+                type: 'GET',
+                url: '/load',
+                dataType: 'json',
+                success: function (data) { return data; },
+                data: {},
+                async: false
+            });
+            data = data['responseJSON'];
+            this.nextFolderId = 0;
+            this.folders = [];
+            this.files = [];
+            this.treeHidden = data['tree'];
+            this.defaultSearch = data['defaultSearch'];
+            this.color = data['color'];
+            this.fzf = data['fzf'];
+            //  If there is a user stored background, load it
+            if (data['background']) {
+                this.background = data['background'];
             }
-            catch (_a) {
-                return false;
+            for (let i = 0; i < data['folders'].length; i++) {
+                let folder = data['folders'][i];
+                this.mkdir([folder['name']], false);
             }
+            ;
+            for (let x = 0; x < data['files'].length; x++) {
+                let file = data['files'][x];
+                this.touch(file['filename'], file['content'], false);
+            }
+            ;
         }
     }
     exports.Launcher = Launcher;

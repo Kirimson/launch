@@ -35,13 +35,16 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
             tree.updateTree(launch);
         }
         tools.clearLaunchBox();
-        localStorage.setItem('launch', launch.store());
-        tree.updateTree(launch);
+        let data = launch.store();
+        // localStorage.setItem('launch', data);
+        // tree.updateTree(launch)
     }
     function rebuildLaunch() {
         tools.addHistory('Launch is corrupted, rebuilding...');
         launch.initLaunch();
-        localStorage.setItem('launch', launch.store());
+        tools.setWindowColor(launch.getColor());
+        // let data = launch.store()
+        // localStorage.setItem('launch', data);
     }
     function getSimilar(value, fuzzy = true) {
         let compositeValue = value.split(' ');
@@ -108,28 +111,14 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
     let fzfList = [];
     let fzfIndex = -1;
     // Load or initialise launch
-    if (localStorage.getItem('launch')) {
-        // If launch is not succesfully loaded init it
-        let launchData;
-        try {
-            launchData = JSON.parse(localStorage.getItem('launch'));
-            if (!launch.load(launchData)) {
-                rebuildLaunch();
-            }
-        }
-        catch (_a) {
-            rebuildLaunch();
-        }
-    }
-    else {
-        launch.initLaunch();
-        localStorage.setItem('launch', launch.store());
-    }
+    launch.load();
     let tree = new tree_1.Tree(launch);
     tools.hideTree(launch.getTreeHidden());
-    tools.setBackground(launch.getBackground());
-    tools.setWindowColor(launch.getColor());
+    if (launch.getBackground() != '') {
+        tools.setBackground(launch.getBackground());
+    }
     tools.showLaunch();
+    tools.setWindowColor(launch.getColor());
     $(function () {
         // Clicking in console to focus
         tools.getTerminal().click(function () {
@@ -172,7 +161,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                     if (launch.getCommands().includes(launchCommand)) {
                         let returnStatement = launch.execCommand(launchVal);
                         tools.clearLaunchBox();
-                        localStorage.setItem('launch', launch.store());
+                        // let data = launch.store()
+                        // localStorage.setItem('launch', data);
                         tree.updateTree(launch);
                         tools.setBackground(launch.getBackground());
                         tools.setWindowColor(launch.getColor());

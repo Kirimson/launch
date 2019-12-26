@@ -46,14 +46,17 @@ function startPageImport(){
         tree.updateTree(launch)
     }
     tools.clearLaunchBox();
-    localStorage.setItem('launch', launch.store())
-    tree.updateTree(launch)
+    let data = launch.store()
+    // localStorage.setItem('launch', data);
+    // tree.updateTree(launch)
 }
 
 function rebuildLaunch(){
     tools.addHistory('Launch is corrupted, rebuilding...')
     launch.initLaunch()
-    localStorage.setItem('launch', launch.store())
+    tools.setWindowColor(launch.getColor());
+    // let data = launch.store()
+    // localStorage.setItem('launch', data);
 }
 
 function getSimilar(value: string, fuzzy:boolean=true): string {
@@ -134,28 +137,17 @@ let resultIndex:number = 0;
 let fzfList:string[] = [];
 let fzfIndex = -1;
 // Load or initialise launch
-if(localStorage.getItem('launch')){
-    // If launch is not succesfully loaded init it
-    let launchData:JSON
-    try{
-        launchData = JSON.parse(localStorage.getItem('launch'));
-        if(!launch.load(launchData)){
-            rebuildLaunch();
-        }
-    } catch {
-        rebuildLaunch();
-    }
-} else {
-    launch.initLaunch();
-    localStorage.setItem('launch', launch.store());
-}
+launch.load()
 
 let tree = new Tree(launch);
 tools.hideTree(launch.getTreeHidden());
 
-tools.setBackground(launch.getBackground());
-tools.setWindowColor(launch.getColor());
+if(launch.getBackground() != ''){
+    tools.setBackground(launch.getBackground());
+}
+
 tools.showLaunch();
+tools.setWindowColor(launch.getColor());
 
 $(function(){
     
@@ -205,7 +197,8 @@ $(function(){
                 if(launch.getCommands().includes(launchCommand)){
                     let returnStatement:string = launch.execCommand(launchVal)
                     tools.clearLaunchBox();
-                    localStorage.setItem('launch', launch.store());
+                    // let data = launch.store()
+                    // localStorage.setItem('launch', data);
 
                     tree.updateTree(launch);
                     

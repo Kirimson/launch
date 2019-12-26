@@ -1,2 +1,6 @@
 .vscode
 node_modules
+venv
+certs
+launch.db
+__pycache__
