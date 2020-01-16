@@ -214,3 +214,43 @@ a {
     /* max-height: 2vh; */
     flex: 1;
 }
+
+@media only screen and (max-width: 1080px) {
+    html {
+        font-size: 18pt;
+    }
+
+    #wrapper {
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+    }
+
+    #console-wrapper {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 40%;
+        width:100%;
+    }
+
+    #terminal-window {
+        height: 100%;
+        width: 100%;
+    }
+
+    #tree-wrapper {
+        position: absolute;
+        top: 60%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width:100%;
+    }
+
+    #tree-window {
+        height: 100%;
+        min-width: 100%;
+        max-width: 100%;
+    }
+  }
