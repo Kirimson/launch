@@ -18,30 +18,10 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
         }
         return false;
     }
-    function startPageImport() {
-        launch.initLaunch();
-        let startJson = JSON.parse(localStorage.getItem('personal-links'));
-        for (let index = 0; index < startJson['titles'].length; index++) {
-            let title = startJson['titles'][index];
-            title.replace(' ', '_');
-            title = title.toLowerCase();
-            launch.mkdir([title]);
-            startJson['links'][index].forEach(link => {
-                let linkName = link[0].replace(' ', '_');
-                linkName = linkName.toLowerCase();
-                launch.touch(`${title}/${linkName}.lnk`, link[1]);
-                tree.updateTree(launch);
-            });
-            tree.updateTree(launch);
-        }
-        tools.clearLaunchBox();
-        localStorage.setItem('launch', launch.store());
-        tree.updateTree(launch);
-    }
     function rebuildLaunch() {
         tools.addHistory('Launch is corrupted, rebuilding...');
         launch.initLaunch();
-        localStorage.setItem('launch', launch.store());
+        launch.store();
     }
     function getSimilar(value, fuzzy = true) {
         let compositeValue = value.split(' ');
@@ -96,39 +76,52 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
         }
         return '';
     }
-    function highlightFzfIndex(offset) {
-        $(`#fzf-${fzfIndex}`).removeClass('fzf-selected');
-        fzfIndex += offset;
-        $(`#fzf-${fzfIndex}`).addClass('fzf-selected');
+    function moveFuzzyIndex(offset) {
+        $(`#fuzzy-${fuzzyIndex}`).removeClass('fuzzy-selected');
+        fuzzyIndex += offset;
+        $(`#fuzzy-${fuzzyIndex}`).addClass('fuzzy-selected');
     }
     var launch = new launch_1.Launcher();
     let tools = new htmltools_1.Tools();
     let resultList = [];
     let resultIndex = 0;
-    let fzfList = [];
-    let fzfIndex = -1;
+    let fuzzyList = [];
+    let fuzzyIndex = -1;
     // Load or initialise launch
     if (localStorage.getItem('launch')) {
-        // If launch is not succesfully loaded init it
-        let launchData;
-        try {
-            launchData = JSON.parse(localStorage.getItem('launch'));
-            if (!launch.load(launchData)) {
-                rebuildLaunch();
-            }
+        // try{
+        let launch_base = JSON.parse(localStorage.getItem('launch'));
+        let launch_folders;
+        let launch_files;
+        if (localStorage.getItem('launch_folders') != null) {
+            launch_folders = JSON.parse(localStorage.getItem('launch_folders'));
         }
-        catch (_a) {
+        if (localStorage.getItem('launch_files') != null) {
+            launch_files = JSON.parse(localStorage.getItem('launch_files'));
+        }
+        if (!launch.load(launch_base, launch_folders, launch_files)) {
+            console.log("Couldnt load");
             rebuildLaunch();
         }
+        // } catch {
+        //     rebuildLaunch();
+        // }
     }
     else {
         launch.initLaunch();
-        localStorage.setItem('launch', launch.store());
+        launch.store();
     }
+    // Start loading things in
+    // Hide tree if hidden
     let tree = new tree_1.Tree(launch);
     tools.hideTree(launch.getTreeHidden());
+    // Hide privacy link if hidden
+    tools.hideElement(!launch.getPrivacy(), $('#privacy'));
+    // Set bg image
     tools.setBackground(launch.getBackground());
+    // Set color
     tools.setWindowColor(launch.getColor());
+    // Display launch after all loading is done
     tools.showLaunch();
     $(function () {
         // Clicking in console to focus
@@ -156,11 +149,6 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
             let launchVal = tools.getConsoleVal();
             switch (key.key) {
                 case 'Enter':
-                    // import
-                    if (launchVal == '!importfromstartpage') {
-                        startPageImport();
-                        break;
-                    }
                     // Debug
                     if (launchVal == '!!DEBUG!!') {
                         console.log(launch);
@@ -172,17 +160,20 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                     if (launch.getCommands().includes(launchCommand)) {
                         let returnStatement = launch.execCommand(launchVal);
                         tools.clearLaunchBox();
-                        localStorage.setItem('launch', launch.store());
+                        launch.store();
+                        // Update Launch after a command
                         tree.updateTree(launch);
                         tools.setBackground(launch.getBackground());
                         tools.setWindowColor(launch.getColor());
                         tools.hideTree(launch.getTreeHidden());
+                        tools.hideElement(!launch.getPrivacy(), $('#privacy'));
+                        // Add command to history
                         tools.addHistory(returnStatement);
                     }
                     else {
-                        // Check if fzf is used and has a link selected
-                        if (fzfList.length > 0 && fzfIndex != -1) {
-                            launch.runFile(fzfList[fzfIndex]);
+                        // Check if fuzzy list is used and has a link selected
+                        if (fuzzyList.length > 0 && fuzzyIndex != -1) {
+                            launch.runFile(fuzzyList[fuzzyIndex]);
                             // check if url before anything else. least taxing
                         }
                         else if (isUrl(launchVal)) {
@@ -197,28 +188,30 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                             launch.runFile(launchVal);
                         }
                     }
+                    // Clear the suggestion if there was one hanging from command
+                    tools.setSuggestion('');
                     break;
                 case 'ArrowUp':
-                    if (fzfList.length == 0) {
+                    if (fuzzyList.length == 0) {
                         tools.setConsoleText(launch.getHistory(true));
                     }
-                    else if (fzfIndex < fzfList.length - 1) {
-                        // fzfIndex++;
-                        highlightFzfIndex(1);
+                    else if (fuzzyIndex < fuzzyList.length - 1) {
+                        moveFuzzyIndex(1);
                     }
                     break;
                 case 'ArrowDown':
-                    if (fzfList.length == 0) {
+                    if (fuzzyList.length == 0) {
                         tools.setConsoleText(launch.getHistory(false));
                     }
-                    else if (fzfIndex > 0) {
-                        // fzfIndex--;
-                        highlightFzfIndex(-1);
+                    else if (fuzzyIndex > 0) {
+                        moveFuzzyIndex(-1);
                     }
                     break;
                 default:
-                    // When normally typing search for links from launch
+                    // When typing search for links from launch
                     let suggestionSet = false;
+                    // Check if console has text, and that entered text
+                    // is not an existing query prefix
                     if (launchVal && !launch.isQuerySearch(launchVal)) {
                         resultList = launch.search(launchVal);
                         if (launchVal.endsWith('/') == false &&
@@ -237,26 +230,25 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                     if (!suggestionSet) {
                         tools.setSuggestion('');
                     }
-                    // fzf stuff
-                    if (launch.isfzf()) {
-                        let hideFzf = true;
+                    if (launch.isFuzzyFinderOn()) {
+                        let hideFuzzyFinder = true;
                         // If launch has a value
                         if (launchVal) {
                             // If there is stuff to find
-                            fzfList = launch.search(launchVal).slice(0, 25);
-                            if (fzfList.length > 0) {
-                                fzfIndex = 0;
-                                tools.populateFzf(fzfList);
+                            fuzzyList = launch.search(launchVal).slice(0, 25);
+                            if (fuzzyList.length > 0) {
+                                fuzzyIndex = 0;
+                                tools.populateFuzzyList(fuzzyList);
                                 tools.hideConsoleHistory(true);
-                                tools.hideFzf(false);
-                                hideFzf = false;
-                                highlightFzfIndex(0);
+                                tools.hideFuzzyList(false);
+                                hideFuzzyFinder = false;
+                                moveFuzzyIndex(0);
                             }
                         }
-                        if (hideFzf) {
-                            fzfList = [];
-                            fzfIndex = -1;
-                            tools.hideFzf(true);
+                        if (hideFuzzyFinder) {
+                            fuzzyList = [];
+                            fuzzyIndex = -1;
+                            tools.hideFuzzyList(true);
                             tools.hideConsoleHistory(false);
                         }
                     }
@@ -272,7 +264,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                 tools.getConsole().focus();
             }
         });
-        $('#fzf').on('click', '.fzf', function () {
+        $('#fuzzy-list').on('click', '.fuzzy', function () {
             launch.runFile(String(this.innerHTML.trim()));
         });
     });

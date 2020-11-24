@@ -10,13 +10,13 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.treeHidden = true;
             this.history = [''];
             this.color = '#333';
-            this.fzf = false;
+            this.fuzzy = false;
             this.privacy = true;
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'set-bg', 'set-background',
                 'feh', 'tree', 'setsearch', 'mv',
                 'set-color', 'set-colo', 'colo',
-                'fzf', 'launch-hide-privacy',
+                'fuzzy', 'launch-hide-privacy',
                 'launch-show-privacy'];
             this.folders = [];
             this.files = [];
@@ -62,6 +62,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             return '';
         }
+        getPrivacy() {
+            return this.privacy;
+        }
         getColor() {
             return this.color;
         }
@@ -85,8 +88,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         getFiles() {
             return this.files;
         }
-        isfzf() {
-            return this.fzf;
+        isFuzzyFinderOn() {
+            return this.fuzzy;
         }
         /**
          * Returns a folder given a name
@@ -214,13 +217,15 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 case 'mv':
                     commandReturn = this.mv(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim());
                     break;
-                case 'fzf':
+                case 'fuzzy':
                     commandReturn = '';
-                    this.fzf = !this.fzf;
+                    this.fuzzy = !this.fuzzy;
                     break;
                 case 'launch-hide-privacy':
+                    this.privacy = false;
                     break;
                 case 'launch-show-privacy':
+                    this.privacy = true;
                     break;
             }
             // Return commandreturn if command gave a return statement.
@@ -365,6 +370,11 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param folderName string[] of folders to remove
          */
         rmdir(folderName) {
+            // If folderName has a trailing / remove it, thatv was from tab
+            // autocomplete
+            if (folderName.endsWith('/')) {
+                folderName = folderName.substr(0, folderName.length - 1);
+            }
             for (let folderID = 0; folderID < this.folders.length; folderID++) {
                 let folder = this.folders[folderID];
                 // Check if folder to delete is a real folder
@@ -480,70 +490,90 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @returns string: stringified JSON data of Launch instance
          */
         store() {
-            let filesData = [];
+            let filesData = { 'files': [] };
             this.files.forEach(file => {
                 let fileData = {
                     'filename': file.getLocation(),
                     'content': file.content,
                 };
-                filesData.push(fileData);
+                filesData['files'].push(fileData);
             });
-            let foldersData = [];
+            let foldersData = { 'folders': [] };
             this.folders.forEach(folder => {
                 let folderData = {
                     'name': folder.name,
                     'id': folder.id,
                 };
-                foldersData.push(folderData);
+                foldersData['folders'].push(folderData);
             });
             let data = {
                 'nextFolderId': this.nextFolderId,
-                'files': filesData,
-                'folders': foldersData,
                 'background': this.background,
                 'tree': this.getTreeHidden(),
                 'defaultSearch': this.defaultSearch,
                 'color': this.color,
-                'fzf': this.fzf,
+                'fuzzy': this.fuzzy,
                 'privacy': this.privacy
             };
-            return JSON.stringify(data);
+            let launch_base = JSON.stringify(data);
+            let launch_folders = JSON.stringify(foldersData);
+            let launch_files = JSON.stringify(filesData);
+            localStorage.setItem('launch', launch_base);
+            localStorage.setItem('launch_folders', launch_folders);
+            localStorage.setItem('launch_files', launch_files);
         }
         /**
          * Creates a launch instance based on it's serialised data
-         * @param data JSON object data of launch from localstorage
+         * @param launch_base JSON object data of launch from localstorage
          * @returns boolean: true if loading is successful
          */
-        load(data) {
+        load(launch_base, launch_folders, launch_files) {
             // Try our best to import the data. If it is corrupt, return false
             try {
                 this.nextFolderId = 0;
                 this.folders = [];
                 this.files = [];
-                this.treeHidden = data['tree'];
-                this.defaultSearch = data['defaultSearch'];
-                this.color = data['color'];
-                this.fzf = data['fzf'];
+                this.treeHidden = launch_base['tree'];
+                this.defaultSearch = launch_base['defaultSearch'];
+                this.color = launch_base['color'];
+                this.fuzzy = launch_base['fuzzy'];
+                this.privacy = launch_base['privacy'];
                 //  If there is a user stored background, load it
-                if (data['background']) {
-                    this.background = data['background'];
+                if (launch_base['background']) {
+                    this.background = launch_base['background'];
                 }
-                for (let i = 0; i < data['folders'].length; i++) {
-                    let folder = data['folders'][i];
-                    let readOnly = (folder['readOnly'] ? true : false);
-                    this.mkdir([folder['name']]);
+                if (launch_base['folders']) {
+                    this.loadFolders(launch_base);
                 }
-                ;
-                for (let x = 0; x < data['files'].length; x++) {
-                    let file = data['files'][x];
-                    this.touch(file['filename'], file['content']);
+                else {
+                    this.loadFolders(launch_folders);
                 }
-                ;
+                if (launch_base['files']) {
+                    this.loadFiles(launch_base);
+                }
+                else {
+                    this.loadFiles(launch_files);
+                }
                 return true;
             }
-            catch (_a) {
+            catch (err) {
+                console.log(err);
                 return false;
             }
+        }
+        loadFolders(folders) {
+            for (let i = 0; i < folders['folders'].length; i++) {
+                let folder = folders['folders'][i];
+                this.mkdir([folder['name']]);
+            }
+            ;
+        }
+        loadFiles(files) {
+            for (let x = 0; x < files['files'].length; x++) {
+                let file = files['files'][x];
+                this.touch(file['filename'], file['content']);
+            }
+            ;
         }
     }
     exports.Launcher = Launcher;

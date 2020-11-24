@@ -16,14 +16,14 @@ export class Launcher {
     private history:string[] = [''];
     private historyIndex:number;
     private color = '#333';
-    private fzf:boolean = false;
+    private fuzzy:boolean = false;
     private privacy:boolean = true;
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'set-bg', 'set-background',
                                             'feh', 'tree', 'setsearch', 'mv',
                                             'set-color', 'set-colo', 'colo',
-                                            'fzf', 'launch-hide-privacy',
+                                            'fuzzy', 'launch-hide-privacy',
                                             'launch-show-privacy'];
 
     constructor() {
@@ -80,6 +80,10 @@ export class Launcher {
         return '';
     }
 
+    getPrivacy(): boolean {
+        return this.privacy;
+    }
+
     getColor(): string {
         return this.color;
     }
@@ -110,8 +114,8 @@ export class Launcher {
         return this.files;
     }
 
-    isfzf(){
-        return this.fzf;
+    isFuzzyFinderOn(){
+        return this.fuzzy;
     }
 
     /**
@@ -252,14 +256,15 @@ export class Launcher {
                 commandReturn = this.mv(args.split(' ')[0], 
                                 args.substr(args.split(' ')[0].length).trim());
                 break;
-            case 'fzf':
+            case 'fuzzy':
                 commandReturn = ''
-                this.fzf = !this.fzf;
+                this.fuzzy = !this.fuzzy;
                 break;
             case 'launch-hide-privacy':
-
+                this.privacy = false; 
                 break;
             case 'launch-show-privacy':
+                this.privacy = true;
                 break;
         }
 
@@ -421,6 +426,13 @@ export class Launcher {
      * @param folderName string[] of folders to remove
      */
     rmdir(folderName:string){
+
+        // If folderName has a trailing / remove it, thatv was from tab
+        // autocomplete
+        if(folderName.endsWith('/')) {
+            folderName = folderName.substr(0, folderName.length - 1);
+        }
+
         for(let folderID = 0; folderID < this.folders.length; folderID++) {
             let folder = this.folders[folderID];
 
@@ -552,76 +564,97 @@ export class Launcher {
      * Serialises the Launch instance into a JSON string
      * @returns string: stringified JSON data of Launch instance
      */
-    store():string{
+    store():void{
 
-        let filesData = []
+        let filesData = {'files': []}
         this.files.forEach(file => {
             let fileData = {
                 'filename': file.getLocation(),
                 'content': file.content,
             }
-            filesData.push(fileData);
+            filesData['files'].push(fileData);
         });
 
-        let foldersData = []
+        let foldersData = {'folders': []}
         this.folders.forEach(folder => {
             let folderData = {
                 'name': folder.name,
                 'id': folder.id,
             }
-            foldersData.push(folderData);
+            foldersData['folders'].push(folderData);
         })
 
         let data = {
             'nextFolderId': this.nextFolderId,
-            'files': filesData,
-            'folders': foldersData,
             'background': this.background,
             'tree': this.getTreeHidden(),
             'defaultSearch': this.defaultSearch,
             'color': this.color,
-            'fzf': this.fzf,
+            'fuzzy': this.fuzzy,
             'privacy': this.privacy
         }
 
-        return JSON.stringify(data);
+        let launch_base = JSON.stringify(data);
+        let launch_folders = JSON.stringify(foldersData);
+        let launch_files = JSON.stringify(filesData);
+
+        localStorage.setItem('launch', launch_base);
+        localStorage.setItem('launch_folders', launch_folders);
+        localStorage.setItem('launch_files', launch_files);
     }
 
     /**
      * Creates a launch instance based on it's serialised data
-     * @param data JSON object data of launch from localstorage
+     * @param launch_base JSON object data of launch from localstorage
      * @returns boolean: true if loading is successful
      */
-    load(data:JSON):boolean{
+    load(launch_base:JSON, launch_folders:JSON, launch_files:JSON):boolean{
         // Try our best to import the data. If it is corrupt, return false
         try{
             this.nextFolderId = 0;
             this.folders = [];
             this.files = [];
-            this.treeHidden = data['tree'];
-            this.defaultSearch = data['defaultSearch'];
-            this.color = data['color'];
-            this.fzf = data['fzf']
+            this.treeHidden = launch_base['tree'];
+            this.defaultSearch = launch_base['defaultSearch'];
+            this.color = launch_base['color'];
+            this.fuzzy = launch_base['fuzzy'];
+            this.privacy = launch_base['privacy'];
     
             //  If there is a user stored background, load it
-            if(data['background']){
-                this.background = data['background'];
+            if(launch_base['background']){
+                this.background = launch_base['background'];
+            }
+
+            if(launch_base['folders']){
+                this.loadFolders(launch_base);
+            } else {
+                this.loadFolders(launch_folders);
+            }
+
+            if(launch_base['files']){
+                this.loadFiles(launch_base);
+            } else {
+                this.loadFiles(launch_files);
             }
     
-            for(let i = 0; i < data['folders'].length; i++){
-                let folder = data['folders'][i];
-                let readOnly:boolean = (folder['readOnly'] ? true : false);
-                this.mkdir([folder['name']]);
-            };
-    
-            for(let x = 0; x < data['files'].length; x++){
-                let file = data['files'][x];
-                this.touch(file['filename'], file['content']);
-            };
-    
             return true;
-        } catch {
+        } catch(err) {
+            console.log(err);
             return false;
         }
+    }
+
+    loadFolders(folders:JSON) {
+        for(let i = 0; i < folders['folders'].length; i++){
+            let folder = folders['folders'][i];
+            this.mkdir([folder['name']]);
+        };
+    }
+
+    loadFiles(files:JSON) {
+        for(let x = 0; x < files['files'].length; x++){
+            let file = files['files'][x];
+            this.touch(file['filename'], file['content']);
+        };
     }
 }

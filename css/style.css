@@ -79,29 +79,29 @@ a {
     margin: 0 2% 0 2%;
 }
 
-.fzf-selected {
+.fuzzy-selected {
     background-color: #000;
     color: white;
     opacity: 0.5;
 }
 
-.fzf::before {
+.fuzzy::before {
     content: ' ';
     white-space: pre;
 }
 
-.fzf:hover {
+.fuzzy:hover {
     background-color: #000;
     color: white;
     opacity: 0.5;
     cursor: pointer;
 }
 
-.fzf:hover::before {
+.fuzzy:hover::before {
     content: '>'
 }
 
-.fzf-selected::before {
+.fuzzy-selected::before {
     content: '>';
 }
 
@@ -197,7 +197,7 @@ a {
     font-weight: inherit;
 }
 
-#fzf {
+#fuzzy-list {
     display: none;
     overflow: hidden;
     flex-direction: column-reverse;
