@@ -11,11 +11,13 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.history = [''];
             this.color = '#333';
             this.fzf = false;
+            this.privacy = true;
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'set-bg', 'set-background',
                 'feh', 'tree', 'setsearch', 'mv',
                 'set-color', 'set-colo', 'colo',
-                'fzf'];
+                'fzf', 'launch-hide-privacy',
+                'launch-show-privacy'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -215,6 +217,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 case 'fzf':
                     commandReturn = '';
                     this.fzf = !this.fzf;
+                    break;
+                case 'launch-hide-privacy':
+                    break;
+                case 'launch-show-privacy':
                     break;
             }
             // Return commandreturn if command gave a return statement.
@@ -498,7 +504,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'tree': this.getTreeHidden(),
                 'defaultSearch': this.defaultSearch,
                 'color': this.color,
-                'fzf': this.fzf
+                'fzf': this.fzf,
+                'privacy': this.privacy
             };
             return JSON.stringify(data);
         }

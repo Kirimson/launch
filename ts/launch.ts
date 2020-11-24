@@ -17,12 +17,14 @@ export class Launcher {
     private historyIndex:number;
     private color = '#333';
     private fzf:boolean = false;
+    private privacy:boolean = true;
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'set-bg', 'set-background',
                                             'feh', 'tree', 'setsearch', 'mv',
                                             'set-color', 'set-colo', 'colo',
-                                            'fzf'];
+                                            'fzf', 'launch-hide-privacy',
+                                            'launch-show-privacy'];
 
     constructor() {
         this.folders = [];
@@ -253,6 +255,11 @@ export class Launcher {
             case 'fzf':
                 commandReturn = ''
                 this.fzf = !this.fzf;
+                break;
+            case 'launch-hide-privacy':
+
+                break;
+            case 'launch-show-privacy':
                 break;
         }
 
@@ -573,7 +580,8 @@ export class Launcher {
             'tree': this.getTreeHidden(),
             'defaultSearch': this.defaultSearch,
             'color': this.color,
-            'fzf': this.fzf
+            'fzf': this.fzf,
+            'privacy': this.privacy
         }
 
         return JSON.stringify(data);
