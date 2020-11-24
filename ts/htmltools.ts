@@ -45,20 +45,32 @@ export class Tools {
     }
 
     setWindowColor(newColor:string){
-        
         // Create fake div to apply user's color to
         let fakeDiv = document.createElement("div");
         fakeDiv.style.color = newColor;
         document.body.appendChild(fakeDiv);
-        
-        // get RBG value of div from color passed
-        let contrastColor = window.getComputedStyle(fakeDiv)
-                                  .getPropertyValue("color");
+
+        // get RBG value of div from color passed. works with any valid CSS color,
+        // even names such as green, orange, etc...
+        let rgbColor = window.getComputedStyle(fakeDiv)
+                                .getPropertyValue("color");
+        // remove the fake div, no longer needed
         document.body.removeChild(fakeDiv);
-        
-        let windows = $('.window');
-        windows.css('background-color', newColor);
-        windows.css('color', this.rgbContrast(contrastColor))
+        let textCol = this.rgbContrast(rgbColor)
+        let titleTextCol = "white"
+        let titleCol = "rgba(0,0,0,0.5)"
+        if (textCol == "white") {
+            titleTextCol = "black"
+            titleCol = "rgba(255,255,255,0.5)"
+        }
+
+        // Convert rgb to rgba for background transparency
+        let rgbaColor = rgbColor.replace(/(?:rgb)+/g, 'rgba');
+        rgbaColor = rgbaColor.replace(/(?:\))+/g, ', 0.5)');
+
+        // Set element colors
+        $(".window").css('color', textCol)
+        $(".window").css("background-color", rgbaColor);
     }
 
     getConsoleVal():string{

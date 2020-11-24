@@ -19,8 +19,10 @@ export class Launcher {
     private fzf:boolean = false;
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
-                                            'rmdir', 'feh', 'tree',
-                                            'setsearch', 'mv', 'colo', 'fzf'];
+                                            'rmdir', 'set-bg', 'set-background',
+                                            'feh', 'tree', 'setsearch', 'mv',
+                                            'set-color', 'set-colo', 'colo',
+                                            'fzf'];
 
     constructor() {
         this.folders = [];
@@ -229,8 +231,12 @@ export class Launcher {
                 commandReturn = this.rmdir(args);
                 break;
             case 'feh':
+            case 'set-bg':
+            case 'set-background':
                 commandReturn = this.setBackground(args);
                 break;
+            case 'set-color':
+            case 'set-colo':
             case 'colo':
                 commandReturn = this.setColor(args);
                 break;

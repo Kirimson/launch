@@ -1,6 +1,7 @@
 define(["require", "exports", "./launchlink"], function (require, exports, launchlink_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Tree = void 0;
     class Tree {
         constructor(launch) {
             $('#tree-wrapper').html(`<div class='window' id='tree-window'>

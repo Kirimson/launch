@@ -1,6 +1,7 @@
 define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"], function (require, exports, launchfolder_1, launchlink_1, launchquery_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Launcher = void 0;
     class Launcher {
         constructor() {
             this.nextFolderId = 0;
@@ -11,8 +12,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.color = '#333';
             this.fzf = false;
             this.availableCommands = ['mkdir', 'touch', 'rm',
-                'rmdir', 'feh', 'tree',
-                'setsearch', 'mv', 'colo', 'fzf'];
+                'rmdir', 'set-bg', 'set-background',
+                'feh', 'tree', 'setsearch', 'mv',
+                'set-color', 'set-colo', 'colo',
+                'fzf'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -191,8 +194,12 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     commandReturn = this.rmdir(args);
                     break;
                 case 'feh':
+                case 'set-bg':
+                case 'set-background':
                     commandReturn = this.setBackground(args);
                     break;
+                case 'set-color':
+                case 'set-colo':
                 case 'colo':
                     commandReturn = this.setColor(args);
                     break;

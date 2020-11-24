@@ -1,6 +1,7 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.LaunchFile = void 0;
     class LaunchFile {
         // ID number of folder is used, to avoid cyclic references that cannot
         // be serialised easily
