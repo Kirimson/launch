@@ -70,8 +70,8 @@ define(["require", "exports", "loader"], function (require, exports) {
         hideConsoleHistory(hidden) {
             this.hideElement(hidden, this.consoleHistory);
         }
-        hideFzf(hidden) {
-            this.hideElement(hidden, $('#fzf'));
+        hideFuzzyList(hidden) {
+            this.hideElement(hidden, $('#fuzzy-list'));
         }
         addHistory(command) {
             this.consoleHistory.prepend(`<span>$ ${command}</span>`);
@@ -86,14 +86,14 @@ define(["require", "exports", "loader"], function (require, exports) {
         setSuggestion(text) {
             $('#suggestion').attr('placeholder', text);
         }
-        populateFzf(fuzzyList) {
-            $('#fzf').html('');
+        populateFuzzyList(fuzzyList) {
+            $('#fuzzy-list').html('');
             fuzzyList.forEach(function (item, i) {
-                let fzfSpan = document.createElement('span');
-                fzfSpan.className = 'fzf';
-                fzfSpan.id = `fzf-${(i)}`;
-                fzfSpan.innerHTML = ` ${item}`;
-                $('#fzf').append(fzfSpan);
+                let fuzzySpan = document.createElement('span');
+                fuzzySpan.className = 'fuzzy';
+                fuzzySpan.id = `fuzzy-${(i)}`;
+                fuzzySpan.innerHTML = ` ${item}`;
+                $('#fuzzy-list').append(fuzzySpan);
             });
         }
     }

@@ -16,14 +16,14 @@ export class Launcher {
     private history:string[] = [''];
     private historyIndex:number;
     private color = '#333';
-    private fzf:boolean = false;
+    private fuzzy:boolean = false;
     private privacy:boolean = true;
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'set-bg', 'set-background',
                                             'feh', 'tree', 'setsearch', 'mv',
                                             'set-color', 'set-colo', 'colo',
-                                            'fzf', 'launch-hide-privacy',
+                                            'fuzzy', 'launch-hide-privacy',
                                             'launch-show-privacy'];
 
     constructor() {
@@ -114,8 +114,8 @@ export class Launcher {
         return this.files;
     }
 
-    isfzf(){
-        return this.fzf;
+    isFuzzyFinderOn(){
+        return this.fuzzy;
     }
 
     /**
@@ -256,9 +256,9 @@ export class Launcher {
                 commandReturn = this.mv(args.split(' ')[0], 
                                 args.substr(args.split(' ')[0].length).trim());
                 break;
-            case 'fzf':
+            case 'fuzzy':
                 commandReturn = ''
-                this.fzf = !this.fzf;
+                this.fuzzy = !this.fuzzy;
                 break;
             case 'launch-hide-privacy':
                 this.privacy = false; 
@@ -592,7 +592,7 @@ export class Launcher {
             'tree': this.getTreeHidden(),
             'defaultSearch': this.defaultSearch,
             'color': this.color,
-            'fzf': this.fzf,
+            'fuzzy': this.fuzzy,
             'privacy': this.privacy
         }
 
@@ -613,7 +613,7 @@ export class Launcher {
             this.treeHidden = data['tree'];
             this.defaultSearch = data['defaultSearch'];
             this.color = data['color'];
-            this.fzf = data['fzf'];
+            this.fuzzy = data['fuzzy'];
             this.privacy = data['privacy'];
     
             //  If there is a user stored background, load it

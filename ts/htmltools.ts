@@ -94,8 +94,8 @@ export class Tools {
         this.hideElement(hidden, this.consoleHistory)
     }
 
-    hideFzf(hidden:boolean){
-        this.hideElement(hidden, $('#fzf'))
+    hideFuzzyList(hidden:boolean){
+        this.hideElement(hidden, $('#fuzzy-list'))
     }
 
     addHistory(command:string){
@@ -115,14 +115,14 @@ export class Tools {
         $('#suggestion').attr('placeholder', text)
     }
 
-    populateFzf(fuzzyList:string[]){
-        $('#fzf').html('')
+    populateFuzzyList(fuzzyList:string[]){
+        $('#fuzzy-list').html('')
         fuzzyList.forEach(function(item, i) {
-            let fzfSpan = document.createElement('span')
-            fzfSpan.className = 'fzf'
-            fzfSpan.id = `fzf-${(i)}`
-            fzfSpan.innerHTML = ` ${item}`
-            $('#fzf').append(fzfSpan);
+            let fuzzySpan = document.createElement('span')
+            fuzzySpan.className = 'fuzzy'
+            fuzzySpan.id = `fuzzy-${(i)}`
+            fuzzySpan.innerHTML = ` ${item}`
+            $('#fuzzy-list').append(fuzzySpan);
         });
     }
 

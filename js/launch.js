@@ -10,13 +10,13 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.treeHidden = true;
             this.history = [''];
             this.color = '#333';
-            this.fzf = false;
+            this.fuzzy = false;
             this.privacy = true;
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'set-bg', 'set-background',
                 'feh', 'tree', 'setsearch', 'mv',
                 'set-color', 'set-colo', 'colo',
-                'fzf', 'launch-hide-privacy',
+                'fuzzy', 'launch-hide-privacy',
                 'launch-show-privacy'];
             this.folders = [];
             this.files = [];
@@ -88,8 +88,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         getFiles() {
             return this.files;
         }
-        isfzf() {
-            return this.fzf;
+        isFuzzyFinderOn() {
+            return this.fuzzy;
         }
         /**
          * Returns a folder given a name
@@ -217,9 +217,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 case 'mv':
                     commandReturn = this.mv(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim());
                     break;
-                case 'fzf':
+                case 'fuzzy':
                     commandReturn = '';
-                    this.fzf = !this.fzf;
+                    this.fuzzy = !this.fuzzy;
                     break;
                 case 'launch-hide-privacy':
                     this.privacy = false;
@@ -514,7 +514,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'tree': this.getTreeHidden(),
                 'defaultSearch': this.defaultSearch,
                 'color': this.color,
-                'fzf': this.fzf,
+                'fuzzy': this.fuzzy,
                 'privacy': this.privacy
             };
             return JSON.stringify(data);
@@ -533,7 +533,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 this.treeHidden = data['tree'];
                 this.defaultSearch = data['defaultSearch'];
                 this.color = data['color'];
-                this.fzf = data['fzf'];
+                this.fuzzy = data['fuzzy'];
                 this.privacy = data['privacy'];
                 //  If there is a user stored background, load it
                 if (data['background']) {
