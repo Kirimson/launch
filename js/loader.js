@@ -21,7 +21,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
     function rebuildLaunch() {
         tools.addHistory('Launch is corrupted, rebuilding...');
         launch.initLaunch();
-        localStorage.setItem('launch', launch.store());
+        launch.store();
     }
     function getSimilar(value, fuzzy = true) {
         let compositeValue = value.split(' ');
@@ -89,21 +89,27 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
     let fuzzyIndex = -1;
     // Load or initialise launch
     if (localStorage.getItem('launch')) {
-        // If launch is not succesfully loaded init it
-        let launchData;
-        try {
-            launchData = JSON.parse(localStorage.getItem('launch'));
-            if (!launch.load(launchData)) {
-                rebuildLaunch();
-            }
+        // try{
+        let launch_base = JSON.parse(localStorage.getItem('launch'));
+        let launch_folders;
+        let launch_files;
+        if (localStorage.getItem('launch_folders') != null) {
+            launch_folders = JSON.parse(localStorage.getItem('launch_folders'));
         }
-        catch (_a) {
+        if (localStorage.getItem('launch_files') != null) {
+            launch_files = JSON.parse(localStorage.getItem('launch_files'));
+        }
+        if (!launch.load(launch_base, launch_folders, launch_files)) {
+            console.log("Couldnt load");
             rebuildLaunch();
         }
+        // } catch {
+        //     rebuildLaunch();
+        // }
     }
     else {
         launch.initLaunch();
-        localStorage.setItem('launch', launch.store());
+        launch.store();
     }
     // Start loading things in
     // Hide tree if hidden
@@ -154,7 +160,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                     if (launch.getCommands().includes(launchCommand)) {
                         let returnStatement = launch.execCommand(launchVal);
                         tools.clearLaunchBox();
-                        localStorage.setItem('launch', launch.store());
+                        launch.store();
                         // Update Launch after a command
                         tree.updateTree(launch);
                         tools.setBackground(launch.getBackground());

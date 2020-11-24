@@ -29,7 +29,7 @@ function guardedMatch(text:string, pattern:RegExp){
 function rebuildLaunch(){
     tools.addHistory('Launch is corrupted, rebuilding...')
     launch.initLaunch()
-    localStorage.setItem('launch', launch.store())
+    launch.store();
 }
 
 function getSimilar(value: string, fuzzy:boolean=true): string {
@@ -111,19 +111,26 @@ let fuzzyList:string[] = [];
 let fuzzyIndex = -1;
 // Load or initialise launch
 if(localStorage.getItem('launch')){
-    // If launch is not succesfully loaded init it
-    let launchData:JSON
-    try{
-        launchData = JSON.parse(localStorage.getItem('launch'));
-        if(!launch.load(launchData)){
-            rebuildLaunch();
-        }
-    } catch {
+    // try{
+    let launch_base = JSON.parse(localStorage.getItem('launch'));
+    let launch_folders:JSON;
+    let launch_files:JSON;
+    if(localStorage.getItem('launch_folders') != null){
+        launch_folders = JSON.parse(localStorage.getItem('launch_folders'));
+    }
+    if(localStorage.getItem('launch_files') != null){
+        launch_files = JSON.parse(localStorage.getItem('launch_files'));
+    }
+    if(!launch.load(launch_base, launch_folders, launch_files)){
+        console.log("Couldnt load");
         rebuildLaunch();
     }
+    // } catch {
+    //     rebuildLaunch();
+    // }
 } else {
     launch.initLaunch();
-    localStorage.setItem('launch', launch.store());
+    launch.store();
 }
 
 // Start loading things in
@@ -184,7 +191,7 @@ $(function(){
                 if(launch.getCommands().includes(launchCommand)){
                     let returnStatement:string = launch.execCommand(launchVal)
                     tools.clearLaunchBox();
-                    localStorage.setItem('launch', launch.store());
+                    launch.store();
 
                     // Update Launch after a command
                     tree.updateTree(launch);
