@@ -370,6 +370,11 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param folderName string[] of folders to remove
          */
         rmdir(folderName) {
+            // If folderName has a trailing / remove it, thatv was from tab
+            // autocomplete
+            if (folderName.endsWith('/')) {
+                folderName = folderName.substr(0, folderName.length - 1);
+            }
             for (let folderID = 0; folderID < this.folders.length; folderID++) {
                 let folder = this.folders[folderID];
                 // Check if folder to delete is a real folder

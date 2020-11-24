@@ -205,6 +205,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                             launch.runFile(launchVal);
                         }
                     }
+                    // Clear the suggestion if there was one hanging from command
+                    tools.setSuggestion('');
                     break;
                 case 'ArrowUp':
                     if (fzfList.length == 0) {
@@ -225,8 +227,10 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                     }
                     break;
                 default:
-                    // When normally typing search for links from launch
+                    // When typing search for links from launch
                     let suggestionSet = false;
+                    // Check if console has text, and that entered text
+                    // is not an existing query prefix
                     if (launchVal && !launch.isQuerySearch(launchVal)) {
                         resultList = launch.search(launchVal);
                         if (launchVal.endsWith('/') == false &&
