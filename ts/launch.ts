@@ -80,6 +80,10 @@ export class Launcher {
         return '';
     }
 
+    getPrivacy(): boolean {
+        return this.privacy;
+    }
+
     getColor(): string {
         return this.color;
     }
@@ -257,9 +261,10 @@ export class Launcher {
                 this.fzf = !this.fzf;
                 break;
             case 'launch-hide-privacy':
-
+                this.privacy = false; 
                 break;
             case 'launch-show-privacy':
+                this.privacy = true;
                 break;
         }
 
@@ -601,7 +606,8 @@ export class Launcher {
             this.treeHidden = data['tree'];
             this.defaultSearch = data['defaultSearch'];
             this.color = data['color'];
-            this.fzf = data['fzf']
+            this.fzf = data['fzf'];
+            this.privacy = data['privacy'];
     
             //  If there is a user stored background, load it
             if(data['background']){

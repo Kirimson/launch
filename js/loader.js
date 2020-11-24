@@ -125,10 +125,17 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
         launch.initLaunch();
         localStorage.setItem('launch', launch.store());
     }
+    // Start loading things in
+    // Hide tree if hidden
     let tree = new tree_1.Tree(launch);
     tools.hideTree(launch.getTreeHidden());
+    // Hide privacy link if hidden
+    tools.hideElement(!launch.getPrivacy(), $('#privacy'));
+    // Set bg image
     tools.setBackground(launch.getBackground());
+    // Set color
     tools.setWindowColor(launch.getColor());
+    // Display launch after all loading is done
     tools.showLaunch();
     $(function () {
         // Clicking in console to focus
@@ -177,6 +184,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                         tools.setBackground(launch.getBackground());
                         tools.setWindowColor(launch.getColor());
                         tools.hideTree(launch.getTreeHidden());
+                        tools.hideElement(!launch.getPrivacy(), $('#privacy'));
                         tools.addHistory(returnStatement);
                     }
                     else {

@@ -150,11 +150,20 @@ if(localStorage.getItem('launch')){
     localStorage.setItem('launch', launch.store());
 }
 
+// Start loading things in
+// Hide tree if hidden
 let tree = new Tree(launch);
 tools.hideTree(launch.getTreeHidden());
 
+// Hide privacy link if hidden
+tools.hideElement(!launch.getPrivacy(), $('#privacy'));
+
+// Set bg image
 tools.setBackground(launch.getBackground());
+// Set color
 tools.setWindowColor(launch.getColor());
+
+// Display launch after all loading is done
 tools.showLaunch();
 
 $(function(){
@@ -212,6 +221,7 @@ $(function(){
                     tools.setBackground(launch.getBackground());
                     tools.setWindowColor(launch.getColor());
                     tools.hideTree(launch.getTreeHidden());
+                    tools.hideElement(!launch.getPrivacy(), $('#privacy'));
                     
                     tools.addHistory(returnStatement)
                 } else {

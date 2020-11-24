@@ -62,6 +62,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             }
             return '';
         }
+        getPrivacy() {
+            return this.privacy;
+        }
         getColor() {
             return this.color;
         }
@@ -219,8 +222,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     this.fzf = !this.fzf;
                     break;
                 case 'launch-hide-privacy':
+                    this.privacy = false;
                     break;
                 case 'launch-show-privacy':
+                    this.privacy = true;
                     break;
             }
             // Return commandreturn if command gave a return statement.
@@ -524,6 +529,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 this.defaultSearch = data['defaultSearch'];
                 this.color = data['color'];
                 this.fzf = data['fzf'];
+                this.privacy = data['privacy'];
                 //  If there is a user stored background, load it
                 if (data['background']) {
                     this.background = data['background'];
