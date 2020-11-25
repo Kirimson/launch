@@ -60,6 +60,10 @@ a {
     padding-left: 1em;
 }
 
+.tree-folder-name::after {
+    content: '/';
+}
+
 .window::before{
     display: flex;
     min-height: 2em;
