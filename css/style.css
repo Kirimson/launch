@@ -33,16 +33,25 @@ a {
 }
 
 .tree-base {
-    padding-left: 1em;
-    border-left: solid thin;
+    /* padding-left: 1em; */
+    /* border-left: solid thin; */
+    font-size: larger;
+    margin: 0.5em;
 }
+
+.tree-base:hover {
+    cursor: pointer;
+} 
 
 .tree-files {
     margin-left: 1em;
     border-left: solid thin;
 }
+.tree-base::before {
+    content: '-';
+}
 
-.tree-file::before, .tree-base::before {
+.tree-file::before {
     content: '';
     border-bottom: thin solid;
     position: absolute;
@@ -76,7 +85,7 @@ a {
 }
 
 .window-content {
-    margin: 0 2% 0 2%;
+    padding: 0 2% 0 2%;
 }
 
 .fuzzy-selected {
@@ -134,21 +143,19 @@ a {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    overflow: scroll;
-    /* For Gecko */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-/* For Chromium */
-#tree-content::-webkit-scrollbar {
-    display: none;
+    overflow-y: auto;
+    height:100%;
 }
 
 #tree {
     border-color: white;
     position: relative;
-    padding-bottom: 25%;
-    word-break: break-all;
+    width:100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #console-wrapper {
