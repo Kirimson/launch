@@ -16,7 +16,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'rmdir', 'set-bg', 'set-background',
                 'feh', 'tree', 'setsearch', 'mv',
                 'set-color', 'set-colo', 'colo',
-                'fuzzy', 'clear-hits',
+                'fuzzy', 'clear-hits', 'set-hits',
                 'launch-hide-privacy',
                 'launch-show-privacy'];
             this.folders = [];
@@ -223,7 +223,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     this.fuzzy = !this.fuzzy;
                     break;
                 case 'clear-hits':
-                    commandReturn = this.clearHits(args);
+                    commandReturn = this.setHits(args);
+                case 'set-hits':
+                    commandReturn = this.setHits(args.split(' ')[0], parseInt(args.split(' ')[1]));
                 case 'launch-hide-privacy':
                     this.privacy = false;
                     break;
@@ -447,16 +449,12 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * Clears the 'hitcount' a file as accumulated
          * @param fileName name of file to clear the hits of
          */
-        clearHits(fileName) {
-            if (fileName == '-rf') {
-                this.files = [];
-                this.folders = [];
-                return `All Files/Folders have been deleted`;
-            }
+        setHits(fileName, newHits = 0) {
+            console.log(newHits);
             let fileID = this.getFileID(fileName);
             if (fileID != -1) {
                 let file = this.files[fileID];
-                file.hits = 0;
+                file.hits = newHits;
                 this.store();
             }
             else {

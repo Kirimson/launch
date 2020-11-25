@@ -44,7 +44,9 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
             folder = split[0],
             fileName = split[1];
         if(fileName){
-            let fileLinks = launch.getFiles().filter(file => file instanceof LaunchLink);
+            let fileLinks = launch.getFiles()
+                .filter(file => file instanceof LaunchLink)
+                .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
             fileLinks = fileLinks.filter(file => file.parentName == folder);
 
             let found = fuzzyFindFile(fileLinks, compositeValue, fileName)
@@ -66,7 +68,9 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
     }
 
     // Or... Files that are in root
-    let fileLinks = launch.getFiles().filter(file => file instanceof LaunchLink);
+    let fileLinks = launch.getFiles()
+        .filter(file => file instanceof LaunchLink)
+        .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
     fileLinks = fileLinks.filter(file => !file.parentName);
 
     let found = fuzzyFindFile(fileLinks, compositeValue, search)

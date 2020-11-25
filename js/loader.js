@@ -31,7 +31,9 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
             // Check aginst file
             let split = search.split('/'), folder = split[0], fileName = split[1];
             if (fileName) {
-                let fileLinks = launch.getFiles().filter(file => file instanceof launchlink_1.LaunchLink);
+                let fileLinks = launch.getFiles()
+                    .filter(file => file instanceof launchlink_1.LaunchLink)
+                    .sort((a, b) => (a['hits'] < b['hits']) ? 1 : -1);
                 fileLinks = fileLinks.filter(file => file.parentName == folder);
                 let found = fuzzyFindFile(fileLinks, compositeValue, fileName);
                 if (found) {
@@ -50,7 +52,9 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
             }
         }
         // Or... Files that are in root
-        let fileLinks = launch.getFiles().filter(file => file instanceof launchlink_1.LaunchLink);
+        let fileLinks = launch.getFiles()
+            .filter(file => file instanceof launchlink_1.LaunchLink)
+            .sort((a, b) => (a['hits'] < b['hits']) ? 1 : -1);
         fileLinks = fileLinks.filter(file => !file.parentName);
         let found = fuzzyFindFile(fileLinks, compositeValue, search);
         if (found) {
