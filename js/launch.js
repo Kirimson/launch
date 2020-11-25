@@ -16,7 +16,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'rmdir', 'set-bg', 'set-background',
                 'feh', 'tree', 'setsearch', 'mv',
                 'set-color', 'set-colo', 'colo',
-                'fuzzy', 'launch-hide-privacy',
+                'fuzzy', 'clear-hits',
+                'launch-hide-privacy',
                 'launch-show-privacy'];
             this.folders = [];
             this.files = [];
@@ -221,6 +222,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     commandReturn = '';
                     this.fuzzy = !this.fuzzy;
                     break;
+                case 'clear-hits':
+                    commandReturn = this.clearHits(args);
                 case 'launch-hide-privacy':
                     this.privacy = false;
                     break;
@@ -293,7 +296,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 else if (newName.match('/')) {
                     let folderFile = newName.split('/');
                     let newFolder = this.getFolder(folderFile[0]);
-                    // console.log(folderFile[1])
                     // Rename file if needed
                     if (folderFile[1]) {
                         targetFile.rename(folderFile[1]);
@@ -433,9 +435,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 // matches description of file. If so, execute that file
                 if (file.toString() == fileName || file.getLocation() == fileName) {
                     file.hits += 1;
-                    console.log(file.hits);
                     this.store();
-                    console.log("saved!");
                     file.execute(queryArg);
                     return;
                 }
@@ -444,16 +444,39 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.runFile(this.defaultSearch + fileName);
         }
         /**
+         * Clears the 'hitcount' a file as accumulated
+         * @param fileName name of file to clear the hits of
+         */
+        clearHits(fileName) {
+            if (fileName == '-rf') {
+                this.files = [];
+                this.folders = [];
+                return `All Files/Folders have been deleted`;
+            }
+            let fileID = this.getFileID(fileName);
+            if (fileID != -1) {
+                let file = this.files[fileID];
+                file.hits = 0;
+                this.store();
+            }
+            else {
+                return `Error: file '${fileName}' not found`;
+            }
+            return '';
+        }
+        /**
          * Searchs through all .lnk files given a search term
          * @param term  search term
          * @returns string[] of LaunchLink toString representations that match the
          *          search term provided
          */
         search(term) {
-            let links = this.files
+            let sortedLinks = this.files
                 .filter(file => file instanceof launchlink_1.LaunchLink)
-                .map(file => file.getLocation())
-                .filter(file => file.match(term));
+                .filter(file => file.getLocation().match(term))
+                .sort((a, b) => (a['hits'] < b['hits']) ? 1 : -1);
+            let links = sortedLinks
+                .map(file => file.getLocation());
             return links;
         }
         /**
