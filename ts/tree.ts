@@ -28,6 +28,7 @@ export class Tree {
         let files:LaunchFile[] = launch.getFiles();
         this.tree.html('');
 
+        // If at the root folder show folders
         if (folderID == -1){
             for(let i = 0; i < folders.length; i++){
                 let folder = folders[i];
@@ -67,6 +68,7 @@ export class Tree {
         else
         {
             // Selected a folder, need to display files
+            // Find selected folder
             let selectedFolder:LaunchFolder;
             for(let i = 0; i < folders.length; i++){
                 let folder = folders[i];
@@ -75,9 +77,8 @@ export class Tree {
                 }
             }
 
-            // Add the folder name
+            // Add the folder
             let folderDiv: HTMLElement = this.createFolderElement(selectedFolder);
-            this.tree.append(folderDiv);
 
             // Get files that belong to this folder
             let folderFiles = files.filter(file => file.parentId == selectedFolder.id)
@@ -106,34 +107,40 @@ export class Tree {
                 for(let k = 0; k < folderFiles.length; k++){
                     let file = folderFiles[k];
 
-                    let fileDiv:HTMLElement = document.createElement('div');
-                    fileDiv.className = 'tree-file';
-                    fileDiv.id = `tree-file-${file.filename}`;
-
-                    let fileName:HTMLElement;
-                    fileName = document.createElement('a');
-
-                    if(file instanceof LaunchLink){
-                        fileName.setAttribute('href', file.content);
-                    } else {
-                        fileName.setAttribute('href', '#');
-                        fileName.setAttribute('folder', selectedFolder.name);
-                        fileName.className = 'query ';
-                    }
-
-                    fileName.className += 'tree-file-name';
-                    // add filename to a tag
-                    fileName.append(file.filename);
-
-                    // append file div to container
-                    fileDiv.append(fileName);
+                    let fileDiv: HTMLElement = this.createFileDiv(file, selectedFolder);
 
                     filesDiv.append(fileDiv);
                 }
             }
-            // Append files to the tree
-            this.tree.append(filesDiv);
+            // Append files to the folder, then folder to tree
+            folderDiv.append(filesDiv);
+            this.tree.append(folderDiv);
         }
+    }
+
+    private createFileDiv(file: LaunchFile, selectedFolder: LaunchFolder) {
+        let fileDiv: HTMLElement = document.createElement('div');
+        fileDiv.className = 'tree-file';
+        fileDiv.id = `tree-file-${file.filename}`;
+
+        let fileName: HTMLElement;
+        fileName = document.createElement('a');
+
+        if (file instanceof LaunchLink) {
+            fileName.setAttribute('href', file.content);
+        } else {
+            fileName.setAttribute('href', '#');
+            fileName.setAttribute('folder', selectedFolder.name);
+            fileName.className = 'query ';
+        }
+
+        fileName.className += 'tree-file-name';
+        // add filename to a tag
+        fileName.append(file.filename);
+
+        // append file div to container
+        fileDiv.append(fileName);
+        return fileDiv;
     }
 
     private createFolderElement(folder: LaunchFolder) {

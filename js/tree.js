@@ -17,6 +17,7 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
                 .sort((foldera, folderb) => foldera.name > folderb.name ? 1 : -1);
             let files = launch.getFiles();
             this.tree.html('');
+            // If at the root folder show folders
             if (folderID == -1) {
                 for (let i = 0; i < folders.length; i++) {
                     let folder = folders[i];
@@ -49,6 +50,7 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
             }
             else {
                 // Selected a folder, need to display files
+                // Find selected folder
                 let selectedFolder;
                 for (let i = 0; i < folders.length; i++) {
                     let folder = folders[i];
@@ -56,9 +58,8 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
                         selectedFolder = folder;
                     }
                 }
-                // Add the folder name
+                // Add the folder
                 let folderDiv = this.createFolderElement(selectedFolder);
-                this.tree.append(folderDiv);
                 // Get files that belong to this folder
                 let folderFiles = files.filter(file => file.parentId == selectedFolder.id)
                     .sort((filea, fileb) => filea.filename > fileb.filename ? 1 : -1);
@@ -81,30 +82,35 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
                 if (folderFiles.length > 0) {
                     for (let k = 0; k < folderFiles.length; k++) {
                         let file = folderFiles[k];
-                        let fileDiv = document.createElement('div');
-                        fileDiv.className = 'tree-file';
-                        fileDiv.id = `tree-file-${file.filename}`;
-                        let fileName;
-                        fileName = document.createElement('a');
-                        if (file instanceof launchlink_1.LaunchLink) {
-                            fileName.setAttribute('href', file.content);
-                        }
-                        else {
-                            fileName.setAttribute('href', '#');
-                            fileName.setAttribute('folder', selectedFolder.name);
-                            fileName.className = 'query ';
-                        }
-                        fileName.className += 'tree-file-name';
-                        // add filename to a tag
-                        fileName.append(file.filename);
-                        // append file div to container
-                        fileDiv.append(fileName);
+                        let fileDiv = this.createFileDiv(file, selectedFolder);
                         filesDiv.append(fileDiv);
                     }
                 }
-                // Append files to the tree
-                this.tree.append(filesDiv);
+                // Append files to the folder, then folder to tree
+                folderDiv.append(filesDiv);
+                this.tree.append(folderDiv);
             }
+        }
+        createFileDiv(file, selectedFolder) {
+            let fileDiv = document.createElement('div');
+            fileDiv.className = 'tree-file';
+            fileDiv.id = `tree-file-${file.filename}`;
+            let fileName;
+            fileName = document.createElement('a');
+            if (file instanceof launchlink_1.LaunchLink) {
+                fileName.setAttribute('href', file.content);
+            }
+            else {
+                fileName.setAttribute('href', '#');
+                fileName.setAttribute('folder', selectedFolder.name);
+                fileName.className = 'query ';
+            }
+            fileName.className += 'tree-file-name';
+            // add filename to a tag
+            fileName.append(file.filename);
+            // append file div to container
+            fileDiv.append(fileName);
+            return fileDiv;
         }
         createFolderElement(folder) {
             let folderDiv = document.createElement('div');

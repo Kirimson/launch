@@ -33,25 +33,21 @@ a {
 }
 
 .tree-base {
-    /* padding-left: 1em; */
-    /* border-left: solid thin; */
-    font-size: larger;
-    margin: 0.5em;
+    padding-left: 1em;
+    border-left: solid thin;
 }
+
 
 .tree-base:hover {
     cursor: pointer;
 } 
 
-.tree-files {
+.tree-files, .tree-base {
     margin-left: 1em;
     border-left: solid thin;
 }
-.tree-base::before {
-    content: '-';
-}
 
-.tree-file::before {
+.tree-file::before, .tree-base::before {
     content: '';
     border-bottom: thin solid;
     position: absolute;
@@ -152,10 +148,6 @@ a {
     position: relative;
     width:100%;
     height: 100%;
-
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
 }
 
 #console-wrapper {
