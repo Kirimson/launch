@@ -42,7 +42,7 @@ a {
     cursor: pointer;
 } 
 
-.tree-files, .tree-base {
+.tree-files, .tree-base, .tree-spacer {
     margin-left: 1em;
     border-left: solid thin;
 }

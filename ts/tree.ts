@@ -55,14 +55,19 @@ export class Tree {
                         filesDiv.append(fileDiv);
                     }
                 }
-                // Append files to the folder, then folder to tree
+                // Append files to the folder
                 folderDiv.append(filesDiv);
             }
-
+            // add folder to the tree
             this.tree.append(folderDiv);
-
+            // if selected folder matches, add a spacer 
+            if (folderID == folder['id']) {
+                let spacer: HTMLElement = document.createElement('div');
+                spacer.className = 'tree-spacer';
+                spacer.insertAdjacentHTML('beforeend', "&nbsp;");
+                this.tree.append(spacer);
+            }
         }
-
 
         // Files that do not belong in a folder
         let orphanedFiles = files
