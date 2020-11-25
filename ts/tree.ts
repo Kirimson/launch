@@ -50,7 +50,7 @@ export class Tree {
                     for(let k = 0; k < folderFiles.length; k++){
                         let file = folderFiles[k];
 
-                        let fileDiv: HTMLElement = this.createFileDiv(file, folder);
+                        let fileDiv: HTMLElement = this.createFileElement(file, folder);
 
                         filesDiv.append(fileDiv);
                     }
@@ -73,17 +73,17 @@ export class Tree {
         for(let i = 0; i < orphanedFiles.length; i++){
             let file = orphanedFiles[i];
             
-            let orphanDiv: HTMLElement = this.createFileDiv(file);
+            let orphanDiv: HTMLElement = this.createFileElement(file);
 
             this.tree.append(orphanDiv);
         }
     }
 
-    private createFileDiv(file: LaunchFile, selectedFolder?: LaunchFolder) {
+    private createFileElement(file: LaunchFile, selectedFolder?: LaunchFolder) {
         let fileDiv: HTMLElement = document.createElement('div');
 
         if(selectedFolder){
-            fileDiv.className = 'tree-file';
+            fileDiv.className = 'file tree-file';
         } else {
             fileDiv.className = 'tree-base';
         }
@@ -94,6 +94,7 @@ export class Tree {
 
         if (file instanceof LaunchLink) {
             fileName.setAttribute('href', file.content);
+            fileName.className = 'link ';
         } else {
             fileName.setAttribute('href', '#');
             if(selectedFolder){

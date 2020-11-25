@@ -315,6 +315,13 @@ $(function(){
 
     $('#fuzzy-list').on('click', '.fuzzy', function(){
         launch.runFile(String(this.innerHTML.trim()))
-    })
+    });
+
+    $('.link').on('click', function(){
+        let filename = this.innerHTML;
+        console.log(filename);
+        launch.runFile(filename);
+        return false;
+    });
     
 })

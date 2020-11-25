@@ -33,7 +33,7 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
                     if (folderFiles.length > 0) {
                         for (let k = 0; k < folderFiles.length; k++) {
                             let file = folderFiles[k];
-                            let fileDiv = this.createFileDiv(file, folder);
+                            let fileDiv = this.createFileElement(file, folder);
                             filesDiv.append(fileDiv);
                         }
                     }
@@ -48,14 +48,14 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
                 .sort((filea, fileb) => filea.filename > fileb.filename ? 1 : -1);
             for (let i = 0; i < orphanedFiles.length; i++) {
                 let file = orphanedFiles[i];
-                let orphanDiv = this.createFileDiv(file);
+                let orphanDiv = this.createFileElement(file);
                 this.tree.append(orphanDiv);
             }
         }
-        createFileDiv(file, selectedFolder) {
+        createFileElement(file, selectedFolder) {
             let fileDiv = document.createElement('div');
             if (selectedFolder) {
-                fileDiv.className = 'tree-file';
+                fileDiv.className = 'file tree-file';
             }
             else {
                 fileDiv.className = 'tree-base';
@@ -65,6 +65,7 @@ define(["require", "exports", "./launchlink"], function (require, exports, launc
             fileName = document.createElement('a');
             if (file instanceof launchlink_1.LaunchLink) {
                 fileName.setAttribute('href', file.content);
+                fileName.className = 'link ';
             }
             else {
                 fileName.setAttribute('href', '#');

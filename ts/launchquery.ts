@@ -6,9 +6,9 @@ export class LaunchQuery extends LaunchFile{
     public link:string
 
     constructor(public filename:string,
-        public content:string, public parentId?:number, 
+        public content:string, public hits:number, public parentId?:number, 
         public parentName?:string){
-            super(filename, content, parentId, parentName);
+            super(filename, content, hits, parentId, parentName);
 
             this.shortHand = content.substr(0,content.indexOf(' '));
             this.link = content.substr(content.indexOf(' ')+1);
