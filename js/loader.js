@@ -87,6 +87,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
     let resultIndex = 0;
     let fuzzyList = [];
     let fuzzyIndex = -1;
+    // Currently viewed folder
+    let currentFolder = -1;
     // Load or initialise launch
     if (localStorage.getItem('launch')) {
         // try{
@@ -162,7 +164,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                         tools.clearLaunchBox();
                         launch.store();
                         // Update Launch after a command
-                        tree.updateTree(launch);
+                        tree.updateTree(launch, currentFolder);
                         tools.setBackground(launch.getBackground());
                         tools.setWindowColor(launch.getColor());
                         tools.hideTree(launch.getTreeHidden());
@@ -263,6 +265,16 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                 tools.getConsole().val(queryFile.shortHand);
                 tools.getConsole().focus();
             }
+        });
+        $('#tree').on('click', '.tree-folder-name', function () {
+            let folderName = this.innerHTML;
+            let clickedFolder = launch.getFolder(folderName);
+            currentFolder = clickedFolder['id'];
+            tree.updateTree(launch, currentFolder);
+        });
+        $('#tree').on('click', '#tree-file-back', function () {
+            currentFolder = -1;
+            tree.updateTree(launch, -1);
         });
         $('#fuzzy-list').on('click', '.fuzzy', function () {
             launch.runFile(String(this.innerHTML.trim()));

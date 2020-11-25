@@ -3,6 +3,7 @@ import {Tools} from "htmltools"
 import { Tree } from "./tree";
 import { LaunchQuery } from "./launchquery";
 import { LaunchFile } from "./launchfile";
+import { LaunchFolder } from "./launchfolder";
 import { LaunchLink } from "./launchlink";
 
 function isUrl(text:string):boolean{
@@ -109,6 +110,10 @@ let resultIndex:number = 0;
 
 let fuzzyList:string[] = [];
 let fuzzyIndex = -1;
+
+// Currently viewed folder
+let currentFolder = -1;
+
 // Load or initialise launch
 if(localStorage.getItem('launch')){
     // try{
@@ -194,7 +199,7 @@ $(function(){
                     launch.store();
 
                     // Update Launch after a command
-                    tree.updateTree(launch);
+                    tree.updateTree(launch, currentFolder);
                     tools.setBackground(launch.getBackground());
                     tools.setWindowColor(launch.getColor());
                     tools.hideTree(launch.getTreeHidden());
@@ -296,6 +301,19 @@ $(function(){
             tools.getConsole().focus();
         }
     });
+
+    $('#tree').on('click','.tree-folder-name',function() {
+        let folderName = this.innerHTML;
+        let clickedFolder:LaunchFolder = launch.getFolder(folderName);
+        currentFolder = clickedFolder['id']
+        tree.updateTree(launch, currentFolder);
+    });
+
+    $('#tree').on('click','#tree-file-back',function() {
+        currentFolder = -1
+        tree.updateTree(launch, -1);
+    });
+
 
     $('#fuzzy-list').on('click', '.fuzzy', function(){
         launch.runFile(String(this.innerHTML.trim()))
