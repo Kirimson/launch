@@ -305,15 +305,13 @@ $(function(){
     $('#tree').on('click','.tree-folder-name',function() {
         let folderName = this.innerHTML;
         let clickedFolder:LaunchFolder = launch.getFolder(folderName);
-        currentFolder = clickedFolder['id']
+        if (currentFolder == clickedFolder['id']){
+            currentFolder = -1;
+        } else {
+            currentFolder = clickedFolder['id'];
+        }
         tree.updateTree(launch, currentFolder);
     });
-
-    $('#tree').on('click','#tree-file-back',function() {
-        currentFolder = -1
-        tree.updateTree(launch, -1);
-    });
-
 
     $('#fuzzy-list').on('click', '.fuzzy', function(){
         launch.runFile(String(this.innerHTML.trim()))

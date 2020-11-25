@@ -28,99 +28,65 @@ export class Tree {
         let files:LaunchFile[] = launch.getFiles();
         this.tree.html('');
 
-        // If at the root folder show folders
-        if (folderID == -1){
-            for(let i = 0; i < folders.length; i++){
-                let folder = folders[i];
-                
-                // Create folder div element
-                let folderDiv: HTMLElement = this.createFolderElement(folder);
+        for(let i = 0; i < folders.length; i++){
+            let folder = folders[i];
+            
+            // Create folder div element
+            let folderDiv: HTMLElement = this.createFolderElement(folder);
 
-                this.tree.append(folderDiv);
-            }
-            // Files that do not belong in a folder
-            let orphanedFiles = files
-            .filter(file => file.parentId == undefined)
-            .sort((filea, fileb) => 
+            // If current folder is selected, need to display files
+            if (folderID == folder['id']) {
+                // Get files that belong to this folder
+                let folderFiles = files.filter(file => file.parentId == folder.id)
+                .sort((filea, fileb) => 
                 filea.filename > fileb.filename ? 1 : -1);
 
-            for(let i = 0; i < orphanedFiles.length; i++){
-                let file = orphanedFiles[i];
-                // Create folder div element
-                let orphanDiv:HTMLElement = document.createElement('div');
-                orphanDiv.className = 'tree-base';
-                orphanDiv.id = `tree-file-${file.filename}`;
+                // Create div to contain tree files
+                let filesDiv:HTMLElement = document.createElement('div');
+                filesDiv.className = 'tree-files';
 
-                let fileName:HTMLElement;
+                // Add files to the file div
+                if(folderFiles.length > 0){
+                    for(let k = 0; k < folderFiles.length; k++){
+                        let file = folderFiles[k];
 
-                if(file instanceof LaunchLink){
-                    fileName = document.createElement('a');
-                    fileName.setAttribute('href', file.content);
-                } else {
-                    fileName = document.createElement('span');
+                        let fileDiv: HTMLElement = this.createFileDiv(file, folder);
+
+                        filesDiv.append(fileDiv);
+                    }
                 }
-                fileName.append(file.filename);
-                orphanDiv.append(fileName);
-
-                this.tree.append(orphanDiv);
+                // Append files to the folder, then folder to tree
+                folderDiv.append(filesDiv);
             }
+
+            this.tree.append(folderDiv);
+
         }
-        else
-        {
-            // Selected a folder, need to display files
-            // Find selected folder
-            let selectedFolder:LaunchFolder;
-            for(let i = 0; i < folders.length; i++){
-                let folder = folders[i];
-                if(folder['id'] == folderID) {
-                    selectedFolder = folder;
-                }
-            }
 
-            // Add the folder
-            let folderDiv: HTMLElement = this.createFolderElement(selectedFolder);
 
-            // Get files that belong to this folder
-            let folderFiles = files.filter(file => file.parentId == selectedFolder.id)
-            .sort((filea, fileb) => 
+        // Files that do not belong in a folder
+        let orphanedFiles = files
+        .filter(file => file.parentId == undefined)
+        .sort((filea, fileb) => 
             filea.filename > fileb.filename ? 1 : -1);
 
-            // Create div to contain tree files
-            let filesDiv:HTMLElement = document.createElement('div');
-            filesDiv.className = 'tree-files';
+        for(let i = 0; i < orphanedFiles.length; i++){
+            let file = orphanedFiles[i];
+            
+            let orphanDiv: HTMLElement = this.createFileDiv(file);
 
-            // Add .. file to go back
-            //create the div
-            let backDiv: HTMLElement = document.createElement('div');
-            backDiv.className = 'tree-file';
-            backDiv.id = 'tree-file-back';
-            // create a element to contain text
-            let backFileName:HTMLElement;
-            backFileName = document.createElement('a');
-            // add the text
-            backFileName.append('..');
-            backDiv.append(backFileName);
-            filesDiv.append(backDiv);
-
-            // Add files to the file div
-            if(folderFiles.length > 0){
-                for(let k = 0; k < folderFiles.length; k++){
-                    let file = folderFiles[k];
-
-                    let fileDiv: HTMLElement = this.createFileDiv(file, selectedFolder);
-
-                    filesDiv.append(fileDiv);
-                }
-            }
-            // Append files to the folder, then folder to tree
-            folderDiv.append(filesDiv);
-            this.tree.append(folderDiv);
+            this.tree.append(orphanDiv);
         }
     }
 
-    private createFileDiv(file: LaunchFile, selectedFolder: LaunchFolder) {
+    private createFileDiv(file: LaunchFile, selectedFolder?: LaunchFolder) {
         let fileDiv: HTMLElement = document.createElement('div');
-        fileDiv.className = 'tree-file';
+
+        if(selectedFolder){
+            fileDiv.className = 'tree-file';
+        } else {
+            fileDiv.className = 'tree-base';
+        }
         fileDiv.id = `tree-file-${file.filename}`;
 
         let fileName: HTMLElement;
@@ -130,7 +96,9 @@ export class Tree {
             fileName.setAttribute('href', file.content);
         } else {
             fileName.setAttribute('href', '#');
-            fileName.setAttribute('folder', selectedFolder.name);
+            if(selectedFolder){
+                fileName.setAttribute('folder', selectedFolder.name);
+            }
             fileName.className = 'query ';
         }
 
