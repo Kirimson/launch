@@ -3,6 +3,7 @@ import {Tools} from "htmltools"
 import { Tree } from "./tree";
 import { LaunchQuery } from "./launchquery";
 import { LaunchFile } from "./launchfile";
+import { LaunchFolder } from "./launchfolder";
 import { LaunchLink } from "./launchlink";
 
 function isUrl(text:string):boolean{
@@ -43,7 +44,9 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
             folder = split[0],
             fileName = split[1];
         if(fileName){
-            let fileLinks = launch.getFiles().filter(file => file instanceof LaunchLink);
+            let fileLinks = launch.getFiles()
+                .filter(file => file instanceof LaunchLink)
+                .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
             fileLinks = fileLinks.filter(file => file.parentName == folder);
 
             let found = fuzzyFindFile(fileLinks, compositeValue, fileName)
@@ -65,7 +68,9 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
     }
 
     // Or... Files that are in root
-    let fileLinks = launch.getFiles().filter(file => file instanceof LaunchLink);
+    let fileLinks = launch.getFiles()
+        .filter(file => file instanceof LaunchLink)
+        .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
     fileLinks = fileLinks.filter(file => !file.parentName);
 
     let found = fuzzyFindFile(fileLinks, compositeValue, search)
@@ -109,6 +114,10 @@ let resultIndex:number = 0;
 
 let fuzzyList:string[] = [];
 let fuzzyIndex = -1;
+
+// Currently viewed folder
+let currentFolder = -1;
+
 // Load or initialise launch
 if(localStorage.getItem('launch')){
     // try{
@@ -194,7 +203,7 @@ $(function(){
                     launch.store();
 
                     // Update Launch after a command
-                    tree.updateTree(launch);
+                    tree.updateTree(launch, currentFolder);
                     tools.setBackground(launch.getBackground());
                     tools.setWindowColor(launch.getColor());
                     tools.hideTree(launch.getTreeHidden());
@@ -297,8 +306,26 @@ $(function(){
         }
     });
 
+    $('#tree').on('click','.tree-folder-name',function() {
+        let folderName = this.innerHTML;
+        let clickedFolder:LaunchFolder = launch.getFolder(folderName);
+        if (currentFolder == clickedFolder['id']){
+            currentFolder = -1;
+        } else {
+            currentFolder = clickedFolder['id'];
+        }
+        tree.updateTree(launch, currentFolder);
+    });
+
     $('#fuzzy-list').on('click', '.fuzzy', function(){
         launch.runFile(String(this.innerHTML.trim()))
-    })
+    });
+
+    $('.link').on('click', function(){
+        let filename = this.innerHTML;
+        console.log(filename);
+        launch.runFile(filename);
+        return false;
+    });
     
 })

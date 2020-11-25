@@ -23,7 +23,8 @@ export class Launcher {
                                             'rmdir', 'set-bg', 'set-background',
                                             'feh', 'tree', 'setsearch', 'mv',
                                             'set-color', 'set-colo', 'colo',
-                                            'fuzzy', 'launch-hide-privacy',
+                                            'fuzzy', 'clear-hits', 'set-hits',
+                                            'launch-hide-privacy',
                                             'launch-show-privacy'];
 
     constructor() {
@@ -260,6 +261,11 @@ export class Launcher {
                 commandReturn = ''
                 this.fuzzy = !this.fuzzy;
                 break;
+            case 'clear-hits':
+                commandReturn = this.setHits(args);
+            case 'set-hits':
+                commandReturn = this.setHits(args.split(' ')[0],
+                    parseInt(args.split(' ')[1]));
             case 'launch-hide-privacy':
                 this.privacy = false; 
                 break;
@@ -340,7 +346,6 @@ export class Launcher {
                 let folderFile = newName.split('/');
                 let newFolder = this.getFolder(folderFile[0]);
 
-                // console.log(folderFile[1])
                 // Rename file if needed
                 if(folderFile[1]){
                     targetFile.rename(folderFile[1]);
@@ -371,7 +376,7 @@ export class Launcher {
      * @param newFile file to create
      * @param content content to add to file
      */
-    touch(newFile:string, content?:string) {
+    touch(newFile:string, content?:string, hits:number = 0) {
         if(newFile == ''){
             return 'Error: no filename was given'
         }
@@ -389,14 +394,14 @@ export class Launcher {
 
             let parentFolder:LaunchFolder = this.getFolder(args[0]);
             if(parentFolder){
-                this.files.push(this.createFile(args[1], content, 
+                this.files.push(this.createFile(args[1], content, hits,
                 parentFolder.id, parentFolder.name));
             } else {
                 return `Error: folder '${args[0]}' not found`;
             }
 
         } else {
-            this.files.push(this.createFile(newFile, content));
+            this.files.push(this.createFile(newFile, content, hits));
         }
     }
 
@@ -460,7 +465,7 @@ export class Launcher {
      * @param parentId folder id, if file is in a folder
      * @param parentName  folder name, if file is in a folder
      */
-    createFile(filename:string, content:string, parentId?:number,
+    createFile(filename:string, content:string, hits:number = 0, parentId?:number,
         parentName?:string): LaunchFile{
             //  Check if there is any file content
             if(!content){
@@ -475,9 +480,9 @@ export class Launcher {
             if(filename.match('.lnk')){
                 // Check content is a proper url
                 content = this.checkHttp(content)
-                return new LaunchLink(filename, content, parentId, parentName);
+                return new LaunchLink(filename, content, hits, parentId, parentName);
             } else {
-                return new LaunchQuery(filename, content, parentId, parentName);
+                return new LaunchQuery(filename, content, hits, parentId, parentName);
             }
     }
 
@@ -501,11 +506,32 @@ export class Launcher {
             // Check if filename (e.g launch/google.lnk or g:) 
             // matches description of file. If so, execute that file
             if(file.toString() == fileName || file.getLocation() == fileName){
+                file.hits += 1;
+                this.store();
                 file.execute(queryArg);
                 return;
             }
         };
         this.runFile(this.defaultSearch+fileName);
+    }
+
+    /**
+     * Clears the 'hitcount' a file as accumulated
+     * @param fileName name of file to clear the hits of
+     */
+    setHits(fileName:string, newHits:number = 0){
+
+        console.log(newHits);
+
+        let fileID = this.getFileID(fileName);
+        if(fileID != -1){
+            let file: LaunchFile = this.files[fileID];
+            file.hits = newHits;
+            this.store();
+        } else {
+            return `Error: file '${fileName}' not found`;
+        }
+        return '';
     }
 
     /**
@@ -515,10 +541,13 @@ export class Launcher {
      *          search term provided
      */
     search(term:string):string[] {
-        let links = this.files
+        let sortedLinks = this.files
         .filter(file => file instanceof LaunchLink)
+        .filter(file => file.getLocation().match(term))
+        .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
+
+        let links = sortedLinks
         .map(file => file.getLocation())
-        .filter(file => file.match(term));
 
         return links;
     }
@@ -571,6 +600,7 @@ export class Launcher {
             let fileData = {
                 'filename': file.getLocation(),
                 'content': file.content,
+                'hits': file.hits
             }
             filesData['files'].push(fileData);
         });
@@ -654,7 +684,11 @@ export class Launcher {
     loadFiles(files:JSON) {
         for(let x = 0; x < files['files'].length; x++){
             let file = files['files'][x];
-            this.touch(file['filename'], file['content']);
+            let hits = 0
+            if (file['hits']){
+                hits = file['hits'];
+            }
+            this.touch(file['filename'], file['content'], hits);
         };
     }
 }

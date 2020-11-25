@@ -2,7 +2,7 @@ export class LaunchFile {
     // ID number of folder is used, to avoid cyclic references that cannot
     // be serialised easily
     constructor(public filename:string, 
-        public content:string, public parentId?:number, 
+        public content:string, public hits:number, public parentId?:number, 
         public parentName?:string){}
         public extension:string;
 

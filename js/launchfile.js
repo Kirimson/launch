@@ -5,9 +5,10 @@ define(["require", "exports"], function (require, exports) {
     class LaunchFile {
         // ID number of folder is used, to avoid cyclic references that cannot
         // be serialised easily
-        constructor(filename, content, parentId, parentName) {
+        constructor(filename, content, hits, parentId, parentName) {
             this.filename = filename;
             this.content = content;
+            this.hits = hits;
             this.parentId = parentId;
             this.parentName = parentName;
         }

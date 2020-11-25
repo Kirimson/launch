@@ -3,9 +3,9 @@ import { LaunchFile } from "./launchfile";
 export class LaunchLink extends LaunchFile {
     
     constructor(public filename:string, 
-        public content:string, public parentId?:number, 
+        public content:string, public hits:number, public parentId?:number, 
         public parentName?:string){
-            super(filename, content, parentId, parentName);
+            super(filename, content, hits, parentId, parentName);
             this.extension = '.lnk';
         }
 
