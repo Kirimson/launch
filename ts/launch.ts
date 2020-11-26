@@ -512,14 +512,14 @@ export class Launcher {
             if(file.toString() == fileName || file.getLocation() == fileName){
                 file.hits += 1;
                 this.store();
-                queryArg = encodeURIComponent(queryArg);
+                queryArg = encodeURIComponent(queryArg).replace(/%20/g, "+");
                 file.execute(queryArg);
                 return;
             }
         };
         // If no macthes, use default query file
         // and properly encode the string for the query text
-        let searchTerm:string = encodeURIComponent(userString);
+        let searchTerm:string = encodeURIComponent(userString).replace(/%20/g, "+");
         this.runFile(this.defaultSearch+searchTerm);
     }
 

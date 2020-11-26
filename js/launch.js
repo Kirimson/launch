@@ -443,7 +443,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 if (file.toString() == fileName || file.getLocation() == fileName) {
                     file.hits += 1;
                     this.store();
-                    queryArg = encodeURIComponent(queryArg);
+                    queryArg = encodeURIComponent(queryArg).replace(/%20/g, "+");
                     file.execute(queryArg);
                     return;
                 }
@@ -451,7 +451,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             ;
             // If no macthes, use default query file
             // and properly encode the string for the query text
-            let searchTerm = encodeURIComponent(userString);
+            let searchTerm = encodeURIComponent(userString).replace(/%20/g, "+");
             this.runFile(this.defaultSearch + searchTerm);
         }
         /**
