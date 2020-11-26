@@ -1,4 +1,4 @@
-define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", "./launchlink"], function (require, exports, launch_1, htmltools_1, tree_1, launchquery_1, launchlink_1) {
+define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"], function (require, exports, launch_1, htmltools_1, tree_1, launchquery_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function isUrl(text) {
@@ -32,7 +32,6 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
             let split = search.split('/'), folder = split[0], fileName = split[1];
             if (fileName) {
                 let fileLinks = launch.getFiles()
-                    .filter(file => file instanceof launchlink_1.LaunchLink)
                     .sort((a, b) => (a['hits'] < b['hits']) ? 1 : -1);
                 fileLinks = fileLinks.filter(file => file.parentName == folder);
                 let found = fuzzyFindFile(fileLinks, compositeValue, fileName);
@@ -53,7 +52,6 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
         }
         // Or... Files that are in root
         let fileLinks = launch.getFiles()
-            .filter(file => file instanceof launchlink_1.LaunchLink)
             .sort((a, b) => (a['hits'] < b['hits']) ? 1 : -1);
         fileLinks = fileLinks.filter(file => !file.parentName);
         let found = fuzzyFindFile(fileLinks, compositeValue, search);
@@ -180,7 +178,13 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
                     else {
                         // Check if fuzzy list is used and has a link selected
                         if (fuzzyList.length > 0 && fuzzyIndex != -1) {
-                            launch.runFile(fuzzyList[fuzzyIndex]);
+                            let chosenFile = launch.getFile(fuzzyList[fuzzyIndex]);
+                            if (chosenFile instanceof launchquery_1.LaunchQuery) {
+                                tools.setConsoleText(chosenFile.toString());
+                            }
+                            else {
+                                chosenFile.execute();
+                            }
                             // check if url before anything else. least taxing
                         }
                         else if (isUrl(launchVal)) {

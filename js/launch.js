@@ -490,7 +490,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          */
         search(term) {
             let sortedLinks = this.files
-                .filter(file => file instanceof launchlink_1.LaunchLink)
                 .filter(file => file.getLocation().match(term))
                 .sort((a, b) => (a['hits'] < b['hits']) ? 1 : -1);
             let links = sortedLinks

@@ -561,7 +561,6 @@ export class Launcher {
      */
     search(term:string):string[] {
         let sortedLinks = this.files
-        .filter(file => file instanceof LaunchLink)
         .filter(file => file.getLocation().match(term))
         .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
 
