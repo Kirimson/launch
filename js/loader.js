@@ -115,6 +115,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery", 
     }
     else {
         launch.initLaunch();
+        tools.addHistory('Welcome to Launch! Use launch-help to see the README');
         launch.store();
     }
     // Start loading things in
