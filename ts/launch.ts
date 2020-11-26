@@ -493,16 +493,27 @@ export class Launcher {
     /**
      * Executes a file given a full file name/path, such as launch/google.lnk
      * Checks if term speocfies a query and searchs based on shorthand if it is 
-     * @param fileName string of file name
+     * @param userString string to execute
      */
-    runFile(fileName:string){
+    runFile(userString:string){
         // Split with spaces if using query
+        let fileName:string;
         let queryArg:string;
 
-        if(this.isQuerySearch(fileName)){
-            let shorthand = fileName.split(':')[0]+':'
-            queryArg = fileName.substr(shorthand.length).trim();
+        // Check if using shorthand for a query file
+        if(this.isQuerySearch(userString)){
+            // Split the prefix from the search term
+            let shorthand = userString.split(':')[0]+':'
+            queryArg = userString.substr(shorthand.length).trim();
             fileName = shorthand;
+        } else {
+            // If file is ran using filename instead,
+            // get the potential searchterm
+            let stringSplit = userString.split(' ');
+            // Set the filename to the first string
+            fileName = stringSplit[0];
+            // Set the query to the rest of the userString
+            queryArg = stringSplit.slice(1, stringSplit.length).join(' ');
         }
 
         for(let i = 0; i < this.files.length; i++){
@@ -512,11 +523,15 @@ export class Launcher {
             if(file.toString() == fileName || file.getLocation() == fileName){
                 file.hits += 1;
                 this.store();
+                queryArg = encodeURIComponent(queryArg);
                 file.execute(queryArg);
                 return;
             }
         };
-        this.runFile(this.defaultSearch+fileName);
+        // If no macthes, use default query file
+        // and properly encode the string for the query text
+        let searchTerm:string = encodeURIComponent(userString);
+        this.runFile(this.defaultSearch+searchTerm);
     }
 
     /**
