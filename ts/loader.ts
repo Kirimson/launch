@@ -139,6 +139,7 @@ if(localStorage.getItem('launch')){
     // }
 } else {
     launch.initLaunch();
+    tools.addHistory('Welcome to Launch! Use launch-help to see the README');
     launch.store();
 }
 

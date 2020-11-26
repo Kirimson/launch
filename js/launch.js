@@ -7,10 +7,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.nextFolderId = 0;
             this.backgroundDefault = 'img/default.png';
             this.defaultSearch = 'g:';
-            this.treeHidden = true;
+            this.treeHidden = false;
             this.history = [''];
             this.color = '#333';
-            this.fuzzy = false;
+            this.fuzzy = true;
             this.privacy = true;
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'set-bg', 'set-background',
@@ -18,7 +18,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 'set-color', 'set-colo', 'colo',
                 'fuzzy', 'clear-hits', 'set-hits',
                 'launch-hide-privacy',
-                'launch-show-privacy'];
+                'launch-show-privacy',
+                'launch-help'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -231,6 +232,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     break;
                 case 'launch-show-privacy':
                     this.privacy = true;
+                    break;
+                case 'launch-help':
+                    window.location.href = 'https://github.com/Kirimson/launch/blob/master/README.md';
                     break;
             }
             // Return commandreturn if command gave a return statement.

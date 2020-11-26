@@ -12,11 +12,11 @@ export class Launcher {
     private backgroundDefault: string = 'img/default.png'
     private background: string;
     private defaultSearch = 'g:'
-    private treeHidden: boolean = true;
+    private treeHidden: boolean = false;
     private history:string[] = [''];
     private historyIndex:number;
     private color = '#333';
-    private fuzzy:boolean = false;
+    private fuzzy:boolean = true;
     private privacy:boolean = true;
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
@@ -25,7 +25,8 @@ export class Launcher {
                                             'set-color', 'set-colo', 'colo',
                                             'fuzzy', 'clear-hits', 'set-hits',
                                             'launch-hide-privacy',
-                                            'launch-show-privacy'];
+                                            'launch-show-privacy',
+                                            'launch-help'];
 
     constructor() {
         this.folders = [];
@@ -271,6 +272,9 @@ export class Launcher {
                 break;
             case 'launch-show-privacy':
                 this.privacy = true;
+                break;
+            case 'launch-help':
+                window.location.href = 'https://github.com/Kirimson/launch/blob/master/README.md';
                 break;
         }
 
