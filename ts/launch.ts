@@ -275,6 +275,7 @@ export class Launcher {
                 break;
             case 'launch-help':
                 window.location.href = 'https://github.com/Kirimson/launch/blob/master/README.md';
+                break;
         }
 
         // Return commandreturn if command gave a return statement.

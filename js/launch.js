@@ -235,6 +235,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                     break;
                 case 'launch-help':
                     window.location.href = 'https://github.com/Kirimson/launch/blob/master/README.md';
+                    break;
             }
             // Return commandreturn if command gave a return statement.
             // Else, return the command the user provided
