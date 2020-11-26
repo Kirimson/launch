@@ -13,6 +13,7 @@ define(["require", "exports", "./launchfile"], function (require, exports, launc
             this.extension = '.lnk';
         }
         execute() {
+            console.log(this.content);
             window.location.href = this.content;
         }
         toString() {

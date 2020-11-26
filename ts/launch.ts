@@ -2,6 +2,7 @@ import { LaunchFolder } from "./launchfolder";
 import { LaunchFile } from "./launchfile";
 import { LaunchLink } from "./launchlink";
 import { LaunchQuery } from "./launchquery";
+import { Helper } from "./helpers";
 
 
 export class Launcher {
@@ -51,18 +52,6 @@ export class Launcher {
                     'map: https://www.google.co.uk/maps/search/${}');
         this.touch('launch/duckduckgo.qry',
                     'ddg: https://duckduckgo.com/?q=${}');
-    }
-    
-    /**
-     * Checks if text contains http, if not, prepend it
-     * @param text text to check
-     */
-    private checkHttp(text:string):string{
-        let pattern = /(http(s)?:\/\/.).*/g
-        if(text.match(pattern)){
-            return text;
-        }
-        return 'http://'+text;
     }
 
     getBackground(): string {
@@ -482,8 +471,8 @@ export class Launcher {
             }
 
             if(filename.match('.lnk')){
-                // Check content is a proper url
-                content = this.checkHttp(content)
+                // Ensure content is a proper url
+                content = Helper.ensureHttp(content)
                 return new LaunchLink(filename, content, hits, parentId, parentName);
             } else {
                 return new LaunchQuery(filename, content, hits, parentId, parentName);
@@ -539,9 +528,6 @@ export class Launcher {
      * @param fileName name of file to clear the hits of
      */
     setHits(fileName:string, newHits:number = 0){
-
-        console.log(newHits);
-
         let fileID = this.getFileID(fileName);
         if(fileID != -1){
             let file: LaunchFile = this.files[fileID];

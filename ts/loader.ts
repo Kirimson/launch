@@ -302,9 +302,12 @@ $(function(){
         let fileName = this.innerHTML;
         let folderName = this.getAttribute('folder');
     
-        let fileLocation = `${folderName}/${fileName}`;
-    
-        let queryFile:LaunchFile = launch.getFile(fileLocation);
+        if(folderName){
+            fileName = `${folderName}/${fileName}`;
+        }
+
+        let queryFile:LaunchFile = launch.getFile(fileName);
+        console.log(queryFile);
         if(queryFile instanceof LaunchQuery){
             tools.getConsole().val(queryFile.shortHand);
             tools.getConsole().focus();

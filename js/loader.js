@@ -268,8 +268,11 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
         $('#tree').on('click', '.query', function () {
             let fileName = this.innerHTML;
             let folderName = this.getAttribute('folder');
-            let fileLocation = `${folderName}/${fileName}`;
-            let queryFile = launch.getFile(fileLocation);
+            if (folderName) {
+                fileName = `${folderName}/${fileName}`;
+            }
+            let queryFile = launch.getFile(fileName);
+            console.log(queryFile);
             if (queryFile instanceof launchquery_1.LaunchQuery) {
                 tools.getConsole().val(queryFile.shortHand);
                 tools.getConsole().focus();

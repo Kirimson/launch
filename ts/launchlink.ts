@@ -10,6 +10,7 @@ export class LaunchLink extends LaunchFile {
         }
 
     execute() {
+        console.log(this.content);
         window.location.href = this.content;
     }
 

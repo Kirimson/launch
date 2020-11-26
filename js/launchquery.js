@@ -1,4 +1,4 @@
-define(["require", "exports", "./launchfile"], function (require, exports, launchfile_1) {
+define(["require", "exports", "./launchfile", "./helpers"], function (require, exports, launchfile_1, helpers_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LaunchQuery = void 0;
@@ -11,11 +11,17 @@ define(["require", "exports", "./launchfile"], function (require, exports, launc
             this.parentId = parentId;
             this.parentName = parentName;
             this.shortHand = content.substr(0, content.indexOf(' '));
+            // If file was made without : add it
+            if (this.shortHand.endsWith(':') == false) {
+                this.shortHand = this.shortHand + ":";
+            }
             this.link = content.substr(content.indexOf(' ') + 1);
             this.extension = '.qry';
         }
         execute(queryArg) {
-            window.location.href = this.link.replace('${}', queryArg);
+            let newLoc = this.link.replace('${}', queryArg);
+            newLoc = helpers_1.Helper.ensureHttp(newLoc);
+            window.location.href = newLoc;
         }
         toString() {
             return this.shortHand;

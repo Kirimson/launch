@@ -1,4 +1,4 @@
-define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"], function (require, exports, launchfolder_1, launchlink_1, launchquery_1) {
+define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery", "./helpers"], function (require, exports, launchfolder_1, launchlink_1, launchquery_1, helpers_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Launcher = void 0;
@@ -36,17 +36,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.touch('launch/amazon.qry', 'ama: https://www.amazon.co.uk/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords=${}');
             this.touch('launch/google_maps.qry', 'map: https://www.google.co.uk/maps/search/${}');
             this.touch('launch/duckduckgo.qry', 'ddg: https://duckduckgo.com/?q=${}');
-        }
-        /**
-         * Checks if text contains http, if not, prepend it
-         * @param text text to check
-         */
-        checkHttp(text) {
-            let pattern = /(http(s)?:\/\/.).*/g;
-            if (text.match(pattern)) {
-                return text;
-            }
-            return 'http://' + text;
         }
         getBackground() {
             return this.background;
@@ -414,8 +403,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 filename += '.lnk';
             }
             if (filename.match('.lnk')) {
-                // Check content is a proper url
-                content = this.checkHttp(content);
+                // Ensure content is a proper url
+                content = helpers_1.Helper.ensureHttp(content);
                 return new launchlink_1.LaunchLink(filename, content, hits, parentId, parentName);
             }
             else {
@@ -470,7 +459,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          * @param fileName name of file to clear the hits of
          */
         setHits(fileName, newHits = 0) {
-            console.log(newHits);
             let fileID = this.getFileID(fileName);
             if (fileID != -1) {
                 let file = this.files[fileID];

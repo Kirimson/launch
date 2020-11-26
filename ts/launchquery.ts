@@ -1,4 +1,5 @@
 import { LaunchFile } from "./launchfile";
+import { Helper } from "./helpers";
 
 export class LaunchQuery extends LaunchFile{
 
@@ -11,12 +12,18 @@ export class LaunchQuery extends LaunchFile{
             super(filename, content, hits, parentId, parentName);
 
             this.shortHand = content.substr(0,content.indexOf(' '));
+            // If file was made without : add it
+            if(this.shortHand.endsWith(':') == false){
+                this.shortHand = this.shortHand + ":";
+            }
             this.link = content.substr(content.indexOf(' ')+1);
             this.extension = '.qry';
         }
     
     execute(queryArg:string){
-        window.location.href = this.link.replace('${}', queryArg);
+        let newLoc:string = this.link.replace('${}', queryArg)
+        newLoc = Helper.ensureHttp(newLoc)
+        window.location.href = newLoc;
     }
 
     toString():string {
