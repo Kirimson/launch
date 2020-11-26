@@ -45,7 +45,6 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
             fileName = split[1];
         if(fileName){
             let fileLinks = launch.getFiles()
-                .filter(file => file instanceof LaunchLink)
                 .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
             fileLinks = fileLinks.filter(file => file.parentName == folder);
 
@@ -69,7 +68,6 @@ function getSimilar(value: string, fuzzy:boolean=true): string {
 
     // Or... Files that are in root
     let fileLinks = launch.getFiles()
-        .filter(file => file instanceof LaunchLink)
         .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
     fileLinks = fileLinks.filter(file => !file.parentName);
 
@@ -215,7 +213,13 @@ $(function(){
                 } else {
                     // Check if fuzzy list is used and has a link selected
                     if(fuzzyList.length > 0 && fuzzyIndex != -1){
-                        launch.runFile(fuzzyList[fuzzyIndex])
+
+                        let chosenFile = launch.getFile(fuzzyList[fuzzyIndex]);
+                        if(chosenFile instanceof LaunchQuery ){
+                            tools.setConsoleText(chosenFile.toString());
+                        } else {
+                            chosenFile.execute();
+                        }
                     // check if url before anything else. least taxing
                     } else if(isUrl(launchVal)){
                         window.location.href = checkHttp(launchVal);
@@ -298,9 +302,12 @@ $(function(){
         let fileName = this.innerHTML;
         let folderName = this.getAttribute('folder');
     
-        let fileLocation = `${folderName}/${fileName}`;
-    
-        let queryFile:LaunchFile = launch.getFile(fileLocation);
+        if(folderName){
+            fileName = `${folderName}/${fileName}`;
+        }
+
+        let queryFile:LaunchFile = launch.getFile(fileName);
+        console.log(queryFile);
         if(queryFile instanceof LaunchQuery){
             tools.getConsole().val(queryFile.shortHand);
             tools.getConsole().focus();

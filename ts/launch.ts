@@ -2,6 +2,7 @@ import { LaunchFolder } from "./launchfolder";
 import { LaunchFile } from "./launchfile";
 import { LaunchLink } from "./launchlink";
 import { LaunchQuery } from "./launchquery";
+import { Helper } from "./helpers";
 
 
 export class Launcher {
@@ -51,18 +52,6 @@ export class Launcher {
                     'map: https://www.google.co.uk/maps/search/${}');
         this.touch('launch/duckduckgo.qry',
                     'ddg: https://duckduckgo.com/?q=${}');
-    }
-    
-    /**
-     * Checks if text contains http, if not, prepend it
-     * @param text text to check
-     */
-    private checkHttp(text:string):string{
-        let pattern = /(http(s)?:\/\/.).*/g
-        if(text.match(pattern)){
-            return text;
-        }
-        return 'http://'+text;
     }
 
     getBackground(): string {
@@ -482,8 +471,8 @@ export class Launcher {
             }
 
             if(filename.match('.lnk')){
-                // Check content is a proper url
-                content = this.checkHttp(content)
+                // Ensure content is a proper url
+                content = Helper.ensureHttp(content)
                 return new LaunchLink(filename, content, hits, parentId, parentName);
             } else {
                 return new LaunchQuery(filename, content, hits, parentId, parentName);
@@ -493,16 +482,27 @@ export class Launcher {
     /**
      * Executes a file given a full file name/path, such as launch/google.lnk
      * Checks if term speocfies a query and searchs based on shorthand if it is 
-     * @param fileName string of file name
+     * @param userString string to execute
      */
-    runFile(fileName:string){
+    runFile(userString:string){
         // Split with spaces if using query
+        let fileName:string;
         let queryArg:string;
 
-        if(this.isQuerySearch(fileName)){
-            let shorthand = fileName.split(':')[0]+':'
-            queryArg = fileName.substr(shorthand.length).trim();
+        // Check if using shorthand for a query file
+        if(this.isQuerySearch(userString)){
+            // Split the prefix from the search term
+            let shorthand = userString.split(':')[0]+':'
+            queryArg = userString.substr(shorthand.length).trim();
             fileName = shorthand;
+        } else {
+            // If file is ran using filename instead,
+            // get the potential searchterm
+            let stringSplit = userString.split(' ');
+            // Set the filename to the first string
+            fileName = stringSplit[0];
+            // Set the query to the rest of the userString
+            queryArg = stringSplit.slice(1, stringSplit.length).join(' ');
         }
 
         for(let i = 0; i < this.files.length; i++){
@@ -512,11 +512,15 @@ export class Launcher {
             if(file.toString() == fileName || file.getLocation() == fileName){
                 file.hits += 1;
                 this.store();
+                queryArg = encodeURIComponent(queryArg);
                 file.execute(queryArg);
                 return;
             }
         };
-        this.runFile(this.defaultSearch+fileName);
+        // If no macthes, use default query file
+        // and properly encode the string for the query text
+        let searchTerm:string = encodeURIComponent(userString);
+        this.runFile(this.defaultSearch+searchTerm);
     }
 
     /**
@@ -524,9 +528,6 @@ export class Launcher {
      * @param fileName name of file to clear the hits of
      */
     setHits(fileName:string, newHits:number = 0){
-
-        console.log(newHits);
-
         let fileID = this.getFileID(fileName);
         if(fileID != -1){
             let file: LaunchFile = this.files[fileID];
@@ -546,7 +547,6 @@ export class Launcher {
      */
     search(term:string):string[] {
         let sortedLinks = this.files
-        .filter(file => file instanceof LaunchLink)
         .filter(file => file.getLocation().match(term))
         .sort((a,b) => (a['hits'] < b['hits']) ? 1 : -1);
 

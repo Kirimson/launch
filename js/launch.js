@@ -1,4 +1,4 @@
-define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"], function (require, exports, launchfolder_1, launchlink_1, launchquery_1) {
+define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery", "./helpers"], function (require, exports, launchfolder_1, launchlink_1, launchquery_1, helpers_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Launcher = void 0;
@@ -36,17 +36,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
             this.touch('launch/amazon.qry', 'ama: https://www.amazon.co.uk/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords=${}');
             this.touch('launch/google_maps.qry', 'map: https://www.google.co.uk/maps/search/${}');
             this.touch('launch/duckduckgo.qry', 'ddg: https://duckduckgo.com/?q=${}');
-        }
-        /**
-         * Checks if text contains http, if not, prepend it
-         * @param text text to check
-         */
-        checkHttp(text) {
-            let pattern = /(http(s)?:\/\/.).*/g;
-            if (text.match(pattern)) {
-                return text;
-            }
-            return 'http://' + text;
         }
         getBackground() {
             return this.background;
@@ -414,8 +403,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 filename += '.lnk';
             }
             if (filename.match('.lnk')) {
-                // Check content is a proper url
-                content = this.checkHttp(content);
+                // Ensure content is a proper url
+                content = helpers_1.Helper.ensureHttp(content);
                 return new launchlink_1.LaunchLink(filename, content, hits, parentId, parentName);
             }
             else {
@@ -425,15 +414,27 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
         /**
          * Executes a file given a full file name/path, such as launch/google.lnk
          * Checks if term speocfies a query and searchs based on shorthand if it is
-         * @param fileName string of file name
+         * @param userString string to execute
          */
-        runFile(fileName) {
+        runFile(userString) {
             // Split with spaces if using query
+            let fileName;
             let queryArg;
-            if (this.isQuerySearch(fileName)) {
-                let shorthand = fileName.split(':')[0] + ':';
-                queryArg = fileName.substr(shorthand.length).trim();
+            // Check if using shorthand for a query file
+            if (this.isQuerySearch(userString)) {
+                // Split the prefix from the search term
+                let shorthand = userString.split(':')[0] + ':';
+                queryArg = userString.substr(shorthand.length).trim();
                 fileName = shorthand;
+            }
+            else {
+                // If file is ran using filename instead,
+                // get the potential searchterm
+                let stringSplit = userString.split(' ');
+                // Set the filename to the first string
+                fileName = stringSplit[0];
+                // Set the query to the rest of the userString
+                queryArg = stringSplit.slice(1, stringSplit.length).join(' ');
             }
             for (let i = 0; i < this.files.length; i++) {
                 let file = this.files[i];
@@ -442,19 +443,22 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
                 if (file.toString() == fileName || file.getLocation() == fileName) {
                     file.hits += 1;
                     this.store();
+                    queryArg = encodeURIComponent(queryArg);
                     file.execute(queryArg);
                     return;
                 }
             }
             ;
-            this.runFile(this.defaultSearch + fileName);
+            // If no macthes, use default query file
+            // and properly encode the string for the query text
+            let searchTerm = encodeURIComponent(userString);
+            this.runFile(this.defaultSearch + searchTerm);
         }
         /**
          * Clears the 'hitcount' a file as accumulated
          * @param fileName name of file to clear the hits of
          */
         setHits(fileName, newHits = 0) {
-            console.log(newHits);
             let fileID = this.getFileID(fileName);
             if (fileID != -1) {
                 let file = this.files[fileID];
@@ -474,7 +478,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery"]
          */
         search(term) {
             let sortedLinks = this.files
-                .filter(file => file instanceof launchlink_1.LaunchLink)
                 .filter(file => file.getLocation().match(term))
                 .sort((a, b) => (a['hits'] < b['hits']) ? 1 : -1);
             let links = sortedLinks

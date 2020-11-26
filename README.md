@@ -6,7 +6,9 @@ A customisable startpage, made to look like and feel like a terminal
 
 Launch is comprised files and folders. Folders can be added with the `mkdir`
 command, and files can be added to both the root of Launch, or to a folder
-with the `touch` command. As of right now, you can't make nested folders, sorry!
+with the `touch` command.
+
+As of right now, you can't make nested folders, sorry!
 
 ## Files
 
@@ -31,8 +33,13 @@ URL in a user-defined spot. Allows you to make files to search sites, fill in
 just a small part of a URL with custom input, etc...
 
 Query Files can be used by typing the prefix for that file, followed by any text
-to search with. Query files can also be clicked on in the tree to insert the
-prefix into the commandline for you.
+to search with.
+
+Query files can also be clicked on in the tree to insert the prefix into the
+commandline for you.
+
+Query files can also be used by typing the path to the file, all additional text
+after a space will be used as the search term. 
 
 ## Default Files
 
@@ -100,6 +107,7 @@ Examples:
 
 Notes:
 
+- if no file extension is provided, Launch will assume the filetype is .lnk
 - in the Query example `s:` will be used as the prefix for the query files
 - in the link for Query files, ${} will be replaced with whatever is provided
 after the Query file's prefix when a Query file is ran. E.g s:hello will take
@@ -199,6 +207,8 @@ Notes:
 
 - Use the up and down arrow keys to navigate the list, press enter to execute
 the selected file
+- Executing a Query file using the fizzy search will insert the prefix for that
+query into the commandline, much like clicking it in the tree
 
 ### clear-hits
 
