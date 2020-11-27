@@ -323,6 +323,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             if (newFile == '') {
                 return 'Error: no filename was given';
             }
+            // Check if extension is specified. If not, append .lnk
+            if (!newFile.match('.lnk') && !newFile.match('.qry')) {
+                newFile += '.lnk';
+            }
             for (let i = 0; i < this.getFiles().length; i++) {
                 let fileName = this.getFiles()[i].getLocation();
                 if (newFile == fileName) {
@@ -397,10 +401,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             //  Check if there is any file content
             if (!content) {
                 content = '#';
-            }
-            // Check if extension is specified. If not, append .lnk
-            if (!filename.match('.lnk') && !filename.match('.qry')) {
-                filename += '.lnk';
             }
             if (filename.match('.lnk')) {
                 // Ensure content is a proper url

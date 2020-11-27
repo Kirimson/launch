@@ -74,6 +74,7 @@ define(["require", "exports", "loader"], function (require, exports) {
             this.hideElement(hidden, $('#fuzzy-list'));
         }
         addHistory(command) {
+            console.log(this.consoleHistory);
             this.consoleHistory.prepend(`<span>$ ${command}</span>`);
         }
         showLaunch() {
