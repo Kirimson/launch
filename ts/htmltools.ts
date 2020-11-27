@@ -99,6 +99,7 @@ export class Tools {
     }
 
     addHistory(command:string){
+        console.log(this.consoleHistory);
         this.consoleHistory.prepend(`<span>$ ${command}</span>`);
     }
 

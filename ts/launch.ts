@@ -374,6 +374,11 @@ export class Launcher {
             return 'Error: no filename was given'
         }
 
+        // Check if extension is specified. If not, append .lnk
+        if(!newFile.match('.lnk') && !newFile.match('.qry')){
+            newFile += '.lnk';
+        }
+
         for(let i = 0; i < this.getFiles().length; i++){
             let fileName = this.getFiles()[i].getLocation();
 
@@ -463,11 +468,6 @@ export class Launcher {
             //  Check if there is any file content
             if(!content){
                 content = '#';
-            }
-
-            // Check if extension is specified. If not, append .lnk
-            if(!filename.match('.lnk') && !filename.match('.qry')){
-                filename += '.lnk';
             }
 
             if(filename.match('.lnk')){
