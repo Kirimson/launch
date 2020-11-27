@@ -7,7 +7,7 @@ define(["require", "exports", "loader"], function (require, exports) {
             this.console = $('#console');
             this.console.focus();
             this.body = document.body;
-            this.consoleHistory = $('#console-history');
+            this.consoleHistory = $('#terminal-history');
             this.terminal = $('#terminal-window');
         }
         hideElement(hidden, element) {

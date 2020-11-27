@@ -11,7 +11,7 @@ export class Tools {
         this.console = $('#console');
         this.console.focus();
         this.body = document.body;
-        this.consoleHistory = $('#console-history');
+        this.consoleHistory = $('#terminal-history');
         this.terminal = $('#terminal-window');
     }
 
