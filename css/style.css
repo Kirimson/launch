@@ -88,7 +88,7 @@ a {
     padding: 0 2% 0 2%;
 }
 
-.fuzzy-selected {
+.fuzzy-selected, .fuzzy:hover {
     background-color: #000;
     color: white;
     opacity: 0.5;
@@ -100,9 +100,6 @@ a {
 }
 
 .fuzzy:hover {
-    background-color: #000;
-    color: white;
-    opacity: 0.5;
     cursor: pointer;
 }
 
@@ -223,4 +220,57 @@ a {
     /* min-height: 2vh; */
     /* max-height: 2vh; */
     flex: 1;
+}
+
+/* Mobile CSS */
+@media only screen and (max-width: 768px) {
+    html {
+        overflow: hidden;
+        font-size: x-large;
+    }
+
+    #wrapper {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    #tree-wrapper {
+        width: 100vw;
+        height:50vh;
+    }
+
+    #tree-window {
+        min-width: 100vw;
+        height:50vh;
+    }
+
+    #console-wrapper {
+        width: 100vw;
+        height:50vh;
+    }
+
+    #terminal-window {
+        min-width: 100vw;
+        height:50vh;
+    }
+
+    .fuzzy, .fuzzy-selected {
+        text-align: center;
+        margin: 0.25em;
+    }
+
+    .fuzzy-selected, .fuzzy:hover {
+        background-color: inherit;
+        opacity: 1;
+        color: inherit;
+    }
+
+    .fuzzy:hover::before {
+        content: ''
+    }
+
+    .fuzzy-selected::before, .fuzzy::before {
+        content: '';
+    }
+
 }
