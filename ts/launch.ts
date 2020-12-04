@@ -22,10 +22,10 @@ export class Launcher {
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'set-bg', 'set-background',
-                                            'feh', 'tree', 'setsearch', 'mv',
-                                            'set-color', 'set-colo', 'colo',
-                                            'fuzzy', 'clear-hits', 'set-hits',
-                                            'launch-hide-privacy',
+                                            'feh', 'tree', 'setsearch', 'mv', 
+                                            'ls', 'set-color', 'set-colo',
+                                            'colo', 'fuzzy', 'clear-hits',
+                                            'set-hits', 'launch-hide-privacy',
                                             'launch-show-privacy',
                                             'launch-help'];
 
@@ -124,6 +124,22 @@ export class Launcher {
     }
 
     /**
+     * Returns all files that belong in a folder
+     * @param foldername name of folder
+     */
+    getFolderFiles(foldername:string):Array<LaunchFile> {
+        let folder = this.getFolder(foldername);
+        let files = this.getFiles();
+        let folderFiles:Array<LaunchFile> = [];
+        files.forEach(file => {
+            if(file.parentId == folder.id) {
+                folderFiles.push(file);
+            } 
+        });
+        return folderFiles;
+    }
+
+    /**
      * Gets the index of a file to delete, given a filename
      * @param fileName file to search for
      */
@@ -202,7 +218,7 @@ export class Launcher {
      * @param term command with arguments
      * @returns return statement from command
      */
-    execCommand(term:string):string {
+    execCommand(term:string):Array<string> {
         this.history.push(term);
         this.historyIndex = 0;
         let command = term.split(' ')[0];
@@ -211,51 +227,53 @@ export class Launcher {
         the arguments to parse */
 
         let args = term.substr(command.length).trim();
-        let commandReturn: string = '';
+        let commandReturn: Array<string> = [term];
 
         switch(command) {
             case 'mkdir':
-                commandReturn = this.mkdir(args.split(' '));
+                commandReturn.push(this.mkdir(args.split(' ')));
                 break;
             case 'touch':
-                commandReturn = this.touch(args.split(' ')[0], 
-                            args.substr(args.split(' ')[0].length).trim());
+                commandReturn.push(this.touch(args.split(' ')[0], 
+                            args.substr(args.split(' ')[0].length).trim()));
                 break;
             case 'rm':
-                commandReturn = this.rm(args);
+                commandReturn.push(this.rm(args));
                 break;
             case 'rmdir':
-                commandReturn = this.rmdir(args);
+                commandReturn.push(...this.rmdir(args));
                 break;
             case 'feh':
             case 'set-bg':
             case 'set-background':
-                commandReturn = this.setBackground(args);
+                commandReturn.push(this.setBackground(args));
                 break;
             case 'set-color':
             case 'set-colo':
             case 'colo':
-                commandReturn = this.setColor(args);
+                commandReturn.push(this.setColor(args));
                 break;
             case 'tree':
-                commandReturn = this.setTreeHidden(!this.getTreeHidden());
+                commandReturn.push(this.setTreeHidden(!this.getTreeHidden()));
                 break;
             case 'setsearch':
-                commandReturn = this.setDefaultSearch(args);
+                commandReturn.push(this.setDefaultSearch(args));
                 break;
             case 'mv':
-                commandReturn = this.mv(args.split(' ')[0], 
-                                args.substr(args.split(' ')[0].length).trim());
+                commandReturn.push(this.mv(args.split(' ')[0], 
+                                args.substr(args.split(' ')[0].length).trim()));
+                break;
+            case 'ls':
+                commandReturn.push(...this.ls(args));
                 break;
             case 'fuzzy':
-                commandReturn = ''
                 this.fuzzy = !this.fuzzy;
                 break;
             case 'clear-hits':
-                commandReturn = this.setHits(args);
+                commandReturn.push(this.setHits(args));
             case 'set-hits':
-                commandReturn = this.setHits(args.split(' ')[0],
-                    parseInt(args.split(' ')[1]));
+                commandReturn.push(this.setHits(args.split(' ')[0],
+                    parseInt(args.split(' ')[1])));
             case 'launch-hide-privacy':
                 this.privacy = false; 
                 break;
@@ -269,7 +287,7 @@ export class Launcher {
 
         // Return commandreturn if command gave a return statement.
         // Else, return the command the user provided
-        return (commandReturn ? commandReturn : term);
+        return commandReturn;
     }
 
     /**
@@ -365,6 +383,27 @@ export class Launcher {
     }
 
     /**
+     * Returns information about a folder
+     * @param folderName folder the get information about
+     */
+    ls(folderName:string) {
+        let files:Array<LaunchFile>;
+        try {
+            files = this.getFolderFiles(folderName);
+        } catch {
+            return [`Folder ${folderName} not found`]
+        }
+        let fileInfoArr:Array<string> = [];
+
+        files.forEach(file => {
+            let fileInfo:string = file.filename + " - " + file.content
+            fileInfoArr.push(fileInfo);
+        });
+        
+        return fileInfoArr;
+    }
+
+    /**
      * Creates a new file, attached to a folder if provided
      * @param newFile file to create
      * @param content content to add to file
@@ -453,7 +492,7 @@ export class Launcher {
                 return '';
             }
         }
-        return `Error: folder '${folderName}' not found`;
+        return [`Error: folder '${folderName}' not found`];
     }
 
     /**

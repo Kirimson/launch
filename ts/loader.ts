@@ -4,7 +4,6 @@ import { Tree } from "./tree";
 import { LaunchQuery } from "./launchquery";
 import { LaunchFile } from "./launchfile";
 import { LaunchFolder } from "./launchfolder";
-import { LaunchLink } from "./launchlink";
 
 function isUrl(text:string):boolean{
     let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
@@ -28,7 +27,7 @@ function guardedMatch(text:string, pattern:RegExp){
 }
 
 function rebuildLaunch(){
-    tools.addHistory('Launch is corrupted, rebuilding...')
+    tools.appendToTerminalOutput(['Launch is corrupted, rebuilding...'])
     launch.initLaunch()
     launch.store();
 }
@@ -137,7 +136,7 @@ if(localStorage.getItem('launch')){
     // }
 } else {
     launch.initLaunch();
-    tools.addHistory('Welcome to Launch! Use launch-help to see the README');
+    tools.appendToTerminalOutput(['Welcome to Launch! Use launch-help to see the README']);
     launch.store();
 }
 
@@ -197,7 +196,7 @@ $(function(){
                 // Check if using a command
                 let launchCommand = launchVal.split(' ')[0];
                 if(launch.getCommands().includes(launchCommand)){
-                    let returnStatement:string = launch.execCommand(launchVal)
+                    let returnStatement:Array<string> = launch.execCommand(launchVal)
                     tools.clearLaunchBox();
                     launch.store();
 
@@ -209,7 +208,7 @@ $(function(){
                     tools.hideElement(!launch.getPrivacy(), $('#privacy'));
                     
                     // Add command to history
-                    tools.addHistory(returnStatement)
+                    tools.appendToTerminalOutput(returnStatement)
                 } else {
                     // Check if fuzzy list is used and has a link selected
                     if(fuzzyList.length > 0 && fuzzyIndex != -1){

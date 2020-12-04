@@ -19,7 +19,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
         return false;
     }
     function rebuildLaunch() {
-        tools.addHistory('Launch is corrupted, rebuilding...');
+        tools.appendToTerminalOutput(['Launch is corrupted, rebuilding...']);
         launch.initLaunch();
         launch.store();
     }
@@ -113,7 +113,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
     }
     else {
         launch.initLaunch();
-        tools.addHistory('Welcome to Launch! Use launch-help to see the README');
+        tools.appendToTerminalOutput(['Welcome to Launch! Use launch-help to see the README']);
         launch.store();
     }
     // Start loading things in
@@ -173,7 +173,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                         tools.hideTree(launch.getTreeHidden());
                         tools.hideElement(!launch.getPrivacy(), $('#privacy'));
                         // Add command to history
-                        tools.addHistory(returnStatement);
+                        tools.appendToTerminalOutput(returnStatement);
                     }
                     else {
                         // Check if fuzzy list is used and has a link selected
