@@ -416,12 +416,14 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 let folder = this.folders[folderID];
                 // Check if folder to delete is a real folder
                 if (folder.name == folderName) {
+                    let output = [];
                     let folderFiles = this.files.filter(file => file.parentId == folder.id);
                     folderFiles.forEach(file => {
+                        output.push(`Deleted file: ${file.getLocation()}`);
                         this.rm(file.getLocation());
                     });
                     this.folders.splice(folderID, 1);
-                    return '';
+                    return output;
                 }
             }
             return [`Error: folder '${folderName}' not found`];

@@ -481,15 +481,17 @@ export class Launcher {
             // Check if folder to delete is a real folder
             if(folder.name == folderName){
 
+                let output:Array<string> = [];
                 let folderFiles = this.files.filter(file => 
                     file.parentId == folder.id);
 
                 folderFiles.forEach(file => {
+                    output.push(`Deleted file: ${file.getLocation()}`)
                     this.rm(file.getLocation());
                 });
 
                 this.folders.splice(folderID,1);
-                return '';
+                return output;
             }
         }
         return [`Error: folder '${folderName}' not found`];
