@@ -250,7 +250,9 @@ $(function(){
                         launch.runFile(resultList[resultIndex]);
                     // check if running a query/standard search 
                     } else {
-                        launch.runFile(launchVal);
+                        let returnStatement:string = launch.runFile(launchVal);
+                        tools.clearLaunchBox();
+                        tools.appendLineToTerminalOutput(returnStatement)
                     }
                 }
                 // Clear the suggestion if there was one hanging from command

@@ -14,7 +14,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             this.privacy = true;
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'set-bg', 'set-background',
-                'feh', 'tree', 'setsearch', 'mv',
+                'feh', 'tree', 'set-search', 'mv',
                 'ls', 'set-color', 'set-colo',
                 'colo', 'fuzzy', 'clear-hits',
                 'set-hits', 'launch-hide-privacy',
@@ -163,6 +163,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
          * @param shorthand new shorthand to set as default
          */
         setDefaultSearch(shorthand) {
+            if (shorthand.toLowerCase() == "none") {
+                this.defaultSearch = "none";
+                return `Default search set to None`;
+            }
             for (let i = 0; i < this.getFiles().length; i++) {
                 let file = this.getFiles()[i];
                 if (file instanceof launchquery_1.LaunchQuery) {
@@ -217,7 +221,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 case 'tree':
                     commandReturn.push(this.setTreeHidden(!this.getTreeHidden()));
                     break;
-                case 'setsearch':
+                case 'set-search':
                     commandReturn.push(this.setDefaultSearch(args));
                     break;
                 case 'mv':
@@ -483,14 +487,18 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                     this.store();
                     queryArg = encodeURIComponent(queryArg).replace(/%20/g, "+");
                     file.execute(queryArg);
-                    return;
+                    return "";
                 }
             }
             ;
             // If no macthes, use default query file
             // and properly encode the string for the query text
             let searchTerm = userString;
-            this.runFile(this.defaultSearch + searchTerm);
+            if (this.defaultSearch != "none") {
+                this.runFile(this.defaultSearch + searchTerm);
+            }
+            else
+                return "No default search set";
         }
         /**
          * Clears the 'hitcount' a file as accumulated

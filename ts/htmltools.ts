@@ -98,6 +98,10 @@ export class Tools {
         this.hideElement(hidden, $('#fuzzy-list'))
     }
 
+    appendLineToTerminalOutput(output:string) {
+        this.appendToTerminalOutput([output]);
+    }
+
     appendToTerminalOutput(output:Array<string>){
         // Go through each line, and if not empty add it to history
         for (let i = 0; i < output.length; i++) {

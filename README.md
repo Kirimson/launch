@@ -186,15 +186,17 @@ Notes:
 - `set-color` has multiple ailiases. `set-colo` and `colo` will also act as
 `set-color`
 
-### setsearch
+### set-search
 
-Sets the default query link to use, based off of the prefix
+Sets the default query link to use, based off of the prefix. Can also be set to
+none to disable this
 
-Usage: `setsearch [prefix]`
+Usage: `set-search [prefix]`
 
 Examples:
-- `setsearch g:`
-- `setsearch b:`
+- `set-search g:`
+- `set-search b:`
+- `set-search none`
 
 ### fuzzy
 

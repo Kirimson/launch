@@ -73,6 +73,9 @@ define(["require", "exports", "loader"], function (require, exports) {
         hideFuzzyList(hidden) {
             this.hideElement(hidden, $('#fuzzy-list'));
         }
+        appendLineToTerminalOutput(output) {
+            this.appendToTerminalOutput([output]);
+        }
         appendToTerminalOutput(output) {
             // Go through each line, and if not empty add it to history
             for (let i = 0; i < output.length; i++) {

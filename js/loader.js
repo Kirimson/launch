@@ -218,7 +218,9 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                             // check if running a query/standard search 
                         }
                         else {
-                            launch.runFile(launchVal);
+                            let returnStatement = launch.runFile(launchVal);
+                            tools.clearLaunchBox();
+                            tools.appendLineToTerminalOutput(returnStatement);
                         }
                     }
                     // Clear the suggestion if there was one hanging from command
