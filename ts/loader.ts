@@ -4,7 +4,6 @@ import { Tree } from "./tree";
 import { LaunchQuery } from "./launchquery";
 import { LaunchFile } from "./launchfile";
 import { LaunchFolder } from "./launchfolder";
-import { LaunchLink } from "./launchlink";
 
 function isUrl(text:string):boolean{
     let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
@@ -28,7 +27,7 @@ function guardedMatch(text:string, pattern:RegExp){
 }
 
 function rebuildLaunch(){
-    tools.addHistory('Launch is corrupted, rebuilding...')
+    tools.appendToTerminalOutput(['Launch is corrupted, rebuilding...'])
     launch.initLaunch()
     launch.store();
 }
@@ -104,6 +103,13 @@ function moveFuzzyIndex(offset:number){
     $(`#fuzzy-${fuzzyIndex}`).addClass('fuzzy-selected')
 }
 
+function hideFuzzy(){
+    fuzzyList = [];
+    fuzzyIndex = -1;
+    tools.hideFuzzyList(true)
+    tools.hideConsoleHistory(false)
+}
+
 var launch = new Launcher();
 
 let tools = new Tools();
@@ -137,7 +143,7 @@ if(localStorage.getItem('launch')){
     // }
 } else {
     launch.initLaunch();
-    tools.addHistory('Welcome to Launch! Use launch-help to see the README');
+    tools.appendToTerminalOutput(['Welcome to Launch! Use launch-help to see the README']);
     launch.store();
 }
 
@@ -197,7 +203,8 @@ $(function(){
                 // Check if using a command
                 let launchCommand = launchVal.split(' ')[0];
                 if(launch.getCommands().includes(launchCommand)){
-                    let returnStatement:string = launch.execCommand(launchVal)
+                    let returnStatement:Array<string> = launch.execCommand(launchVal)
+                    hideFuzzy();
                     tools.clearLaunchBox();
                     launch.store();
 
@@ -209,7 +216,7 @@ $(function(){
                     tools.hideElement(!launch.getPrivacy(), $('#privacy'));
                     
                     // Add command to history
-                    tools.addHistory(returnStatement)
+                    tools.appendToTerminalOutput(returnStatement)
                 } else {
                     // Check if fuzzy list is used and has a link selected
                     if(fuzzyList.length > 0 && fuzzyIndex != -1){
@@ -217,6 +224,7 @@ $(function(){
                         let chosenFile = launch.getFile(fuzzyList[fuzzyIndex]);
                         if(chosenFile instanceof LaunchQuery ){
                             tools.setConsoleText(chosenFile.toString());
+                            hideFuzzy();
                         } else {
                             chosenFile.execute();
                         }
@@ -287,10 +295,7 @@ $(function(){
                         }
                     } 
                     if(hideFuzzyFinder) {
-                        fuzzyList = [];
-                        fuzzyIndex = -1;
-                        tools.hideFuzzyList(true)
-                        tools.hideConsoleHistory(false)
+                        hideFuzzy();
                     }
                 }
             }

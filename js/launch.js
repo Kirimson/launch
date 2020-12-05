@@ -15,9 +15,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'set-bg', 'set-background',
                 'feh', 'tree', 'setsearch', 'mv',
-                'set-color', 'set-colo', 'colo',
-                'fuzzy', 'clear-hits', 'set-hits',
-                'launch-hide-privacy',
+                'ls', 'set-color', 'set-colo',
+                'colo', 'fuzzy', 'clear-hits',
+                'set-hits', 'launch-hide-privacy',
                 'launch-show-privacy',
                 'launch-help'];
             this.folders = [];
@@ -94,6 +94,21 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 }
             });
             return parent;
+        }
+        /**
+         * Returns all files that belong in a folder
+         * @param foldername name of folder
+         */
+        getFolderFiles(foldername) {
+            let folder = this.getFolder(foldername);
+            let files = this.getFiles();
+            let folderFiles = [];
+            files.forEach(file => {
+                if (file.parentId == folder.id) {
+                    folderFiles.push(file);
+                }
+            });
+            return folderFiles;
         }
         /**
          * Gets the index of a file to delete, given a filename
@@ -175,47 +190,49 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             /** Remove the length the command of the text sent to launch to get
             the arguments to parse */
             let args = term.substr(command.length).trim();
-            let commandReturn = '';
+            let commandReturn = [term];
             switch (command) {
                 case 'mkdir':
-                    commandReturn = this.mkdir(args.split(' '));
+                    commandReturn.push(this.mkdir(args.split(' ')));
                     break;
                 case 'touch':
-                    commandReturn = this.touch(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim());
+                    commandReturn.push(this.touch(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim()));
                     break;
                 case 'rm':
-                    commandReturn = this.rm(args);
+                    commandReturn.push(this.rm(args));
                     break;
                 case 'rmdir':
-                    commandReturn = this.rmdir(args);
+                    commandReturn.push(...this.rmdir(args));
                     break;
                 case 'feh':
                 case 'set-bg':
                 case 'set-background':
-                    commandReturn = this.setBackground(args);
+                    commandReturn.push(this.setBackground(args));
                     break;
                 case 'set-color':
                 case 'set-colo':
                 case 'colo':
-                    commandReturn = this.setColor(args);
+                    commandReturn.push(this.setColor(args));
                     break;
                 case 'tree':
-                    commandReturn = this.setTreeHidden(!this.getTreeHidden());
+                    commandReturn.push(this.setTreeHidden(!this.getTreeHidden()));
                     break;
                 case 'setsearch':
-                    commandReturn = this.setDefaultSearch(args);
+                    commandReturn.push(this.setDefaultSearch(args));
                     break;
                 case 'mv':
-                    commandReturn = this.mv(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim());
+                    commandReturn.push(this.mv(args.split(' ')[0], args.substr(args.split(' ')[0].length).trim()));
+                    break;
+                case 'ls':
+                    commandReturn.push(...this.ls(args));
                     break;
                 case 'fuzzy':
-                    commandReturn = '';
                     this.fuzzy = !this.fuzzy;
                     break;
                 case 'clear-hits':
-                    commandReturn = this.setHits(args);
+                    commandReturn.push(this.setHits(args));
                 case 'set-hits':
-                    commandReturn = this.setHits(args.split(' ')[0], parseInt(args.split(' ')[1]));
+                    commandReturn.push(this.setHits(args.split(' ')[0], parseInt(args.split(' ')[1])));
                 case 'launch-hide-privacy':
                     this.privacy = false;
                     break;
@@ -228,7 +245,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             }
             // Return commandreturn if command gave a return statement.
             // Else, return the command the user provided
-            return (commandReturn ? commandReturn : term);
+            return commandReturn;
         }
         /**
          * Create new folder/s from given list
@@ -315,6 +332,25 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             return '';
         }
         /**
+         * Returns information about a folder
+         * @param folderName folder the get information about
+         */
+        ls(folderName) {
+            let files;
+            try {
+                files = this.getFolderFiles(folderName);
+            }
+            catch (_a) {
+                return [`Folder ${folderName} not found`];
+            }
+            let fileInfoArr = [];
+            files.forEach(file => {
+                let fileInfo = file.filename + " - " + file.content;
+                fileInfoArr.push(fileInfo);
+            });
+            return fileInfoArr;
+        }
+        /**
          * Creates a new file, attached to a folder if provided
          * @param newFile file to create
          * @param content content to add to file
@@ -380,15 +416,17 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 let folder = this.folders[folderID];
                 // Check if folder to delete is a real folder
                 if (folder.name == folderName) {
+                    let output = [];
                     let folderFiles = this.files.filter(file => file.parentId == folder.id);
                     folderFiles.forEach(file => {
+                        output.push(`Deleted file: ${file.getLocation()}`);
                         this.rm(file.getLocation());
                     });
                     this.folders.splice(folderID, 1);
-                    return '';
+                    return output;
                 }
             }
-            return `Error: folder '${folderName}' not found`;
+            return [`Error: folder '${folderName}' not found`];
         }
         /**
          * Creates a new file, file type based on filename

@@ -19,7 +19,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
         return false;
     }
     function rebuildLaunch() {
-        tools.addHistory('Launch is corrupted, rebuilding...');
+        tools.appendToTerminalOutput(['Launch is corrupted, rebuilding...']);
         launch.initLaunch();
         launch.store();
     }
@@ -83,6 +83,12 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
         fuzzyIndex += offset;
         $(`#fuzzy-${fuzzyIndex}`).addClass('fuzzy-selected');
     }
+    function hideFuzzy() {
+        fuzzyList = [];
+        fuzzyIndex = -1;
+        tools.hideFuzzyList(true);
+        tools.hideConsoleHistory(false);
+    }
     var launch = new launch_1.Launcher();
     let tools = new htmltools_1.Tools();
     let resultList = [];
@@ -113,7 +119,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
     }
     else {
         launch.initLaunch();
-        tools.addHistory('Welcome to Launch! Use launch-help to see the README');
+        tools.appendToTerminalOutput(['Welcome to Launch! Use launch-help to see the README']);
         launch.store();
     }
     // Start loading things in
@@ -164,6 +170,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     let launchCommand = launchVal.split(' ')[0];
                     if (launch.getCommands().includes(launchCommand)) {
                         let returnStatement = launch.execCommand(launchVal);
+                        hideFuzzy();
                         tools.clearLaunchBox();
                         launch.store();
                         // Update Launch after a command
@@ -173,7 +180,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                         tools.hideTree(launch.getTreeHidden());
                         tools.hideElement(!launch.getPrivacy(), $('#privacy'));
                         // Add command to history
-                        tools.addHistory(returnStatement);
+                        tools.appendToTerminalOutput(returnStatement);
                     }
                     else {
                         // Check if fuzzy list is used and has a link selected
@@ -181,6 +188,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                             let chosenFile = launch.getFile(fuzzyList[fuzzyIndex]);
                             if (chosenFile instanceof launchquery_1.LaunchQuery) {
                                 tools.setConsoleText(chosenFile.toString());
+                                hideFuzzy();
                             }
                             else {
                                 chosenFile.execute();
@@ -257,10 +265,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                             }
                         }
                         if (hideFuzzyFinder) {
-                            fuzzyList = [];
-                            fuzzyIndex = -1;
-                            tools.hideFuzzyList(true);
-                            tools.hideConsoleHistory(false);
+                            hideFuzzy();
                         }
                     }
             }

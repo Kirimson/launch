@@ -73,9 +73,18 @@ define(["require", "exports", "loader"], function (require, exports) {
         hideFuzzyList(hidden) {
             this.hideElement(hidden, $('#fuzzy-list'));
         }
-        addHistory(command) {
-            console.log(this.consoleHistory);
-            this.consoleHistory.prepend(`<span>$ ${command}</span>`);
+        appendToTerminalOutput(output) {
+            // Go through each line, and if not empty add it to history
+            for (let i = 0; i < output.length; i++) {
+                const outputLine = output[i];
+                if (outputLine) {
+                    let prefix = "&nbsp&nbsp";
+                    if (i == 0) {
+                        prefix = "$ ";
+                    }
+                    this.consoleHistory.prepend(`<span>${prefix}${outputLine}</span>`);
+                }
+            }
         }
         showLaunch() {
             $('.app').css('display', 'flex');

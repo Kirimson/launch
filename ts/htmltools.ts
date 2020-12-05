@@ -98,9 +98,18 @@ export class Tools {
         this.hideElement(hidden, $('#fuzzy-list'))
     }
 
-    addHistory(command:string){
-        console.log(this.consoleHistory);
-        this.consoleHistory.prepend(`<span>$ ${command}</span>`);
+    appendToTerminalOutput(output:Array<string>){
+        // Go through each line, and if not empty add it to history
+        for (let i = 0; i < output.length; i++) {
+            const outputLine = output[i];
+            if(outputLine){
+                let prefix = "&nbsp&nbsp";
+                if(i == 0) {
+                    prefix = "$ ";
+                }
+                this.consoleHistory.prepend(`<span>${prefix}${outputLine}</span>`);
+            }
+        }
     }
 
     showLaunch(){
