@@ -103,6 +103,13 @@ function moveFuzzyIndex(offset:number){
     $(`#fuzzy-${fuzzyIndex}`).addClass('fuzzy-selected')
 }
 
+function hideFuzzy(){
+    fuzzyList = [];
+    fuzzyIndex = -1;
+    tools.hideFuzzyList(true)
+    tools.hideConsoleHistory(false)
+}
+
 var launch = new Launcher();
 
 let tools = new Tools();
@@ -197,6 +204,7 @@ $(function(){
                 let launchCommand = launchVal.split(' ')[0];
                 if(launch.getCommands().includes(launchCommand)){
                     let returnStatement:Array<string> = launch.execCommand(launchVal)
+                    hideFuzzy();
                     tools.clearLaunchBox();
                     launch.store();
 
@@ -216,6 +224,7 @@ $(function(){
                         let chosenFile = launch.getFile(fuzzyList[fuzzyIndex]);
                         if(chosenFile instanceof LaunchQuery ){
                             tools.setConsoleText(chosenFile.toString());
+                            hideFuzzy();
                         } else {
                             chosenFile.execute();
                         }
@@ -286,10 +295,7 @@ $(function(){
                         }
                     } 
                     if(hideFuzzyFinder) {
-                        fuzzyList = [];
-                        fuzzyIndex = -1;
-                        tools.hideFuzzyList(true)
-                        tools.hideConsoleHistory(false)
+                        hideFuzzy();
                     }
                 }
             }
