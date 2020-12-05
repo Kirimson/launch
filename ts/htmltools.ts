@@ -98,18 +98,17 @@ export class Tools {
         this.hideElement(hidden, $('#fuzzy-list'))
     }
 
-    appendLineToTerminalOutput(output:string) {
-        this.appendToTerminalOutput([output]);
+    appendLineToTerminalOutput(output:string, prefix:string) {
+        this.appendToTerminalOutput([output], prefix);
     }
 
-    appendToTerminalOutput(output:Array<string>){
+    appendToTerminalOutput(output:Array<string>, prefix:string){
         // Go through each line, and if not empty add it to history
         for (let i = 0; i < output.length; i++) {
             const outputLine = output[i];
             if(outputLine){
-                let prefix = "&nbsp&nbsp";
-                if(i == 0) {
-                    prefix = "$ ";
+                if(i != 0) {
+                    prefix = "&nbsp&nbsp";
                 }
                 this.consoleHistory.prepend(`<span>${prefix}${outputLine}</span>`);
             }

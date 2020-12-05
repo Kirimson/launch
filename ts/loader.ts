@@ -27,7 +27,7 @@ function guardedMatch(text:string, pattern:RegExp){
 }
 
 function rebuildLaunch(){
-    tools.appendToTerminalOutput(['Launch is corrupted, rebuilding...'])
+    tools.appendToTerminalOutput(['Launch is corrupted, rebuilding...'], launch.getPrefix())
     launch.initLaunch()
     launch.store();
 }
@@ -138,12 +138,9 @@ if(localStorage.getItem('launch')){
         console.log("Couldnt load");
         rebuildLaunch();
     }
-    // } catch {
-    //     rebuildLaunch();
-    // }
 } else {
     launch.initLaunch();
-    tools.appendToTerminalOutput(['Welcome to Launch! Use launch-help to see the README']);
+    tools.appendToTerminalOutput(['Welcome to Launch! Use launch-help to see the README'], launch.getPrefix());
     launch.store();
 }
 
@@ -159,6 +156,9 @@ tools.hideElement(!launch.getPrivacy(), $('#privacy'));
 tools.setBackground(launch.getBackground());
 // Set color
 tools.setWindowColor(launch.getColor());
+
+// Update launch's prefix
+$('#console-prefix').html(launch.getPrefix());
 
 // Display launch after all loading is done
 tools.showLaunch();
@@ -230,7 +230,7 @@ $(function(){
                     tools.hideElement(!launch.getPrivacy(), $('#privacy'));
                     
                     // Add command to history
-                    tools.appendToTerminalOutput(returnStatement)
+                    tools.appendToTerminalOutput(returnStatement, launch.getPrefix())
                 } else {
                     // Check if fuzzy list is used and has a link selected
                     if(fuzzyList.length > 0 && fuzzyIndex != -1){
@@ -252,7 +252,7 @@ $(function(){
                     } else {
                         let returnStatement:string = launch.runFile(launchVal);
                         tools.clearLaunchBox();
-                        tools.appendLineToTerminalOutput(returnStatement)
+                        tools.appendLineToTerminalOutput(returnStatement, launch.getPrefix())
                     }
                 }
                 // Clear the suggestion if there was one hanging from command

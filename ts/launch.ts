@@ -19,6 +19,7 @@ export class Launcher {
     private color = '#333';
     private fuzzy:boolean = true;
     private privacy:boolean = true;
+    private prefix:string = "$&nbsp";
 
     private availableCommands: string[] = ['mkdir', 'touch', 'rm', 
                                             'rmdir', 'set-bg', 'set-background',
@@ -26,8 +27,8 @@ export class Launcher {
                                             'ls', 'set-color', 'set-colo',
                                             'colo', 'fuzzy', 'clear-hits',
                                             'set-hits', 'launch-hide-privacy',
-                                            'launch-show-privacy',
-                                            'launch-help'];
+                                            'launch-show-privacy', 'clear',
+                                            'launch-help', 'set-prefix'];
 
     constructor() {
         this.folders = [];
@@ -107,6 +108,10 @@ export class Launcher {
 
     isFuzzyFinderOn(){
         return this.fuzzy;
+    }
+
+    getPrefix(){
+        return this.prefix;
     }
 
     /**
@@ -291,6 +296,14 @@ export class Launcher {
                 break;
             case 'launch-help':
                 window.location.href = 'https://github.com/Kirimson/launch/blob/master/README.md';
+                break;
+            case 'set-prefix':
+                this.prefix = args + "&nbsp";
+                $('#console-prefix').html(this.prefix);
+                break;
+            case 'clear':
+                $('#terminal-history').html('');
+                commandReturn = [''];
                 break;
         }
 
@@ -677,7 +690,8 @@ export class Launcher {
             'defaultSearch': this.defaultSearch,
             'color': this.color,
             'fuzzy': this.fuzzy,
-            'privacy': this.privacy
+            'privacy': this.privacy,
+            'prefix': this.prefix
         }
 
         let launch_base = JSON.stringify(data);
@@ -705,6 +719,12 @@ export class Launcher {
             this.color = launch_base['color'];
             this.fuzzy = launch_base['fuzzy'];
             this.privacy = launch_base['privacy'];
+            this.prefix = launch_base['prefix'];
+
+            // if no prefix, set to default
+            if (!this.prefix) {
+                this.prefix = "$&nbsp";
+            }
     
             //  If there is a user stored background, load it
             if(launch_base['background']){
