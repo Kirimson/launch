@@ -347,7 +347,12 @@ $(function(){
     });
 
     $('#fuzzy-list').on('click', '.fuzzy', function(){
-        launch.runFile(String(this.innerHTML.trim()))
+        let file = launch.getFile(this.innerHTML.trim());
+        if(file instanceof LaunchQuery){
+            tools.getConsole().val(file.shortHand);
+            tools.getConsole().focus();
+            hideFuzzy();
+        } else launch.runFile(String(this.innerHTML.trim()))
     });
 
     $('.link').on('click', function(){
