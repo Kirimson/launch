@@ -179,10 +179,24 @@ $(function(){
             case 'ArrowDown':
                 key.preventDefault();
                 break;
+            case 'ArrowRight':
+                // Check if pressing right at the end of the string
+                let val = tools.getConsoleVal();
+                let consoleInput:HTMLInputElement = <HTMLInputElement>document.getElementById("console");
+                let isAtEnd = false;
+                isAtEnd = (consoleInput.selectionEnd == val.length);
+                // If at the end, right will act the same as tab
+                if (isAtEnd) {
+                    key.preventDefault();
+                    let autocomplete = getSimilar(tools.getConsoleVal());
+                    tools.setConsoleText(autocomplete);
+                }
+                break;
             case 'Tab':
                 key.preventDefault();
                 let autocomplete = getSimilar(tools.getConsoleVal());
                 tools.setConsoleText(autocomplete);
+                break;
         }
     })
 
@@ -236,7 +250,9 @@ $(function(){
                         launch.runFile(resultList[resultIndex]);
                     // check if running a query/standard search 
                     } else {
-                        launch.runFile(launchVal);
+                        let returnStatement:string = launch.runFile(launchVal);
+                        tools.clearLaunchBox();
+                        tools.appendLineToTerminalOutput(returnStatement)
                     }
                 }
                 // Clear the suggestion if there was one hanging from command
