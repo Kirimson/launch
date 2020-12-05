@@ -87,6 +87,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
          * @param folderName folder name to search for
          */
         getFolder(folderName) {
+            // Strip trailing / if it's there
+            if (folderName.endsWith("/")) {
+                folderName = folderName.replace("/", "");
+            }
             let parent = null;
             this.folders.forEach(folder => {
                 if (folder.name == folderName) {

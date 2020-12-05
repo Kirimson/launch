@@ -114,6 +114,11 @@ export class Launcher {
      * @param folderName folder name to search for
      */
     getFolder(folderName:string):LaunchFolder{
+        // Strip trailing / if it's there
+        if (folderName.endsWith("/")) {
+            folderName = folderName.replace("/", "");
+        }
+
         let parent:LaunchFolder = null;
         this.folders.forEach(folder => {
             if(folder.name == folderName){

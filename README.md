@@ -113,6 +113,22 @@ Notes:
 after the Query file's prefix when a Query file is ran. E.g s:hello will take
 you to `www.website.com/search?q=hello`
 
+### ls
+
+Lists the file contents of a given folder, such as link, search prefix and
+search link
+
+Examples:
+
+- `ls launch/`
+- `ls media`
+
+Notes:
+Output is in the following format:
+
+Links: filename - link
+Queries filename - prefix link
+
 ### rm
 
 Removes a file
