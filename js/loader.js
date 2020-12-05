@@ -148,10 +148,24 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                 case 'ArrowDown':
                     key.preventDefault();
                     break;
+                case 'ArrowRight':
+                    // Check if pressing right at the end of the string
+                    let val = tools.getConsoleVal();
+                    let consoleInput = document.getElementById("console");
+                    let isAtEnd = false;
+                    isAtEnd = (consoleInput.selectionEnd == val.length);
+                    // If at the end, right will act the same as tab
+                    if (isAtEnd) {
+                        key.preventDefault();
+                        let autocomplete = getSimilar(tools.getConsoleVal());
+                        tools.setConsoleText(autocomplete);
+                    }
+                    break;
                 case 'Tab':
                     key.preventDefault();
                     let autocomplete = getSimilar(tools.getConsoleVal());
                     tools.setConsoleText(autocomplete);
+                    break;
             }
         });
         // When typing in console
