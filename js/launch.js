@@ -12,14 +12,15 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             this.color = '#333';
             this.fuzzy = true;
             this.privacy = true;
+            this.prefix = "$&nbsp";
             this.availableCommands = ['mkdir', 'touch', 'rm',
                 'rmdir', 'set-bg', 'set-background',
                 'feh', 'tree', 'set-search', 'mv',
                 'ls', 'set-color', 'set-colo',
                 'colo', 'fuzzy', 'clear-hits',
                 'set-hits', 'launch-hide-privacy',
-                'launch-show-privacy',
-                'launch-help'];
+                'launch-show-privacy', 'clear',
+                'launch-help', 'set-prefix'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -81,6 +82,9 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
         }
         isFuzzyFinderOn() {
             return this.fuzzy;
+        }
+        getPrefix() {
+            return this.prefix;
         }
         /**
          * Returns a folder given a name
@@ -249,6 +253,14 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                     break;
                 case 'launch-help':
                     window.location.href = 'https://github.com/Kirimson/launch/blob/master/README.md';
+                    break;
+                case 'set-prefix':
+                    this.prefix = args + "&nbsp";
+                    $('#console-prefix').html(this.prefix);
+                    break;
+                case 'clear':
+                    $('#terminal-history').html('');
+                    commandReturn = [''];
                     break;
             }
             // Return commandreturn if command gave a return statement.
@@ -596,7 +608,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 'defaultSearch': this.defaultSearch,
                 'color': this.color,
                 'fuzzy': this.fuzzy,
-                'privacy': this.privacy
+                'privacy': this.privacy,
+                'prefix': this.prefix
             };
             let launch_base = JSON.stringify(data);
             let launch_folders = JSON.stringify(foldersData);
@@ -621,6 +634,11 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 this.color = launch_base['color'];
                 this.fuzzy = launch_base['fuzzy'];
                 this.privacy = launch_base['privacy'];
+                this.prefix = launch_base['prefix'];
+                // if no prefix, set to default
+                if (!this.prefix) {
+                    this.prefix = "$&nbsp";
+                }
                 //  If there is a user stored background, load it
                 if (launch_base['background']) {
                     this.background = launch_base['background'];

@@ -73,17 +73,16 @@ define(["require", "exports", "loader"], function (require, exports) {
         hideFuzzyList(hidden) {
             this.hideElement(hidden, $('#fuzzy-list'));
         }
-        appendLineToTerminalOutput(output) {
-            this.appendToTerminalOutput([output]);
+        appendLineToTerminalOutput(output, prefix) {
+            this.appendToTerminalOutput([output], prefix);
         }
-        appendToTerminalOutput(output) {
+        appendToTerminalOutput(output, prefix) {
             // Go through each line, and if not empty add it to history
             for (let i = 0; i < output.length; i++) {
                 const outputLine = output[i];
                 if (outputLine) {
-                    let prefix = "&nbsp&nbsp";
-                    if (i == 0) {
-                        prefix = "$ ";
+                    if (i != 0) {
+                        prefix = "&nbsp&nbsp";
                     }
                     this.consoleHistory.prepend(`<span>${prefix}${outputLine}</span>`);
                 }
