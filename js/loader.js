@@ -206,6 +206,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                             else {
                                 let shiftHeld = key.shiftKey ? "shift" : "";
                                 chosenFile.execute(shiftHeld);
+                                tools.clearLaunchBox();
                             }
                             // check if url before anything else. least taxing
                         }
