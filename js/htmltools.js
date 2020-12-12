@@ -104,7 +104,7 @@ define(["require", "exports", "loader"], function (require, exports) {
                 let fuzzySpan = document.createElement('span');
                 fuzzySpan.className = 'fuzzy';
                 fuzzySpan.id = `fuzzy-${(i)}`;
-                fuzzySpan.innerHTML = ` ${item}`;
+                fuzzySpan.innerHTML = ` <span>${item.getLocation()}</span><span class="fuzzy-hits">${item.hits}</span>`;
                 $('#fuzzy-list').append(fuzzySpan);
             });
         }
