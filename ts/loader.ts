@@ -243,6 +243,7 @@ $(function(){
                             let shiftHeld = key.shiftKey ? "shift" : "";
                             chosenFile.execute(shiftHeld);
                             tools.clearLaunchBox();
+                            hideFuzzy();
                         }
                     // check if url before anything else. least taxing
                     } else if(isUrl(launchVal)){
