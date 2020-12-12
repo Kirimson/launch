@@ -9,9 +9,14 @@ export class LaunchLink extends LaunchFile {
             this.extension = '.lnk';
         }
 
-    execute() {
+    execute(args?:string) {
         console.log(this.content);
-        window.location.href = this.content;
+        console.log(args);
+        if (args) {
+            window.open(this.content);
+        } else {
+            window.location.href = this.content;
+        }
     }
 
     toString():string {

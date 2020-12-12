@@ -204,7 +204,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                                 hideFuzzy();
                             }
                             else {
-                                chosenFile.execute();
+                                let shiftHeld = key.shiftKey ? "shift" : "";
+                                chosenFile.execute(shiftHeld);
                             }
                             // check if url before anything else. least taxing
                         }

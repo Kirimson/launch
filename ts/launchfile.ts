@@ -30,6 +30,6 @@ export class LaunchFile {
     }
 
     // Overrriden functions
-    execute(queryArg?:string){}
+    execute(args?:string){}
     toString():string{return '';}
 }

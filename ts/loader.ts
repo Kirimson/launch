@@ -240,7 +240,8 @@ $(function(){
                             tools.setConsoleText(chosenFile.toString());
                             hideFuzzy();
                         } else {
-                            chosenFile.execute();
+                            let shiftHeld = key.shiftKey ? "shift" : "";
+                            chosenFile.execute(shiftHeld);
                         }
                     // check if url before anything else. least taxing
                     } else if(isUrl(launchVal)){
