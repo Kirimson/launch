@@ -240,6 +240,12 @@ Sets the amount of 'hits' a file has had, to a user defined amount
 
 Usage: `set-hits folder/file.lnk 100`
 
+### set-prefix
+
+Sets the character used at the beggining of the prompt. Default is `$`
+
+Usage: `set-prefix >`
+
 ### launch-hide-privacy
 
 Hides the privacy text in the corner of the screen
