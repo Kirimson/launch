@@ -217,8 +217,6 @@ a {
     font-family: inherit;
     font-size: inherit;
     font-weight: inherit;
-    /* min-height: 2vh; */
-    /* max-height: 2vh; */
     flex: 1;
 }
 

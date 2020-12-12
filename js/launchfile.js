@@ -34,7 +34,7 @@ define(["require", "exports"], function (require, exports) {
             this.parentName = parentName;
         }
         // Overrriden functions
-        execute(queryArg) { }
+        execute(args) { }
         toString() { return ''; }
     }
     exports.LaunchFile = LaunchFile;

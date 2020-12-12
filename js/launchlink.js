@@ -12,9 +12,15 @@ define(["require", "exports", "./launchfile"], function (require, exports, launc
             this.parentName = parentName;
             this.extension = '.lnk';
         }
-        execute() {
+        execute(args) {
             console.log(this.content);
-            window.location.href = this.content;
+            console.log(args);
+            if (args) {
+                window.open(this.content);
+            }
+            else {
+                window.location.href = this.content;
+            }
         }
         toString() {
             return this.getLocation().slice(0, -4);

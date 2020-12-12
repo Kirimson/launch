@@ -18,8 +18,8 @@ define(["require", "exports", "./launchfile", "./helpers"], function (require, e
             this.link = content.substr(content.indexOf(' ') + 1);
             this.extension = '.qry';
         }
-        execute(queryArg) {
-            let newLoc = this.link.replace('${}', queryArg);
+        execute(args) {
+            let newLoc = this.link.replace('${}', args);
             newLoc = helpers_1.Helper.ensureHttp(newLoc);
             window.location.href = newLoc;
         }

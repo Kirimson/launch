@@ -20,8 +20,8 @@ export class LaunchQuery extends LaunchFile{
             this.extension = '.qry';
         }
     
-    execute(queryArg:string){
-        let newLoc:string = this.link.replace('${}', queryArg)
+    execute(args:string){
+        let newLoc:string = this.link.replace('${}', args)
         newLoc = Helper.ensureHttp(newLoc)
         window.location.href = newLoc;
     }
