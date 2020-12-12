@@ -135,7 +135,7 @@ export class Tools {
             let fuzzySpan = document.createElement('span')
             fuzzySpan.className = 'fuzzy'
             fuzzySpan.id = `fuzzy-${(i)}`
-            fuzzySpan.innerHTML = ` <span>${item.getLocation()}</span><span class="fuzzy-hits">${item.hits}</span>`
+            fuzzySpan.innerHTML = ` <span class="fuzzy-name">${item.getLocation()}</span><span class="fuzzy-hits">${item.hits}</span>`
             $('#fuzzy-list').append(fuzzySpan);
         });
     }
