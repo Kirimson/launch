@@ -222,6 +222,17 @@ a {
     flex: 1;
 }
 
+.fuzzy {
+    display: flex;
+}
+
+.fuzzy-hits {
+    position: relative;
+    width: 100%;
+    text-align: right;
+    opacity: 0.5;
+}
+
 /* Mobile CSS */
 @media only screen and (max-width: 768px) {
     html, body {

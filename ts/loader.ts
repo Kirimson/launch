@@ -303,7 +303,10 @@ $(function(){
                         fuzzyList = launch.search(launchVal).slice(0,25)
                         if(fuzzyList.length > 0){
                             fuzzyIndex = 0;
-                            tools.populateFuzzyList(fuzzyList);
+                            let files:LaunchFile[] = fuzzyList.map(function(file){
+                                return launch.getFile(file);
+                            })
+                            tools.populateFuzzyList(files);
                             tools.hideConsoleHistory(true);
                             tools.hideFuzzyList(false);
                             hideFuzzyFinder = false;

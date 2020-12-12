@@ -1,4 +1,5 @@
 import "loader"
+import { LaunchFile } from "./launchfile";
 
 export class Tools {
 
@@ -128,13 +129,13 @@ export class Tools {
         $('#suggestion').attr('placeholder', text)
     }
 
-    populateFuzzyList(fuzzyList:string[]){
+    populateFuzzyList(fuzzyList:LaunchFile[]){
         $('#fuzzy-list').html('')
         fuzzyList.forEach(function(item, i) {
             let fuzzySpan = document.createElement('span')
             fuzzySpan.className = 'fuzzy'
             fuzzySpan.id = `fuzzy-${(i)}`
-            fuzzySpan.innerHTML = ` ${item}`
+            fuzzySpan.innerHTML = ` <span>${item.getLocation()}</span><span class="fuzzy-hits">${item.hits}</span>`
             $('#fuzzy-list').append(fuzzySpan);
         });
     }
