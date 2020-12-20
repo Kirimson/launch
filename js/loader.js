@@ -3,6 +3,14 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
     Object.defineProperty(exports, "__esModule", { value: true });
     function isUrl(text) {
         let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+        let files = launch.getFiles();
+        console.log(files.map(x => x.getLocation()));
+        console.log(text);
+        if (files.map(x => x.getLocation()).includes(text)) {
+            console.log("is filename");
+            return false;
+        }
+        console.log("is NOT filename");
         return guardedMatch(text, pattern);
     }
     function checkHttp(text) {
@@ -205,6 +213,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                             }
                             else {
                                 let shiftHeld = key.shiftKey ? "shift" : "";
+                                chosenFile.hits += 1;
+                                launch.store();
                                 chosenFile.execute(shiftHeld);
                                 tools.clearLaunchBox();
                                 hideFuzzy();
