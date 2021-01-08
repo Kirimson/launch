@@ -326,18 +326,20 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
             tree.updateTree(launch, currentFolder);
         });
         $('#fuzzy-list').on('click', '.fuzzy', function () {
-            let file = launch.getFile(this.innerHTML.trim());
+            let fileString = $(this).find(">:first-child").html();
+            let file = launch.getFile(fileString);
             if (file instanceof launchquery_1.LaunchQuery) {
                 tools.getConsole().val(file.shortHand);
                 tools.getConsole().focus();
                 hideFuzzy();
+                // Clear suggestion
+                tools.setSuggestion('');
             }
             else
-                launch.runFile(String(this.innerHTML.trim()));
+                file.execute();
         });
         $('.link').on('click', function () {
             let filename = this.innerHTML;
-            console.log(filename);
             launch.runFile(filename);
             return false;
         });

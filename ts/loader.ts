@@ -362,17 +362,19 @@ $(function(){
     });
 
     $('#fuzzy-list').on('click', '.fuzzy', function(){
-        let file = launch.getFile(this.innerHTML.trim());
+        let fileString = $(this).find(">:first-child").html()
+        let file:LaunchFile = launch.getFile(fileString);
         if(file instanceof LaunchQuery){
             tools.getConsole().val(file.shortHand);
             tools.getConsole().focus();
             hideFuzzy();
-        } else launch.runFile(String(this.innerHTML.trim()))
+            // Clear suggestion
+            tools.setSuggestion('');
+        } else file.execute()
     });
 
     $('.link').on('click', function(){
         let filename = this.innerHTML;
-        console.log(filename);
         launch.runFile(filename);
         return false;
     });
