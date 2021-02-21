@@ -81,6 +81,7 @@ a {
     display: flex;
     flex-direction: column;
     backdrop-filter: blur(15px);
+    z-index: 0;
 }
 
 .window-content {
@@ -190,10 +191,9 @@ a {
 #suggestion {
     z-index: -1;
     position: fixed;
-    opacity: 0.5;
     font-family: inherit;
     font-size: inherit;
-    font-weight: inherit;
+    font-weight: bolder;
 }
 
 #fuzzy-list {
