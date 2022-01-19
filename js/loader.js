@@ -95,7 +95,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
         fuzzyList = [];
         fuzzyIndex = -1;
         tools.hideFuzzyList(true);
-        tools.hideConsoleHistory(false);
+        tools.hideTerminalHistory(false);
     }
     var launch = new launch_1.Launcher();
     let tools = new htmltools_1.Tools();
@@ -138,16 +138,18 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
     // Set color
     tools.setWindowColor(launch.getColor());
     // Update launch's prefix
-    $('#console-prefix').html(launch.getPrefix());
+    $('#terminal-prefix').html(launch.getPrefix());
     // Display launch after all loading is done
     tools.showLaunch();
     $(function () {
+        let terminal = tools.getTerminal();
+        let terminalInput = tools.getTerminalInput();
         // Clicking in console to focus
-        tools.getTerminal().click(function () {
-            tools.getConsole().focus();
+        terminal.on('click', function () {
+            terminalInput.trigger('focus');
         });
         // Prevent default for up/down
-        tools.getConsole().on('keydown', function (key) {
+        terminalInput.on('keydown', function (key) {
             switch (key.key) {
                 case 'ArrowUp':
                     key.preventDefault();
@@ -157,28 +159,28 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     break;
                 case 'ArrowRight':
                     // Check if pressing right at the end of the string
-                    let val = tools.getConsoleVal();
-                    let consoleInput = document.getElementById("console");
+                    let val = tools.getTerminalVal();
+                    let terminalInput = document.getElementById("terminal-input");
                     let isAtEnd = false;
-                    isAtEnd = (consoleInput.selectionEnd == val.length);
+                    isAtEnd = (terminalInput.selectionEnd == val.length);
                     // If at the end, right will act the same as tab
                     if (isAtEnd) {
                         key.preventDefault();
-                        let autocomplete = getSimilar(tools.getConsoleVal());
-                        tools.setConsoleText(autocomplete);
+                        let autocomplete = getSimilar(tools.getTerminalVal());
+                        tools.setTerminalText(autocomplete);
                     }
                     break;
                 case 'Tab':
                     key.preventDefault();
-                    let autocomplete = getSimilar(tools.getConsoleVal());
-                    tools.setConsoleText(autocomplete);
+                    let autocomplete = getSimilar(tools.getTerminalVal());
+                    tools.setTerminalText(autocomplete);
                     break;
             }
         });
-        // When typing in console
-        tools.getConsole().on('keyup', function (key) {
+        // When typing in terminal
+        terminalInput.on('keyup', function (key) {
             // Listen for enter
-            let launchVal = tools.getConsoleVal();
+            let launchVal = tools.getTerminalVal();
             switch (key.key) {
                 case 'Enter':
                     // Debug
@@ -208,7 +210,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                         if (fuzzyList.length > 0 && fuzzyIndex != -1) {
                             let chosenFile = launch.getFile(fuzzyList[fuzzyIndex]);
                             if (chosenFile instanceof launchquery_1.LaunchQuery) {
-                                tools.setConsoleText(chosenFile.toString());
+                                tools.setTerminalText(chosenFile.toString());
                                 hideFuzzy();
                             }
                             else {
@@ -240,7 +242,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     break;
                 case 'ArrowUp':
                     if (fuzzyList.length == 0) {
-                        tools.setConsoleText(launch.getHistory(true));
+                        tools.setTerminalText(launch.getHistory(true));
                     }
                     else if (fuzzyIndex < fuzzyList.length - 1) {
                         moveFuzzyIndex(1);
@@ -248,7 +250,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     break;
                 case 'ArrowDown':
                     if (fuzzyList.length == 0) {
-                        tools.setConsoleText(launch.getHistory(false));
+                        tools.setTerminalText(launch.getHistory(false));
                     }
                     else if (fuzzyIndex > 0) {
                         moveFuzzyIndex(-1);
@@ -289,7 +291,7 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                                     return launch.getFile(file);
                                 });
                                 tools.populateFuzzyList(files);
-                                tools.hideConsoleHistory(true);
+                                tools.hideTerminalHistory(true);
                                 tools.hideFuzzyList(false);
                                 hideFuzzyFinder = false;
                                 moveFuzzyIndex(0);
@@ -310,8 +312,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
             let queryFile = launch.getFile(fileName);
             console.log(queryFile);
             if (queryFile instanceof launchquery_1.LaunchQuery) {
-                tools.getConsole().val(queryFile.shortHand);
-                tools.getConsole().focus();
+                terminalInput.val(queryFile.shortHand);
+                terminalInput.trigger('focus');
             }
         });
         $('#tree').on('click', '.tree-folder-name', function () {
@@ -329,8 +331,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
             let fileString = $(this).find(">:first-child").html();
             let file = launch.getFile(fileString);
             if (file instanceof launchquery_1.LaunchQuery) {
-                tools.getConsole().val(file.shortHand);
-                tools.getConsole().focus();
+                terminalInput.val(file.shortHand);
+                terminalInput.trigger('focus');
                 hideFuzzy();
                 // Clear suggestion
                 tools.setSuggestion('');

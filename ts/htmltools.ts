@@ -3,16 +3,16 @@ import { LaunchFile } from "./launchfile";
 
 export class Tools {
 
-    private console:JQuery;
+    private terminalInput:JQuery;
     private body:HTMLElement;
     private terminal:JQuery;
-    private consoleHistory:JQuery;
+    private terminalHistory:JQuery;
 
     constructor(){
-        this.console = $('#console');
-        this.console.focus();
+        this.terminalInput = $('#terminal-input');
+        this.terminalInput.trigger('focus');
         this.body = document.body;
-        this.consoleHistory = $('#terminal-history');
+        this.terminalHistory = $('#terminal-history');
         this.terminal = $('#terminal-window');
     }
 
@@ -24,8 +24,8 @@ export class Tools {
         }
     }
  
-    getConsole():JQuery{
-        return this.console;
+    getTerminalInput():JQuery{
+        return this.terminalInput;
     }
     
 
@@ -74,12 +74,12 @@ export class Tools {
         $(".window").css("background-color", rgbaColor);
     }
 
-    getConsoleVal():string{
-        return String(this.console.val());
+    getTerminalVal():string{
+        return String(this.terminalInput.val());
     }
 
     clearLaunchBox():void{
-        this.console.val('');
+        this.terminalInput.val('');
     }
 
     setBackground(background_url:string):void {
@@ -91,8 +91,8 @@ export class Tools {
 
     }
 
-    hideConsoleHistory(hidden:boolean){
-        this.hideElement(hidden, this.consoleHistory)
+    hideTerminalHistory(hidden:boolean){
+        this.hideElement(hidden, this.terminalHistory)
     }
 
     hideFuzzyList(hidden:boolean){
@@ -111,18 +111,18 @@ export class Tools {
                 if(i != 0) {
                     prefix = "&nbsp&nbsp";
                 }
-                this.consoleHistory.prepend(`<span>${prefix}${outputLine}</span>`);
+                this.terminalHistory.prepend(`<span>${prefix}${outputLine}</span>`);
             }
         }
     }
 
     showLaunch(){
         $('.app').css('display', 'flex');
-        this.console.focus();
+        this.terminalInput.focus();
     }
 
-    setConsoleText(text:string){
-        this.console.val(text);
+    setTerminalText(text:string){
+        this.terminalInput.val(text);
     }
 
     setSuggestion(text:string){

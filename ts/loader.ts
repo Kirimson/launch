@@ -114,7 +114,7 @@ function hideFuzzy(){
     fuzzyList = [];
     fuzzyIndex = -1;
     tools.hideFuzzyList(true)
-    tools.hideConsoleHistory(false)
+    tools.hideTerminalHistory(false)
 }
 
 var launch = new Launcher();
@@ -165,20 +165,23 @@ tools.setBackground(launch.getBackground());
 tools.setWindowColor(launch.getColor());
 
 // Update launch's prefix
-$('#console-prefix').html(launch.getPrefix());
+$('#terminal-prefix').html(launch.getPrefix());
 
 // Display launch after all loading is done
 tools.showLaunch();
 
 $(function(){
+
+    let terminal = tools.getTerminal();
+    let terminalInput = tools.getTerminalInput();
     
     // Clicking in console to focus
-    tools.getTerminal().click(function(){
-        tools.getConsole().focus();
+    terminal.on('click', function(){
+        terminalInput.trigger('focus');
     });
 
     // Prevent default for up/down
-    tools.getConsole().on('keydown', function(key){
+    terminalInput.on('keydown', function(key){
         switch(key.key){
             case 'ArrowUp':
                 key.preventDefault();
@@ -188,29 +191,29 @@ $(function(){
                 break;
             case 'ArrowRight':
                 // Check if pressing right at the end of the string
-                let val = tools.getConsoleVal();
-                let consoleInput:HTMLInputElement = <HTMLInputElement>document.getElementById("console");
+                let val = tools.getTerminalVal();
+                let terminalInput:HTMLInputElement = <HTMLInputElement>document.getElementById("terminal-input");
                 let isAtEnd = false;
-                isAtEnd = (consoleInput.selectionEnd == val.length);
+                isAtEnd = (terminalInput.selectionEnd == val.length);
                 // If at the end, right will act the same as tab
                 if (isAtEnd) {
                     key.preventDefault();
-                    let autocomplete = getSimilar(tools.getConsoleVal());
-                    tools.setConsoleText(autocomplete);
+                    let autocomplete = getSimilar(tools.getTerminalVal());
+                    tools.setTerminalText(autocomplete);
                 }
                 break;
             case 'Tab':
                 key.preventDefault();
-                let autocomplete = getSimilar(tools.getConsoleVal());
-                tools.setConsoleText(autocomplete);
+                let autocomplete = getSimilar(tools.getTerminalVal());
+                tools.setTerminalText(autocomplete);
                 break;
         }
     })
 
-    // When typing in console
-    tools.getConsole().on('keyup', function(key){
+    // When typing in terminal
+    terminalInput.on('keyup', function(key){
         // Listen for enter
-        let launchVal:string = tools.getConsoleVal();
+        let launchVal:string = tools.getTerminalVal();
 
         switch(key.key){
             case 'Enter':
@@ -244,7 +247,7 @@ $(function(){
 
                         let chosenFile = launch.getFile(fuzzyList[fuzzyIndex]);
                         if(chosenFile instanceof LaunchQuery ){
-                            tools.setConsoleText(chosenFile.toString());
+                            tools.setTerminalText(chosenFile.toString());
                             hideFuzzy();
                         } else {
                             let shiftHeld = key.shiftKey ? "shift" : "";
@@ -272,14 +275,14 @@ $(function(){
                 break;
             case 'ArrowUp':
                 if(fuzzyList.length == 0){
-                    tools.setConsoleText(launch.getHistory(true));
+                    tools.setTerminalText(launch.getHistory(true));
                 } else if(fuzzyIndex < fuzzyList.length-1) {
                     moveFuzzyIndex(1)
                 }
                 break;
             case 'ArrowDown':
                 if(fuzzyList.length == 0){
-                    tools.setConsoleText(launch.getHistory(false));
+                    tools.setTerminalText(launch.getHistory(false));
                 } else if(fuzzyIndex > 0) {
                     moveFuzzyIndex(-1)
                 }
@@ -319,7 +322,7 @@ $(function(){
                                 return launch.getFile(file);
                             })
                             tools.populateFuzzyList(files);
-                            tools.hideConsoleHistory(true);
+                            tools.hideTerminalHistory(true);
                             tools.hideFuzzyList(false);
                             hideFuzzyFinder = false;
                             moveFuzzyIndex(0);
@@ -345,8 +348,8 @@ $(function(){
         let queryFile:LaunchFile = launch.getFile(fileName);
         console.log(queryFile);
         if(queryFile instanceof LaunchQuery){
-            tools.getConsole().val(queryFile.shortHand);
-            tools.getConsole().focus();
+            terminalInput.val(queryFile.shortHand);
+            terminalInput.trigger('focus');
         }
     });
 
@@ -365,8 +368,8 @@ $(function(){
         let fileString = $(this).find(">:first-child").html()
         let file:LaunchFile = launch.getFile(fileString);
         if(file instanceof LaunchQuery){
-            tools.getConsole().val(file.shortHand);
-            tools.getConsole().focus();
+            terminalInput.val(file.shortHand);
+            terminalInput.trigger('focus');
             hideFuzzy();
             // Clear suggestion
             tools.setSuggestion('');

@@ -256,7 +256,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                     break;
                 case 'set-prefix':
                     this.prefix = args + "&nbsp";
-                    $('#console-prefix').html(this.prefix);
+                    $('#terminal-prefix').html(this.prefix);
                     break;
                 case 'clear':
                     $('#terminal-history').html('');
