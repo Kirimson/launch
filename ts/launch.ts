@@ -139,12 +139,18 @@ export class Launcher {
      */
     getFolderFiles(foldername:string):Array<LaunchFile> {
         let folder = this.getFolder(foldername);
+        
+        let folderFiles: Array<LaunchFile> = this.getFolderFilesById(folder.id);
+        return folderFiles;
+    }
+
+    private getFolderFilesById(folderID: number) {
         let files = this.getFiles();
-        let folderFiles:Array<LaunchFile> = [];
+        let folderFiles: Array<LaunchFile> = [];
         files.forEach(file => {
-            if(file.parentId == folder.id) {
+            if (file.parentId == folderID) {
                 folderFiles.push(file);
-            } 
+            }
         });
         return folderFiles;
     }
@@ -299,7 +305,7 @@ export class Launcher {
                 break;
             case 'set-prefix':
                 this.prefix = args + "&nbsp";
-                $('#console-prefix').html(this.prefix);
+                $('#terminal-prefix').html(this.prefix);
                 break;
             case 'clear':
                 $('#terminal-history').html('');
@@ -411,7 +417,11 @@ export class Launcher {
     ls(folderName:string) {
         let files:Array<LaunchFile>;
         try {
-            files = this.getFolderFiles(folderName);
+            if (!folderName) {
+                files = this.getFolderFilesById(undefined);
+            } else {
+                files = this.getFolderFiles(folderName);
+            }
         } catch {
             return [`Folder ${folderName} not found`]
         }
@@ -575,7 +585,6 @@ export class Launcher {
             if(file.toString() == fileName || file.getLocation() == fileName){
                 file.hits += 1;
                 this.store();
-                queryArg = encodeURIComponent(queryArg).replace(/%20/g, "+");
                 file.execute(queryArg);
                 return "";
             }

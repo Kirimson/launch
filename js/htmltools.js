@@ -4,10 +4,10 @@ define(["require", "exports", "loader"], function (require, exports) {
     exports.Tools = void 0;
     class Tools {
         constructor() {
-            this.console = $('#console');
-            this.console.focus();
+            this.terminalInput = $('#terminal-input');
+            this.terminalInput.trigger('focus');
             this.body = document.body;
-            this.consoleHistory = $('#terminal-history');
+            this.terminalHistory = $('#terminal-history');
             this.terminal = $('#terminal-window');
         }
         hideElement(hidden, element) {
@@ -18,8 +18,8 @@ define(["require", "exports", "loader"], function (require, exports) {
                 element.css('display', 'flex');
             }
         }
-        getConsole() {
-            return this.console;
+        getTerminalInput() {
+            return this.terminalInput;
         }
         getTerminal() {
             return this.terminal;
@@ -55,11 +55,11 @@ define(["require", "exports", "loader"], function (require, exports) {
             $(".window").css('color', textCol);
             $(".window").css("background-color", rgbaColor);
         }
-        getConsoleVal() {
-            return String(this.console.val());
+        getTerminalVal() {
+            return String(this.terminalInput.val());
         }
         clearLaunchBox() {
-            this.console.val('');
+            this.terminalInput.val('');
         }
         setBackground(background_url) {
             this.body.style.backgroundImage = `url(${background_url})`;
@@ -67,8 +67,8 @@ define(["require", "exports", "loader"], function (require, exports) {
         hideTree(hidden) {
             this.hideElement(hidden, $('#tree-wrapper'));
         }
-        hideConsoleHistory(hidden) {
-            this.hideElement(hidden, this.consoleHistory);
+        hideTerminalHistory(hidden) {
+            this.hideElement(hidden, this.terminalHistory);
         }
         hideFuzzyList(hidden) {
             this.hideElement(hidden, $('#fuzzy-list'));
@@ -84,16 +84,16 @@ define(["require", "exports", "loader"], function (require, exports) {
                     if (i != 0) {
                         prefix = "&nbsp&nbsp";
                     }
-                    this.consoleHistory.prepend(`<span>${prefix}${outputLine}</span>`);
+                    this.terminalHistory.prepend(`<span>${prefix}${outputLine}</span>`);
                 }
             }
         }
         showLaunch() {
             $('.app').css('display', 'flex');
-            this.console.focus();
+            this.terminalInput.focus();
         }
-        setConsoleText(text) {
-            this.console.val(text);
+        setTerminalText(text) {
+            this.terminalInput.val(text);
         }
         setSuggestion(text) {
             $('#suggestion').attr('placeholder', text);

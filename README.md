@@ -41,6 +41,10 @@ commandline for you.
 Query files can also be used by typing the path to the file, all additional text
 after a space will be used as the search term. 
 
+Multiple "arguments" can be used in a query file, if there are multiple parts
+of a link that needs filling in with a custom value. To fill in each argument
+seperate them with a space.
+
 ## Default Files
 
 A 'launch' folder is originally created with some query files pre-made.
@@ -104,6 +108,7 @@ Examples:
 - `touch folderName/fileName.lnk www.website.com`
 - `touch folderName/fileName www.website.com`
 - `touch folderName/fileName.qry s: www.website.com/search?q=${}`
+- `touch folderName/fileName.qry s: www.website.com/project/${1}/repos/${2}`
 
 Notes:
 

@@ -109,10 +109,14 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
          */
         getFolderFiles(foldername) {
             let folder = this.getFolder(foldername);
+            let folderFiles = this.getFolderFilesById(folder.id);
+            return folderFiles;
+        }
+        getFolderFilesById(folderID) {
             let files = this.getFiles();
             let folderFiles = [];
             files.forEach(file => {
-                if (file.parentId == folder.id) {
+                if (file.parentId == folderID) {
                     folderFiles.push(file);
                 }
             });
@@ -256,7 +260,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                     break;
                 case 'set-prefix':
                     this.prefix = args + "&nbsp";
-                    $('#console-prefix').html(this.prefix);
+                    $('#terminal-prefix').html(this.prefix);
                     break;
                 case 'clear':
                     $('#terminal-history').html('');
@@ -358,9 +362,14 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
         ls(folderName) {
             let files;
             try {
-                files = this.getFolderFiles(folderName);
+                if (!folderName) {
+                    files = this.getFolderFilesById(undefined);
+                }
+                else {
+                    files = this.getFolderFiles(folderName);
+                }
             }
-            catch (_a) {
+            catch {
                 return [`Folder ${folderName} not found`];
             }
             let fileInfoArr = [];
@@ -501,7 +510,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 if (file.toString() == fileName || file.getLocation() == fileName) {
                     file.hits += 1;
                     this.store();
-                    queryArg = encodeURIComponent(queryArg).replace(/%20/g, "+");
                     file.execute(queryArg);
                     return "";
                 }

@@ -203,11 +203,11 @@ a {
     flex: 1;
 }
 
-#console-input-line {
+#terminal-input-line {
     display: flex;
 }
 
-.console-input{
+.terminal-input{
     background-color: transparent;
     border: none;
     outline: none;

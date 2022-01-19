@@ -21,7 +21,19 @@ export class LaunchQuery extends LaunchFile{
         }
     
     execute(args:string){
-        let newLoc:string = this.link.replace('${}', args)
+        let newLoc:string;
+        // If this is a multi arg query file
+        if (this.link.includes('${1}')) {
+            let splitArgs = args.split(" ");
+            newLoc = this.link;
+            for (let i = 0; i < splitArgs.length; i++ ) {
+                let arg = splitArgs[i];
+                newLoc = newLoc.replace(`\${${i+1}}`, arg)
+            }
+        } else {
+            let encodedargs = encodeURIComponent(args).replace(/%20/g, "+");
+            newLoc = this.link.replaceAll('${}', encodedargs)
+        }
         newLoc = Helper.ensureHttp(newLoc)
         window.location.href = newLoc;
     }
