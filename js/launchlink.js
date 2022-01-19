@@ -13,8 +13,6 @@ define(["require", "exports", "./launchfile"], function (require, exports, launc
             this.extension = '.lnk';
         }
         execute(args) {
-            console.log(this.content);
-            console.log(args);
             if (args) {
                 window.open(this.content);
             }

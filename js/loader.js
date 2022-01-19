@@ -4,13 +4,9 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
     function isUrl(text) {
         let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
         let files = launch.getFiles();
-        console.log(files.map(x => x.getLocation()));
-        console.log(text);
         if (files.map(x => x.getLocation()).includes(text)) {
-            console.log("is filename");
             return false;
         }
-        console.log("is NOT filename");
         return guardedMatch(text, pattern);
     }
     function checkHttp(text) {
@@ -118,7 +114,6 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
             launch_files = JSON.parse(localStorage.getItem('launch_files'));
         }
         if (!launch.load(launch_base, launch_folders, launch_files)) {
-            console.log("Couldnt load");
             rebuildLaunch();
         }
     }
@@ -310,7 +305,6 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                 fileName = `${folderName}/${fileName}`;
             }
             let queryFile = launch.getFile(fileName);
-            console.log(queryFile);
             if (queryFile instanceof launchquery_1.LaunchQuery) {
                 terminalInput.val(queryFile.shortHand);
                 terminalInput.trigger('focus');

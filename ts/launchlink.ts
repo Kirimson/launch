@@ -10,8 +10,6 @@ export class LaunchLink extends LaunchFile {
         }
 
     execute(args?:string) {
-        console.log(this.content);
-        console.log(args);
         if (args) {
             window.open(this.content);
         } else {

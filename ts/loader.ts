@@ -8,13 +8,9 @@ import { LaunchFolder } from "./launchfolder";
 function isUrl(text:string):boolean{
     let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
     let files = launch.getFiles()
-    console.log(files.map(x => x.getLocation()))
-    console.log(text)
     if (files.map(x => x.getLocation()).includes(text)) {
-        console.log("is filename")
         return false;
     }
-    console.log("is NOT filename")
     return guardedMatch(text, pattern)
 }
 
@@ -142,7 +138,6 @@ if(localStorage.getItem('launch')){
         launch_files = JSON.parse(localStorage.getItem('launch_files'));
     }
     if(!launch.load(launch_base, launch_folders, launch_files)){
-        console.log("Couldnt load");
         rebuildLaunch();
     }
 } else {
@@ -346,7 +341,6 @@ $(function(){
         }
 
         let queryFile:LaunchFile = launch.getFile(fileName);
-        console.log(queryFile);
         if(queryFile instanceof LaunchQuery){
             terminalInput.val(queryFile.shortHand);
             terminalInput.trigger('focus');
