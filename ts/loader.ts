@@ -179,7 +179,7 @@ $(function(){
               }, function(err) {
                 console.error('Async: Could not copy text: ', err);
               });
-        }
+        } else terminalInput.trigger('focus');
     });
 
     // Prevent default for up/down

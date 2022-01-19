@@ -149,6 +149,8 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                     console.error('Async: Could not copy text: ', err);
                 });
             }
+            else
+                terminalInput.trigger('focus');
         });
         // Prevent default for up/down
         terminalInput.on('keydown', function (key) {
