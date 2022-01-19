@@ -148,7 +148,6 @@ define(["require", "exports", "launch", "htmltools", "./tree", "./launchquery"],
                 }, function (err) {
                     console.error('Async: Could not copy text: ', err);
                 });
-                console.log(selectedText);
             }
         });
         // Prevent default for up/down
