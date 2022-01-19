@@ -139,12 +139,18 @@ export class Launcher {
      */
     getFolderFiles(foldername:string):Array<LaunchFile> {
         let folder = this.getFolder(foldername);
+        
+        let folderFiles: Array<LaunchFile> = this.getFolderFilesById(folder.id);
+        return folderFiles;
+    }
+
+    private getFolderFilesById(folderID: number) {
         let files = this.getFiles();
-        let folderFiles:Array<LaunchFile> = [];
+        let folderFiles: Array<LaunchFile> = [];
         files.forEach(file => {
-            if(file.parentId == folder.id) {
+            if (file.parentId == folderID) {
                 folderFiles.push(file);
-            } 
+            }
         });
         return folderFiles;
     }
@@ -411,7 +417,11 @@ export class Launcher {
     ls(folderName:string) {
         let files:Array<LaunchFile>;
         try {
-            files = this.getFolderFiles(folderName);
+            if (!folderName) {
+                files = this.getFolderFilesById(undefined);
+            } else {
+                files = this.getFolderFiles(folderName);
+            }
         } catch {
             return [`Folder ${folderName} not found`]
         }

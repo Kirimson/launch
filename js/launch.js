@@ -109,10 +109,14 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
          */
         getFolderFiles(foldername) {
             let folder = this.getFolder(foldername);
+            let folderFiles = this.getFolderFilesById(folder.id);
+            return folderFiles;
+        }
+        getFolderFilesById(folderID) {
             let files = this.getFiles();
             let folderFiles = [];
             files.forEach(file => {
-                if (file.parentId == folder.id) {
+                if (file.parentId == folderID) {
                     folderFiles.push(file);
                 }
             });
@@ -358,7 +362,12 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
         ls(folderName) {
             let files;
             try {
-                files = this.getFolderFiles(folderName);
+                if (!folderName) {
+                    files = this.getFolderFilesById(undefined);
+                }
+                else {
+                    files = this.getFolderFiles(folderName);
+                }
             }
             catch (_a) {
                 return [`Folder ${folderName} not found`];
