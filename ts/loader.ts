@@ -170,9 +170,18 @@ $(function(){
     let terminal = tools.getTerminal();
     let terminalInput = tools.getTerminalInput();
     
-    // Clicking in console to focus
-    terminal.on('click', function(){
-        terminalInput.trigger('focus');
+    terminal.on('mouseup', function(){
+        let selectedText = window.getSelection().toString();
+        if (selectedText.length > 0) {
+            navigator.clipboard.writeText(selectedText).then(function() {
+                tools.appendLineToTerminalOutput('Text Copied!', launch.getPrefix());
+                terminalInput.trigger('focus');
+              }, function(err) {
+                console.error('Async: Could not copy text: ', err);
+              });
+            console.log(selectedText);
+        }
+
     });
 
     // Prevent default for up/down
