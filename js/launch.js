@@ -369,7 +369,7 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                     files = this.getFolderFiles(folderName);
                 }
             }
-            catch (_a) {
+            catch {
                 return [`Folder ${folderName} not found`];
             }
             let fileInfoArr = [];
@@ -510,7 +510,6 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 if (file.toString() == fileName || file.getLocation() == fileName) {
                     file.hits += 1;
                     this.store();
-                    queryArg = encodeURIComponent(queryArg).replace(/%20/g, "+");
                     file.execute(queryArg);
                     return "";
                 }

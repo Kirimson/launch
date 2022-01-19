@@ -19,7 +19,20 @@ define(["require", "exports", "./launchfile", "./helpers"], function (require, e
             this.extension = '.qry';
         }
         execute(args) {
-            let newLoc = this.link.replace('${}', args);
+            let newLoc;
+            // If this is a multi arg query file
+            if (this.link.includes('${1}')) {
+                let splitArgs = args.split(" ");
+                newLoc = this.link;
+                for (let i = 0; i < splitArgs.length; i++) {
+                    let arg = splitArgs[i];
+                    newLoc = newLoc.replace(`\${${i + 1}}`, arg);
+                }
+            }
+            else {
+                let encodedargs = encodeURIComponent(args).replace(/%20/g, "+");
+                newLoc = this.link.replaceAll('${}', encodedargs);
+            }
             newLoc = helpers_1.Helper.ensureHttp(newLoc);
             window.location.href = newLoc;
         }

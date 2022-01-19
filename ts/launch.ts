@@ -585,7 +585,6 @@ export class Launcher {
             if(file.toString() == fileName || file.getLocation() == fileName){
                 file.hits += 1;
                 this.store();
-                queryArg = encodeURIComponent(queryArg).replace(/%20/g, "+");
                 file.execute(queryArg);
                 return "";
             }
