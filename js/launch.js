@@ -20,7 +20,8 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 'colo', 'fuzzy', 'clear-hits',
                 'set-hits', 'launch-hide-privacy',
                 'launch-show-privacy', 'clear',
-                'launch-help', 'set-prefix'];
+                'launch-help', 'set-prefix',
+                'launch-export', 'launch-import'];
             this.folders = [];
             this.files = [];
             this.background = this.backgroundDefault;
@@ -258,6 +259,15 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 case 'launch-help':
                     window.location.href = 'https://github.com/Kirimson/launch/blob/master/README.md';
                     break;
+                case 'launch-export':
+                    commandReturn.push(this.launchExport(args.split(' ')));
+                    break;
+                case 'launch-import':
+                    let blat = false;
+                    if (args.split(' ')[0] == "blat")
+                        blat = true;
+                    this.launchImport(blat);
+                    break;
                 case 'set-prefix':
                     this.prefix = args + "&nbsp";
                     $('#terminal-prefix').html(this.prefix);
@@ -267,9 +277,74 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                     commandReturn = [''];
                     break;
             }
-            // Return commandreturn if command gave a return statement.
+            // Return commandReturn if command gave a return statement.
             // Else, return the command the user provided
             return commandReturn;
+        }
+        /**
+         * Exports Launch to a JSON file that can then be imported by another instance
+         * @param dataToExport arguments provided by the user. Expects "files" and "config".
+         * if "files" is present, will export both files and folders, if "config" is present
+         * will export launch configuration
+         */
+        launchExport(dataToExport = ["files"]) {
+            let exportFolders = {};
+            let exportFiles = {};
+            if (dataToExport.includes("files")) {
+                exportFolders = this.exportableFolders();
+                exportFiles = this.exportableFiles();
+            }
+            let exportData = { ...exportFolders, ...exportFiles };
+            if (dataToExport.includes("config")) {
+                exportData["launch"] = this.exportableBaseData();
+                // For some reason JSON.stringy ignores anything after a '#' character.
+                // base.color may be a hex color code, which contains '#'. Lets replace it with (hex) to fix this
+                exportData["launch"]["color"] = exportData["launch"]["color"].replace('#', '(hex)');
+            }
+            let exportJSON = JSON.stringify(exportData, null, 2);
+            let downloadElem = document.createElement('a');
+            downloadElem.href = 'data:attachment/text,' + encodeURI(exportJSON);
+            downloadElem.target = '_blank';
+            downloadElem.download = `launch.json`;
+            downloadElem.click();
+            return "Launch Exported Successfully";
+        }
+        readLaunchFile(file) {
+            return new Promise((resolve, reject) => {
+                var fr = new FileReader();
+                fr.onload = () => {
+                    let importObject = JSON.parse(fr.result.toString());
+                    resolve(importObject);
+                };
+                fr.onerror = reject;
+                fr.readAsText(file);
+            });
+        }
+        /**
+         * Imports data from another launch instance. Can either merge the import data, or
+         * configure launch exactly like the import data
+         * @param blat Whether to completely overwrite the current launch data with the imported data, or to merge it in
+         */
+        launchImport(blat) {
+            var self = this;
+            let importElem = document.createElement('input');
+            importElem.type = "file";
+            importElem.click();
+            importElem.addEventListener('change', function () {
+                self.readLaunchFile(this.files[0]).then(function (importData) {
+                    // fix up the color hex problem...
+                    importData['launch']['color'] = importData['launch']['color'].replace('(hex)', '#');
+                    self.loadConfig(importData['launch']);
+                    if (blat) {
+                        self.files = [];
+                        self.folders = [];
+                    }
+                    self.loadFolders(importData['folders']);
+                    self.loadFiles(importData['files']);
+                    self.store();
+                    location.reload();
+                });
+            });
         }
         /**
          * Create new folder/s from given list
@@ -588,10 +663,10 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
             return null;
         }
         /**
-         * Serialises the Launch instance into a JSON string
-         * @returns string: stringified JSON data of Launch instance
+         * Generates an object containing Launch files
+         * @returns A serializable object for Launch's files
          */
-        store() {
+        exportableFiles() {
             let filesData = { 'files': [] };
             this.files.forEach(file => {
                 let fileData = {
@@ -601,6 +676,13 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 };
                 filesData['files'].push(fileData);
             });
+            return filesData;
+        }
+        /**
+         * Generates an object containing Launch folders
+         * @returns A serializable object for Launch's folders
+         */
+        exportableFolders() {
             let foldersData = { 'folders': [] };
             this.folders.forEach(folder => {
                 let folderData = {
@@ -609,7 +691,14 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 };
                 foldersData['folders'].push(folderData);
             });
-            let data = {
+            return foldersData;
+        }
+        /**
+         * Generates an object containing generic launch configuration options
+         * @returns A serializable object for generic Launch configuration options
+         */
+        exportableBaseData() {
+            let baseData = {
                 'nextFolderId': this.nextFolderId,
                 'background': this.background,
                 'tree': this.getTreeHidden(),
@@ -619,12 +708,19 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 'privacy': this.privacy,
                 'prefix': this.prefix
             };
-            let launch_base = JSON.stringify(data);
-            let launch_folders = JSON.stringify(foldersData);
-            let launch_files = JSON.stringify(filesData);
-            localStorage.setItem('launch', launch_base);
-            localStorage.setItem('launch_folders', launch_folders);
-            localStorage.setItem('launch_files', launch_files);
+            return baseData;
+        }
+        /**
+         * Stores a serialized version of Launch in the browser's Local Storage
+         * @returns string: stringified JSON data of Launch instance
+         */
+        store() {
+            let base_data = JSON.stringify(this.exportableBaseData());
+            let folder_data = JSON.stringify(this.exportableFolders());
+            let file_data = JSON.stringify(this.exportableFiles());
+            localStorage.setItem('launch', base_data);
+            localStorage.setItem('launch_folders', folder_data);
+            localStorage.setItem('launch_files', file_data);
         }
         /**
          * Creates a launch instance based on it's serialised data
@@ -634,34 +730,21 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
         load(launch_base, launch_folders, launch_files) {
             // Try our best to import the data. If it is corrupt, return false
             try {
-                this.nextFolderId = 0;
-                this.folders = [];
-                this.files = [];
-                this.treeHidden = launch_base['tree'];
-                this.defaultSearch = launch_base['defaultSearch'];
-                this.color = launch_base['color'];
-                this.fuzzy = launch_base['fuzzy'];
-                this.privacy = launch_base['privacy'];
-                this.prefix = launch_base['prefix'];
-                // if no prefix, set to default
-                if (!this.prefix) {
-                    this.prefix = "$&nbsp";
-                }
-                //  If there is a user stored background, load it
-                if (launch_base['background']) {
-                    this.background = launch_base['background'];
-                }
+                // Load base config, such as background, color, prefix etc...
+                this.loadConfig(launch_base);
+                // Old functionality when folders where in launch_base
                 if (launch_base['folders']) {
-                    this.loadFolders(launch_base);
+                    this.loadFolders(launch_base['folders']);
                 }
                 else {
-                    this.loadFolders(launch_folders);
+                    this.loadFolders(launch_folders['folders']);
                 }
+                // Old functionality when files were in launch_base
                 if (launch_base['files']) {
-                    this.loadFiles(launch_base);
+                    this.loadFiles(launch_base['files']);
                 }
                 else {
-                    this.loadFiles(launch_files);
+                    this.loadFiles(launch_files['files']);
                 }
                 return true;
             }
@@ -670,16 +753,32 @@ define(["require", "exports", "./launchfolder", "./launchlink", "./launchquery",
                 return false;
             }
         }
+        loadConfig(baseConfig) {
+            this.treeHidden = baseConfig['tree'];
+            this.defaultSearch = baseConfig['defaultSearch'];
+            this.color = baseConfig['color'];
+            this.fuzzy = baseConfig['fuzzy'];
+            this.privacy = baseConfig['privacy'];
+            this.prefix = baseConfig['prefix'];
+            // if no prefix, set to default
+            if (!this.prefix) {
+                this.prefix = "$&nbsp";
+            }
+            //  If there is a user stored background, load it
+            if (baseConfig['background']) {
+                this.background = baseConfig['background'];
+            }
+        }
         loadFolders(folders) {
-            for (let i = 0; i < folders['folders'].length; i++) {
-                let folder = folders['folders'][i];
+            for (let i = 0; i < folders.length; i++) {
+                let folder = folders[i];
                 this.mkdir([folder['name']]);
             }
             ;
         }
         loadFiles(files) {
-            for (let x = 0; x < files['files'].length; x++) {
-                let file = files['files'][x];
+            for (let x = 0; x < files.length; x++) {
+                let file = files[x];
                 let hits = 0;
                 if (file['hits']) {
                     hits = file['hits'];
