@@ -385,9 +385,12 @@ export class Launcher {
         importElem.click();
         importElem.addEventListener('change', function(){
             self.readLaunchFile(this.files[0]).then(function(importData) {
-                // fix up the color hex problem...
-                importData['launch']['color'] = importData['launch']['color'].replace('(hex)', '#');
-                self.loadConfig(importData['launch'])
+                
+                if (importData['launch']) {
+                    // fix up the color hex problem...
+                    importData['launch']['color'] = importData['launch']['color'].replace('(hex)', '#');
+                    self.loadConfig(importData['launch'])
+                }
                 if (blat){
                     self.files = []
                     self.folders = []
