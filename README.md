@@ -247,7 +247,7 @@ Usage: `set-hits folder/file.lnk 100`
 
 ### set-prefix
 
-Sets the character used at the beggining of the prompt. Default is `$`
+Sets the character used at the beginning of the prompt. Default is `$`
 
 Usage: `set-prefix >`
 
@@ -262,6 +262,25 @@ Usage: `launch-hide-privacy`
 Shows the privacy text in the corner of the screen
 
 Usage: `launch-show-privacy`
+
+### launch-export
+
+Exports data from the current launch instance to a json file.
+
+Usage: `launch-export [files, config]`
+
+Defaults to exporting files/folders. Only supplying `config` will export only
+launch config options, such as background image, window colour, etc...
+
+### launch-import
+
+Imports data from a launch json file into the current launch instance.
+
+Usage: `launch-import [blat]`
+
+Defaults to merging data from the export file with your current launch. Using the
+`blat` option will erase all content in your current launch, replacing it with only
+content from the import file.
 
 ### launch-help
 
